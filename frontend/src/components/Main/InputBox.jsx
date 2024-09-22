@@ -3,6 +3,7 @@ import useInputStore from '../../store/inputStore.js'
 import {sendMessageAndGetResponse, sendMessageAndReturnResponse} from "../../services/chat.mjs";
 import useChatStore from "../../store/chatStore.js";
 import useChatSettingStore from "../../store/chatSettingStore.js";
+import useModelManagementStore from "../../store/modelManagementStore.js";
 import styles from "./InputBox.module.css"
 import {assets} from "../../assets/assets.js";
 import useApiKeyStore from "../../store/apiKeyStore.js";
@@ -77,52 +78,52 @@ const InputBox = () => {
 
         // Check the number of messages in chatStore
         const {messages} = useChatStore.getState();
-        // if (messages.length === 4) {
-        //     // Add a delay of 3 seconds (3000 milliseconds)
-        //     await delay(3000);
-        //
-        //     console.log("message count is 4, proceed to get conversation title");
-        //     let integratedMessagesForTitle = [
-        //         ...useChatStore.getState().getIntegratedMessages(),     // dont use artifact mode here
-        //         {
-        //             role: "user",
-        //             content: "Provide a title (in 5 words or less) for the conversation so far, so that i can recall what the conversation is about later on."
-        //         }
-        //     ]
-        //
-        //     const tools = [
-        //         {
-        //             "type": "function",
-        //             "function": {
-        //                 "name": "set_title",
-        //                 "description": "update conversation title",
-        //                 "parameters": {
-        //                     "type": "object",
-        //                     "properties": {
-        //                         "new_title": {
-        //                             "type": "string",
-        //                             "description": "conversation title in 5 words or less",
-        //                         },
-        //                     },
-        //                     "required": ["new_title"],
-        //                 },
-        //             }
-        //         }
-        //     ];
-        //
-        //     let response = await sendMessageAndReturnResponse({
-        //         msgs: integratedMessagesForTitle,
-        //         stream: false,
-        //         tools: tools,
-        //         tool_choice: "required",
-        //         extra_body_overwrite: {"thinking_template" : "",} //disable thinking template to avoid model confusion
-        //     })
-        //
-        //     // Truncate the response to maximum 6 words
-        //     let parsed_argument = JSON.parse(response.tool_calls[0].function.arguments)["new_title"]
-        //     parsed_argument = parsed_argument.split(" ").slice(0, 5).join(" ");
-        //     useChatStore.getState().setConversationTitle(parsed_argument);
-        // }
+        if (messages.length === 4) {
+            // Add a delay of 3 seconds (3000 milliseconds)
+            await delay(1500);
+
+            console.log("message count is 4, proceed to get conversation title");
+            let integratedMessagesForTitle = [
+                ...useChatStore.getState().getIntegratedMessages(),     // dont use artifact mode here
+                {
+                    role: "user",
+                    content: "Provide a title (in 5 words or less) for the conversation so far, so that i can recall what the conversation is about later on."
+                }
+            ]
+
+            const tools = [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "set_title",
+                        "description": "update conversation title",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "new_title": {
+                                    "type": "string",
+                                    "description": "conversation title in 5 words or less",
+                                },
+                            },
+                            "required": ["new_title"],
+                        },
+                    }
+                }
+            ];
+
+            let response = await sendMessageAndReturnResponse({
+                msgs: integratedMessagesForTitle,
+                stream: false,
+                tools: tools,
+                tool_choice: "required",
+                extra_body_overwrite: {"thinking_template" : "",} //disable thinking template to avoid model confusion
+            })
+
+            // Truncate the response to maximum 6 words
+            let parsed_argument = JSON.parse(response.tool_calls[0].function.arguments)["new_title"]
+            parsed_argument = parsed_argument.split(" ").slice(0, 5).join(" ");
+            useChatStore.getState().setConversationTitle(parsed_argument);
+        }
     };
 
     const adjustTextareaHeight = () => {
@@ -135,6 +136,16 @@ const InputBox = () => {
     const handleKeyPress = async (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
+
+            // Check if any models are loaded
+            const loadedModels = useModelManagementStore.getState().loadedModels;
+
+            if (Object.keys(loadedModels).length === 0) {
+                // No models are loaded, trigger a warning popup
+                alert("No model has been loaded\nCheck Model Management in Sidebar"); // You might want to use a more elegant modal here
+                return; // Prevent sending the message
+            }
+
             if (inputText.trim() !== '') {
                 onSent(inputText);
                 softClear();
@@ -150,6 +161,15 @@ const InputBox = () => {
     };
 
     const handleIconClick = () => {
+        // Check if any models are loaded
+        const loadedModels = useModelManagementStore.getState().loadedModels;
+
+        if (Object.keys(loadedModels).length === 0) {
+            // No models are loaded, trigger a warning popup
+            alert("No model has been loaded\nCheck Model Management in Sidebar"); // Replace with a more user-friendly modal if needed
+            return; // Prevent further actions
+        }
+
         if (isStreaming) {
             stopGeneration();
         } else if (inputText.trim() !== '') {

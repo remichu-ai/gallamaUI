@@ -96,7 +96,6 @@
     color: var(--ui-icon-color);
     white-space: nowrap;
     overflow: hidden;
-    /*transition: opacity 0.3s ease, visibility 0s 0.03s;*/
 }
 
 
@@ -109,14 +108,17 @@
 
 .conversationItem {
     display: flex;
+    justify-content: space-between; /* This will space the children evenly */
     align-items: center;
     padding: 8px 12px;
     border-radius: 4px;
     margin-bottom: 8px;
-    background-color: var(--conversation-item-bg-color, #f0f0f0); /* Default background color */
+    background-color: var(--conversation-item-bg-color, #f0f0f0);
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
+    width: 90%;
 }
+
 
 .conversationItem:hover {
     background-color: var(--conversation-item-hover-bg-color, #e0e0e0);

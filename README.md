@@ -31,10 +31,24 @@ Gallama UI is a companion frontend for [gallama](https://github.com/remichu-ai/g
    ```shell
    git clone https://github.com/yourusername/gallamaui.git
    cd gallamaui
-   npm install
+   npm run install
    ```
-
-2. Set up MongoDB using Docker:
+2. Recommend models:
+- Top choices:
+   ```shell
+   Qwen-2.5-32B and Qwen-2.5-72B, Mistral Large
+   ```
+- Second Choices:
+   ```shell
+   Qwen-2-72B, Llama-3.1-70B
+   ```
+- Third Choices:
+   ```shell
+   Yi-34B, Codestral, Gemma-29B
+   ```
+- For more models and how to download them, check out this readme:  
+  [https://github.com/remichu-ai/gallama/blob/main/README.md](https://github.com/remichu-ai/gallama/blob/main/README.md)
+3. Set up MongoDB using Docker:
 
    ```shell
    docker run --name mongodb -d -p 27017:27017 -v /path/to/your/data:/data/db mongodb/mongodb-community-server:latest
@@ -48,13 +62,13 @@ Gallama UI is a companion frontend for [gallama](https://github.com/remichu-ai/g
    docker restart mongodb
    ```
 
-3. Run the UI:
+4. Run the UI:
 
    ```shell
    npm run start
    ```
 
-4. Access the UI at [http://localhost:5173/](http://localhost:5173/)
+5. Access the UI at [http://localhost:5173/](http://localhost:5173/)
 
 ## Configuration
 
