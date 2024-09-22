@@ -1,0 +1,194 @@
+.sidebarContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--side-bar-bg-color);
+    padding-left: 6px;
+    width: var(--side-bar-width);
+    transition: width 0.3s ease, background-color 0.3s ease;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    --divider-color: rgba(0, 0, 0, 0.05);
+}
+
+.sidebarContainer:hover {
+    width: calc(var(--side-bar-width) + 300px);
+    max-width: calc(var(--side-bar-width) + 300px);
+    background-color: var(--side-bar-hover-color);
+}
+
+
+.sidebarTop {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 5px;
+    border-bottom: 1px solid var(--divider-color);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.sidebarMiddle {
+    flex-grow: 1; /* This will make it expand to fill available space */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* WebKit browsers (Chrome, Safari) */
+.sidebarMiddle::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+}
+
+.sidebarBottom {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-top: 5px;
+    margin-top: 10px;
+    border-top: 1px solid var(--divider-color);
+}
+
+.conversationList {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+
+
+.clearMessages, .settings, .modelManagement {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+
+.menuIcon {
+    padding: 4px;
+    width: calc(var(--side-bar-width) - 5px);
+    height: calc(var(--side-bar-width) - 5px);
+    color: var(--ui-icon-color);
+    stroke: var(--ui-icon-color);
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    transition: transform 0.3s ease-in-out;
+}
+
+.menuIcon:hover {
+    transform: scale(1.03);
+}
+
+.menuText {
+    opacity: 0;
+    visibility: hidden;
+    margin-left: 0px;
+    font-size: 14px;
+    color: var(--ui-icon-color);
+    white-space: nowrap;
+    overflow: hidden;
+    /*transition: opacity 0.3s ease, visibility 0s 0.03s;*/
+}
+
+
+
+.sidebarContainer:hover .menuText {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s 0.05s;
+}
+
+.conversationItem {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background-color: var(--conversation-item-bg-color, #f0f0f0); /* Default background color */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.conversationItem:hover {
+    background-color: var(--conversation-item-hover-bg-color, #e0e0e0);
+    color: var(--conversation-item-hover-color, #333);
+}
+
+/* Hide the delete button by default */
+.deleteButton {
+    display: none;
+}
+
+/* Show delete button on hover */
+.conversationItem:hover .deleteButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent ; /* Background color for the button */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+/* Style for the delete icon (three dots) */
+.deleteButton {
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Three dots */
+.deleteButton::before {
+    content: '•••';
+    font-size: 16px;
+    color: #333;
+    display: block;
+    text-align: center;
+}
+
+/* Mini box style */
+.deleteBox {
+    /*display: none;*/
+    position: absolute;
+    top: 100%; /* Position it directly below the delete button */
+    left: 0; /* Align it to the left of the delete button */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    z-index: 100;
+}
+
+/* Position the delete box based on button's width */
+.deleteBox button {
+    background-color: hsl(0, 65%, 60%);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.deleteBox button:hover {
+    background-color: hsl(0, 100%, 71%);
+}
+
+/* Show the mini box on clicking the delete button */
+.conversationItem.active .deleteBox {
+    display: block;
+}

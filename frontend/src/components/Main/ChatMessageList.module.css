@@ -1,0 +1,45 @@
+.chatMessageList {
+    height: 100%; /* Adjust this value based on your needs */
+    width: 100%; /* Or any specific width */
+    overflow-wrap: break-word;
+    overflow-y: auto;   /* scroll appear when needed only */
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    /*scrollbar-color: black transparent;*/
+    /* For IE and older Edge */
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+/* Ensure Webkit scrollbar is visible */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .chatMessageList {
+        overflow-y: overlay;
+    }
+}
+
+/* Webkit browsers like Chrome, Safari */
+/*.chatMessageList:hover {*/
+/*    scrollbar-color: var(--chat-list-scroll-bar-color) transparent; !* Show scrollbar on hover *!*/
+/*}*/
+
+/* Webkit browsers (Chrome, Safari, newer versions of Edge) */
+.chatMessageList::-webkit-scrollbar {
+    width: 0.5px !important; /* Using !important to override potential conflicts */
+}
+
+.chatMessageList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chatMessageList::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 0.5px;
+}
+/* Hover styles */
+.chatMessageList:hover {
+    scrollbar-color: var(--scroll-bar-color) transparent;
+}
+
+.chatMessageList:hover::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-bar-color);
+}

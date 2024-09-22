@@ -1,0 +1,19 @@
+.topBar {
+    display: flex;
+    padding: 5px 45px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--top-bar-bg-color);
+    color: var(--top-bar-text-color);
+    height: var(--top-bar-height);
+}
+
+.topBarText {
+    margin: 2px;
+    font-size: var(--top-bar-font-size);
+    font-weight: 600;
+}
+
+.spacer {
+    flex-grow: 1;
+}

@@ -1,0 +1,132 @@
+.artifactBackground {
+    display: flex;
+    flex-direction: column;
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    border-radius: var(--border-radius);
+    box-sizing: border-box;
+    background-color: var(--code-bar);
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    height: 100%;
+    width: 100%;
+    margin-bottom: 20px;
+    /*padding-left:40px;*/
+}
+
+
+.topHeaderBar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* Adjust alignment */
+    padding: 0 15px;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    color: var(--code-bar-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.3s ease-in-out;  /* Add transition for smooth effect */
+}
+
+.closeButton:hover {
+    box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.1);  /* Glow effect */
+    /*color: var(--hover-color);  !* Optional: change icon color on hover *!*/
+}
+.topHeaderBar h2 {
+    font-size: var(--artifact-top-bar-font-size);
+    padding-left: 13px;
+    color: var(--code-bar-text);
+}
+
+.bottomHeaderBar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    position: relative;
+}
+
+.navigationGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scrollBarWrap {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+    padding: 0 15px;
+}
+
+.content {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    margin-left: 3px;
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    border-radius: var(--border-radius);
+    box-sizing: border-box; /* Add this line */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.markdownContent {
+    padding: 2% 5%;
+    display: flex;
+    overflow: auto;
+    background-color: var(--artifact-content-bg);
+    color: var(--text-color)
+}
+
+.markdownContainer {
+    overflow: auto;
+}
+
+.navButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--code-bar-text);
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.artifactCounter {
+    font-size: 14px;
+    color: var(--code-bar-text);
+}
+
+.copyButton {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.copyButtonWrapper {
+    position: absolute;
+    right: 10px; /* Adjust as needed for spacing */
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,183 @@
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainMono/webfonts/JetBrainsMono-Regular.woff2') format('woff2');
+    font-weight: 350;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainMono/webfonts/JetBrainsMono-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainMono/webfonts/JetBrainsMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainMono/webfonts/JetBrainsMono-BoldItalic.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+}
+
+/* You can add more variations (Light, Medium, etc.) following the same pattern */
+
+/* Poppins font */
+/* Poppins Font-Face Declarations */
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-ThinItalic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-ExtraLightItalic.ttf') format('truetype');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('fonts/Poppins/Poppins-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/* Global CSS to apply JetBrains Mono */
+body {
+    /*font-family: 'Poppins', monospace;*/
+    font-family: var(--primary-font);
+}
+
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#root {
+    /*min-height: 100vh;*/
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    /*flex-direction: column;*/
+    overflow-y: auto;
+    animation: fadeIn 1.5s;
+}
+
+/*@keyframes fadeIn {*/
+/*    0%{*/
+/*        opacity: 0;*/
+/*    }*/
+/*    100%{*/
+/*        opacity: 1;*/
+/*    }*/
+/*}*/

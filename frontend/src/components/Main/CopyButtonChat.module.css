@@ -1,0 +1,14 @@
+.container {
+    padding: 0;
+    cursor: pointer;
+    margin-left: auto;
+    background: transparent !important;
+    border: transparent;
+    width: auto;
+}
+
+.menuIcon {
+    width: 17px;
+    height: 17px;
+    transition: transform 0.3s ease-in-out;
+}

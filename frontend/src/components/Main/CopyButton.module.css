@@ -1,0 +1,8 @@
+.container {
+    padding: 5px 10px 5px 10px;
+    cursor: pointer;
+    background-color: var(--artifact-button-border-color-hover);
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    border-radius: 8px;
+    color: white;
+}

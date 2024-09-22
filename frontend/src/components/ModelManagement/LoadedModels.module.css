@@ -1,0 +1,57 @@
+.container {
+    margin-bottom: 20px;
+    height: fit-content;
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    background-color: var(--r-message-background);
+    padding: 10px;
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.refreshButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.refreshButton:hover {
+    transform: rotate(30deg);
+}
+
+.refreshButton svg {
+    width: 24px;
+    height: 24px;
+}
+
+.listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    color: var(--r-font-color);
+    /*border-radius: 4px;*/
+    /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);*/
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    background-color: var(--chat-message-thinking-background);
+}

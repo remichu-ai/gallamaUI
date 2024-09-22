@@ -1,0 +1,48 @@
+/* src/css/ArtifactComponent.css */
+.artifact-component {
+  position: fixed; /* Fix the div to the viewport */
+  top: 10%; /* Distance from the top, adjust as needed */
+  right: 0; /* Align to the right side */
+  width: 300px; /* Set a width for the panel */
+  height: 90vh; /* Full height of the viewport minus some margin */
+  background: white; /* Background color */
+  border: 1px solid #ccc; /* Border style */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  z-index: 1000; /* Ensure it stays on top */
+  overflow-y: auto; /* Add scroll if content overflows */
+}
+
+.top-bar {
+  background: #f1f1f1; /* Light background for the top bar */
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.close-button {
+  background: red; /* Close button styling */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.content {
+  padding: 10px; /* Padding for content inside the div */
+}
+
+.copy-icon {
+  width: 16px; /* Adjust the icon size as needed */
+  height: 16px;
+}
+
+.copy-button {
+  background: #007bff; /* Button background color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background: #0056b3; /* Button hover color */
+}

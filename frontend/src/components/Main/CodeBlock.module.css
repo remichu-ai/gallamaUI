@@ -1,0 +1,33 @@
+.codeBlock {
+    background-color: var(--artifact-content-bg-color);
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+/* Hover styles */
+.codeBlock:hover {
+    scrollbar-color: var(--scroll-bar-color) transparent;
+}
+
+.pre {
+    position: relative;
+    margin: 0;
+    padding: 1em;
+}
+
+.code {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    color: var(--code-text);
+    line-height: 1.5;
+    /*background: blue;*/
+}
+
+/* this css will overwrite highlight.js*/
+.codeBlock .hljs {
+    color: #C7CCD1;
+    background-color: transparent !important; /* Use !important to ensure override */
+    width: 100%;
+}

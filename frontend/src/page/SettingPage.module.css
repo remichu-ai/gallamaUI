@@ -1,0 +1,192 @@
+.container {
+    /*max-width: 1024px; !* Increase max-width for the new 2-column layout *!*/
+    margin: 0 auto;
+    padding-left: 40px;
+    padding-right: 40px;
+    width: 100%;
+    height: 100vh;
+    /* Enable scrolling */
+    overflow-x: auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    /* Slim scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.settingContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.settingColumn1 {
+    padding: 10px;
+    flex: 1;
+    flex-direction: column;
+    margin-right: 40px;
+    width: 100%;
+    display: flex;
+}
+
+
+.settingColumn2 {
+    flex: 2;
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+}
+
+
+/* Slim scrollbar for Webkit browsers like Chrome and Safari */
+.container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+
+.header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.subHeader {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin-top: 1rem;
+}
+
+.settingGroup {
+    margin-bottom: 16px;
+    max-width: 100%;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.blockLabel {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+}
+
+.rangeInput {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+.rangeInput:hover {
+    opacity: 1;
+}
+
+.rangeInput::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--r-accent2);
+    cursor: pointer;
+}
+
+.rangeInput::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--r-accent2);
+    cursor: pointer;
+}
+
+.textInput {
+    min-width: 30px;
+    padding: 8px;
+    margin-top: 8px;
+    font-size: 1rem;
+}
+
+.textArea,
+.selectInput {
+    width: 100%;
+    min-width: 450px;
+    padding: 8px;
+    margin-top: 8px;
+    font-size: 1rem;
+    border: 1px solid var(--r-font-color);
+    border-radius: 4px;
+}
+
+.textArea {
+    resize: both;
+}
+
+.saveButton {
+    background-color: var(--r-accent);
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--r-border-color);
+
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 20px;
+}
+
+.saveButton:hover {
+    background-color: var(--r-accent2);
+    border: 1px solid var(--r-border-color);
+
+}
+
+.errorText {
+    color: darkred;
+    font-size: 0.875rem;
+}
+
+.loadButton {
+    background-color: var(--r-accent);
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+    border: 1px solid var(--r-border-color);
+
+}
+
+.loadButton:hover {
+    background-color: var(--r-accent2);
+    border: 1px solid var(--r-border-color);
+
+}

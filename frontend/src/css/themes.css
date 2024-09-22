@@ -1,0 +1,397 @@
+/* themes.css */
+/*Dark Theme*/
+/*https://colorhunt.co/palette/1a363640534c677d6ad6bd98*/
+:root {
+
+    /*--r-font-color: black;*/
+    /*--r-message-background: #81B29A;*/
+    /*--r-background-color: #F4F1DE;*/
+    /*--r-border-color: black;*/
+
+    /*matcha*/
+    /*--r-font-color: black;*/
+    /*--r-message-background: #a4b086;*/
+    /*--r-background-color: #F4F1DE;*/
+    /*--r-border-color: black;*/
+
+
+/*    $text: #1a120f;*/
+/*$background: #fdfdfc;*/
+/*$primary: #ab7969;*/
+/*$secondary: #c8bf9d;*/
+/*$accent: #babc8a;*/
+
+
+    /*!*matchav2*!*/
+    --r-accent: rgba(139, 105, 92, 1);
+    --r-accent2: #699bab;
+    --r-font-color: #1a120f;
+    --r-font-color-accent: #412616;
+    --r-message-background: hsl(75,20.1%,56.1%);  /* #9AA679 */
+    --r-background-color: #FEFAE0;
+
+    --r-max-chat-width: 800px;
+    --r-max-chat-input-box-width: 1000px;
+    --r-min-chat-input-box-height: 60px;
+    --r-border-color: #1a120f;
+    --code-bg-color: transparent;
+    --side-bar-hover-color: transparent;
+    --conversation-item-bg-color: transparent;
+    --conversation-item-hover-bg-color: rgba(139, 105, 92, 1);
+    --conversation-item-hover-color: --r-font-color;
+
+    /* artifact */
+    /*--r-artifact-background: #1C2023;  */
+    --r-artifact-background: #1C2830;
+
+    /* thinking */
+    --r-background-thinking-color: #a0a25d;
+    --r-thinking-tag-background-color: #b3b57d;
+    --r-thinking-tag-color: #1a120f;
+}
+
+/* Retro Theme */
+[data-theme="retro"] {
+    --primary-font: 'Poppins', sans-serif;
+    --code-font: 'JetBrains Mono', monospace;
+    --border-radius: 12px;
+    --border-size: 2px;
+    --page-bg-color: var(--r-background-color);
+
+    /* Shadow variables */
+    --shadow-color: rgba(0, 0, 0, 0);
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 0px;
+    --shadow-blur: 0px;
+    --shadow-spread: 0px;
+
+    --top-bar-bg-color: transparent;
+    --top-bar-text-color: var(--r-font-color);
+    --top-bar-height: 32px;
+    --top-bar-font-size: 26px;
+
+    --additional-vh-spacing: 30px;
+
+    --side-bar-width: 30px;
+    --side-bar-bg-color: transparent;
+    --side-bar-space-to-chat: 0px;
+    --ui-icon-color: var(--r-font-color);
+
+    --bg-color: var(--r-background-color);
+    --text-color: var(--r-font-color);
+
+    --scroll-bar-color: var(--r-font-color);
+
+    --chat-message-background-user: #c8bf9e;
+    --chat-message-background-assistant: var(--r-message-background);
+    --chat-message-border-size: var(--border-size);
+    --chat-message-border-color: var(--r-border-color);
+    --code-bar: var(--r-background-color);
+    --code-bar-text: var(--r-font-color);
+    --code-border-color: var(--r-border-color);
+    --code-text: var(--r-font-color);
+
+    --chat-message-thinking-background: var(--r-background-thinking-color);
+    --chat-message-thinking-color: var(--r-font-color);
+    --chat-message-thinking-border-size: var(--border-size);
+    --chat-message-thinking-border-color: var(--r-border-color);
+
+    /*--artifact-button-background-color: var(--ecru);*/
+    --artifact-top-bar-font-size: 20px;
+    --artifact-content-bg-color: var(--r-artifact-background);
+    --artifact-button-subtext-color: var(--r-font-color);
+    /*--artifact-button-icon-background: var(--wheat-2);*/
+    --artifact-button-icon-color: var(--r-font-color);
+    --artifact-button-border-color: var(--r-border-color);
+    --artifact-button-border-color-hover: rgba(139, 105, 92, 1);
+    --artifact-button-icon-size: 25px;
+
+    --input-box-background-color: var(--ecru);
+    --input-box-footer-font-color: var(--r-font-color);
+    --code-bg-color: hsl(196, 20.2%, 56.3%);
+    --side-bar-hover-color: #f1edd6;
+}
+
+
+[data-theme="light"] {
+    --primary-font: 'Poppins', sans-serif;
+    --code-font: 'JetBrains Mono', monospace;
+    --border-radius: 12px;
+
+    --page-bg-color: #ffffff;
+
+    /* Shadow variables */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 3px;
+    --shadow-blur: 7px;
+    --shadow-spread: 0px;
+
+    --top-bar-bg-color: #ffffff;
+    --top-bar-text-color: #333333;
+    --top-bar-height: 27px;
+    --top-bar-font-size: 20px;
+
+    --additional-vh-spacing: 15px;
+
+    --side-bar-width: 30px;
+    --side-bar-bg-color: transparent;
+    --side-bar-space-to-chat: 0px;
+    --ui-icon-color: #333333;
+
+    --bg-color: #ffffff;
+    --text-color: #333333;
+
+    --scroll-bar-color: #ccc;
+
+    --chat-message-background-user: #f4f4f4;
+    --chat-message-background-assistant: #e0e0e0;
+    --chat-message-border-size: 0px;
+    --chat-message-border-color: black;
+    --code-bar: #f4f4f4;
+    --code-bar-text: #333333;
+    --code-border: #ddd;
+    --code-text: #333333;
+
+    --artifact-button-background-color: #f4f4f4;
+    --artifact-content-bg: #ffffff;
+    --artifact-button-subtext-color: #666666;
+    --artifact-button-icon-background: #e0e0e0;
+    --artifact-button-icon-color: #666666;
+    --artifact-button-border-color: rgba(100, 100, 100, 0.5);
+    --artifact-button-border-color-hover: rgba(100, 100, 100, 1);
+    --artifact-button-icon-size: 25px;
+
+    --input-box-background-color: #f4f4f4;
+    --input-box-footer-font-color: #666666;
+    --code-bg-color: red;
+}
+
+[data-theme="claude"] {
+    --primary-font: 'Poppins', sans-serif;
+    --code-font: 'JetBrains Mono', monospace;
+    --border-radius: 8px;
+
+    --page-bg-color: #2b2a27;
+
+    /* Shadow variables */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 3px;
+    --shadow-blur: 7px;
+    --shadow-spread: 0px;
+
+    --top-bar-bg-color: #2b2a27;
+    --top-bar-text-color: #f5f4ef;
+    --top-bar-height: 27px;
+    --top-bar-font-size: 20px;
+
+    --additional-vh-spacing: 15px;
+
+    --side-bar-width: 30px;
+    --side-bar-bg-color: transparent;
+    --side-bar-space-to-chat: 0px;
+    --ui-icon-color: #ffffff;
+
+    --bg-color: #333333;
+    --text-color: #f5f4ef;
+
+    --scroll-bar-color: #888;
+
+    --chat-message-background-user: #21201c;
+    --chat-message-background-assistant: #393937;
+    --chat-message-border-size: 0px;
+    --chat-message-border-color: black;
+    --code-bar: #393937;
+    --code-bar-text: #ffffff;
+    --code-border: #555;
+    --code-text: #ffffff;
+
+    --artifact-button-background-color: #2f2f2c;
+    --artifact-content-bg-color: #282c34;
+    --artifact-button-subtext-color: #a6a39a;
+    --artifact-button-icon-background: rgb(33, 32, 28);
+    --artifact-button-icon-color: #a6a39a;
+    --artifact-button-border-color: rgb(92, 99, 112, 0.5);
+    --artifact-button-border-color-hover: rgb(92, 99, 112, 1);
+    --artifact-button-icon-size: 25px;
+
+    --input-box-background-color: #393937;
+    --input-box-footer-font-color: #a6a39a;
+    --code-bg-color: red;
+}
+
+/*!* themes.css *!*/
+
+/*:root {*/
+
+/*    --r-font-color: black;*/
+/*    --r-message-background: #a4b086;*/
+/*    --r-background-color: #EFD6AC;*/
+/*    --r-border-color: black;*/
+/*}*/
+
+/*!* Retro Theme *!*/
+/*[data-theme="retro"] {*/
+/*    --primary-font: 'Poppins', sans-serif;*/
+/*    --code-font: 'JetBrains Mono', monospace;*/
+/*    --border-radius: 12px;*/
+/*    --border-size: 2px;*/
+/*    --page-bg-color: var(--r-background-color);*/
+
+/*    !* Shadow variables *!*/
+/*    --shadow-color: rgba(0, 0, 0, 0);*/
+/*    --shadow-offset-x: 0px;*/
+/*    --shadow-offset-y: 0px;*/
+/*    --shadow-blur: 0px;*/
+/*    --shadow-spread: 0px;*/
+
+/*    --top-bar-bg-color: transparent;*/
+/*    --top-bar-text-color: var(--r-font-color);*/
+/*    --top-bar-height: 27px;*/
+/*    --top-bar-font-size: 20px;*/
+
+/*    --additional-vh-spacing: 15px;*/
+
+/*    --side-bar-width: 30px;*/
+/*    --side-bar-bg-color: transparent;*/
+/*    --side-bar-space-to-chat: 0px;*/
+/*    --ui-icon-color: var(--r-font-color);*/
+
+/*    --bg-color: var(--r-background-color);*/
+/*    --text-color: var(--r-font-color);*/
+
+/*    --scroll-bar-color: var(--r-font-color);*/
+
+/*    --chat-message-background-user: transparent;*/
+/*    --chat-message-background-assistant: var(--r-message-background);*/
+/*    --chat-message-border-size: var(--border-size);*/
+/*    --chat-message-border-color: var(--r-border-color);*/
+/*    --code-bar: var(--r-background-color);*/
+/*    --code-bar-text: var(--r-font-color);*/
+/*    --code-border-color: var(--r-border-color);*/
+/*    --code-text: var(--r-font-color);*/
+
+/*    --artifact-button-background-color: var(--ecru);*/
+/*    --artifact-content-bg-color: var(--r-message-background);*/
+/*    --artifact-button-subtext-color: var(--r-font-color);*/
+/*    --artifact-button-icon-background: var(--wheat-2);*/
+/*    --artifact-button-icon-color: var(--r-font-color);*/
+/*    --artifact-button-border-color: var(--r-border-color);*/
+/*    --artifact-button-border-color-hover: rgba(139, 105, 92, 1);*/
+/*    --artifact-button-icon-size: 25px;*/
+
+/*    --input-box-background-color: var(--ecru);*/
+/*    --input-box-footer-font-color: var(--r-font-color);*/
+/*    --code-bg-color: rgba(129,178,154, 0.5);*/
+/*}*/
+
+
+/*[data-theme="light"] {*/
+/*    --primary-font: 'Poppins', sans-serif;*/
+/*    --code-font: 'JetBrains Mono', monospace;*/
+/*    --border-radius: 12px;*/
+
+/*    --page-bg-color: #ffffff;*/
+
+/*    !* Shadow variables *!*/
+/*    --shadow-color: rgba(0, 0, 0, 0.05);*/
+/*    --shadow-offset-x: 0px;*/
+/*    --shadow-offset-y: 3px;*/
+/*    --shadow-blur: 7px;*/
+/*    --shadow-spread: 0px;*/
+
+/*    --top-bar-bg-color: #ffffff;*/
+/*    --top-bar-text-color: #333333;*/
+/*    --top-bar-height: 27px;*/
+/*    --top-bar-font-size: 20px;*/
+
+/*    --additional-vh-spacing: 15px;*/
+
+/*    --side-bar-width: 30px;*/
+/*    --side-bar-bg-color: transparent;*/
+/*    --side-bar-space-to-chat: 0px;*/
+/*    --ui-icon-color: #333333;*/
+
+/*    --bg-color: #ffffff;*/
+/*    --text-color: #333333;*/
+
+/*    --scroll-bar-color: #ccc;*/
+
+/*    --chat-message-background-user: #f4f4f4;*/
+/*    --chat-message-background-assistant: #e0e0e0;*/
+/*    --chat-message-border-size: 0px;*/
+/*    --chat-message-border-color: black;*/
+/*    --code-bar: #f4f4f4;*/
+/*    --code-bar-text: #333333;*/
+/*    --code-border: #ddd;*/
+/*    --code-text: #333333;*/
+
+/*    --artifact-button-background-color: #f4f4f4;*/
+/*    --artifact-content-bg: #ffffff;*/
+/*    --artifact-button-subtext-color: #666666;*/
+/*    --artifact-button-icon-background: #e0e0e0;*/
+/*    --artifact-button-icon-color: #666666;*/
+/*    --artifact-button-border-color: rgba(100, 100, 100, 0.5);*/
+/*    --artifact-button-border-color-hover: rgba(100, 100, 100, 1);*/
+/*    --artifact-button-icon-size: 25px;*/
+
+/*    --input-box-background-color: #f4f4f4;*/
+/*    --input-box-footer-font-color: #666666;*/
+/*    --code-bg-color: red;*/
+/*}*/
+
+/*[data-theme="claude"] {*/
+/*    --primary-font: 'Poppins', sans-serif;*/
+/*    --code-font: 'JetBrains Mono', monospace;*/
+/*    --border-radius: 8px;*/
+
+/*    --page-bg-color: #2b2a27;*/
+
+/*    !* Shadow variables *!*/
+/*    --shadow-color: rgba(0, 0, 0, 0.05);*/
+/*    --shadow-offset-x: 0px;*/
+/*    --shadow-offset-y: 3px;*/
+/*    --shadow-blur: 7px;*/
+/*    --shadow-spread: 0px;*/
+
+/*    --top-bar-bg-color: #2b2a27;*/
+/*    --top-bar-text-color: #f5f4ef;*/
+/*    --top-bar-height: 27px;*/
+/*    --top-bar-font-size: 20px;*/
+
+/*    --additional-vh-spacing: 15px;*/
+
+/*    --side-bar-width: 30px;*/
+/*    --side-bar-bg-color: transparent;*/
+/*    --side-bar-space-to-chat: 0px;*/
+/*    --ui-icon-color: #ffffff;*/
+
+/*    --bg-color: #333333;*/
+/*    --text-color: #f5f4ef;*/
+
+/*    --scroll-bar-color: #888;*/
+
+/*    --chat-message-background-user: #21201c;*/
+/*    --chat-message-background-assistant: #393937;*/
+/*    --chat-message-border-size: 0px;*/
+/*    --chat-message-border-color: black;*/
+/*    --code-bar: #393937;*/
+/*    --code-bar-text: #ffffff;*/
+/*    --code-border: #555;*/
+/*    --code-text: #ffffff;*/
+
+/*    --artifact-button-background-color: #2f2f2c;*/
+/*    --artifact-content-bg-color: #282c34;*/
+/*    --artifact-button-subtext-color: #a6a39a;*/
+/*    --artifact-button-icon-background: rgb(33, 32, 28);*/
+/*    --artifact-button-icon-color: #a6a39a;*/
+/*    --artifact-button-border-color: rgb(92, 99, 112, 0.5);*/
+/*    --artifact-button-border-color-hover: rgb(92, 99, 112, 1);*/
+/*    --artifact-button-icon-size: 25px;*/
+
+/*    --input-box-background-color: #393937;*/
+/*    --input-box-footer-font-color: #a6a39a;*/
+/*    --code-bg-color: red;*/
+/*}*/
+

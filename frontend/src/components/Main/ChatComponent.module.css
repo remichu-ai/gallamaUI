@@ -1,0 +1,36 @@
+.chatComponentContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5px 10px;
+    height: calc(100vh - var(--top-bar-height) - var(--additional-vh-spacing));
+    max-width: var(--r-max-chat-input-box-width);
+}
+
+.chatComponentMessageList {
+    display: flex;
+    height: 100%;
+    min-width: 60%;
+    max-width: 85%;
+    flex-grow: 1; /* Allow the message list to grow and take up available space */
+
+    overflow-y: auto; /* Enable scrolling for the message list if content overflows */
+    flex-direction: column;
+    padding: 16px; /* Optional: add padding to the messages */
+    min-height: 0; /* Allows flex item to shrink below content size */
+}
+
+.chatComponentContainerInputBox {
+    display: flex;
+    height: min-content; /* to ensure when the bar is empty, it only occupy 1 row */
+    width: 90%;
+    background-color: var(--input-box-background-color);
+    margin-left: 29px;
+    padding-right: 5px;
+    border-radius: var(--border-radius);
+    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    flex-shrink: 0;
+}
+

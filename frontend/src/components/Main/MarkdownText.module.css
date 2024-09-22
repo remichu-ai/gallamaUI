@@ -1,0 +1,45 @@
+.markdownContainer {
+    max-width: 100%;
+    word-wrap: break-word; /* Breaks long words */
+    overflow-wrap: break-word; /* Ensures that long words break properly */
+    overflow: auto; /* Enables scrolling when content overflows */
+    /*white-space: pre-wrap; !* Preserves whitespace and line breaks *!*/
+}
+
+.markdownContent {
+    overflow: auto;
+}
+
+.markdownContainer code {
+    font-family: 'Poppins', sans-serif;
+    overflow-wrap: break-word; /* Ensures that long words break properly */
+    word-break: break-all; /* Breaks long words and lines */
+    overflow: auto; /* Enables scrolling when content overflows */
+}
+
+.markdownContainer pre {
+    padding: 0; /* Padding inside the code block */
+    overflow-x: auto; /* Horizontal scrolling */
+    white-space: pre-wrap; /* Wraps text while preserving whitespace */
+}
+
+.markdownContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.markdownContainer th,
+.markdownContainer td {
+    border: 2px solid black  ;
+    padding: 6px;
+}
+
+.markdownContainer th {
+    background-color: hsl(75,20.1%,56.1%);
+    text-align: left;
+}
+
+.markdownContainer tr:nth-child(even) {
+    background-color: #fef3e0;
+}
+

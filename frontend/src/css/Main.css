@@ -1,0 +1,414 @@
+
+
+
+.main {
+    flex: 1;
+    min-height: 100vh;
+    padding-bottom: 15vh;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main .nav {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    font-size: 30px;
+    font-weight: 500;
+    padding: 20px;
+    /*color: #585858;*/
+    align-items: center;
+}
+
+.hljs-comment{
+    /*color: rgb(92, 99, 112);*/
+    font-style: italic;
+}
+
+.main .nav img{
+    width: 40px;
+    border-radius: 50%;
+}
+.main-container .main-container-working-group {
+    width: 100%;
+    max-width: 900px;
+    margin: auto; /*this will align the welcome screen portion center*/
+    /*justify-content: center;*/
+    /*flex-direction: row;*/
+    /*flex:1;*/
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column; /* or column as needed */
+    justify-content: center; /* Align items vertically at the center */
+    align-items: center; /* Align items horizontally at the start */
+}
+
+.main-container-working-group {
+    border-left: 3px solid rgba(0, 0, 0, 0.03); /* Add left border */
+}
+
+.greet {
+    margin: 50px 0px;
+    font-size: 56px;
+    /*color: #c4c7c5;*/
+    font-weight: 500;
+    padding: 20px;
+}
+.greet span {
+    background: -webkit-linear-gradient(16deg, #4b90ff, #ff5546);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap: 15px;
+    padding: 20px;
+}
+.card {
+    height: 200px;
+    padding: 15px;
+    background-color: #f0f4f9;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+}
+.card:hover {
+    background-color: #dfe4ea;
+}
+.card p {
+    /*color: #585858;*/
+    font-size: 17px;
+}
+.card img {
+    width: 35px;
+    padding: 5px;
+    position: absolute;
+    background-color: white;
+    border-radius: 20px;
+    bottom: 10px;
+    right: 10px;
+}
+.main-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    max-width: 900px;
+    padding: 0 20px;
+    margin: auto;
+}
+.search-box {
+    position: fixed; /* Fixes the element to the viewport */
+    bottom: 0; /* Positions the element at the bottom of the viewport */
+    left: 50%; /* Aligns the element to the left edge */
+    /*right: 0; !* Aligns the element to the right edge *!*/
+    transform: translateX(-50%);
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background-color: #f0f4f9;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+    z-index: 1000; /* Ensure it stays above other content */
+}
+
+.search-box textarea {
+    flex: 1;
+    background: transparent;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 8px;
+    font-size: 16px;
+    min-height: 24px; /* Adjust as needed */
+    max-height: 200px; /* Adjust as needed */
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.search-box textarea::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent; /* Chrome/Safari/Webkit */
+}
+
+.search-box div {
+    display: flex;
+    gap: 15px;
+}
+
+.search-box img {
+    width: 24px;
+    cursor: pointer;
+}
+.bottom-info {
+    font-size: 13px;
+    margin: 15px auto;
+    text-align: center;
+    font-weight: 300;
+}
+.result {
+    display: flex;
+    align-items: start;
+    gap: 20px;
+    padding: 0% 5%;
+    max-height: none; /* Remove max-height constraint */
+    overflow-y: visible; /* Change from scroll to visible */
+    margin-bottom: 25px;
+    border-radius: 10px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    width: 720px;
+}
+
+.result::-webkit-scrollbar{
+    display:none;
+}
+
+.result-icon {
+    width: 40px; /* Set a fixed width */
+    height: 40px; /* Set a fixed height */
+    flex-shrink: 0; /*without these shrink grow setting the image getting resized*/
+    flex-grow: 0;
+    object-fit: contain; /* Ensure the icon fits the container */
+    padding-top: 4.5px;
+}
+
+/*openai mode*/
+.result-user, .result-assistant {
+display: block;
+}
+
+
+.result-artifact{
+    display: flex;
+    flex-direction: column;
+    width: 90%; /* Adjust width to ensure it takes full width with some padding */
+    border-radius: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: #f0f4f9;
+}
+
+
+
+/*AI Squad mode*/
+.result-human, .result-agent {
+    display: flex;
+    flex-direction: column;
+    width: 90%; /* Adjust width to ensure it takes full width with some padding */
+    background-color: #ececec;
+    border-radius: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+/*overwrite background color to lighter grey*/
+.result-agent {
+    background-color: #f9f9f9;
+}
+
+
+.result img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.result code {
+    background-color: transparent; /* Change this color to any shade of grey you prefer */
+    padding: 2px 4px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+	width: auto;
+    color: #E50914;
+    font-family: monospace;
+}
+
+.result p code{
+    background-color: #D3D3D3;
+}
+
+.artifact-text p code{
+    background-color: #dbd9d9
+}
+.artifact-text li code{
+    background-color: #dbd9d9
+}
+
+.result pre {
+     /* Apply Pygments style */
+    background-color: rgb(40, 44, 52);
+    /*background-color: #f0f0f0; !* Change this color to any shade of grey you prefer *!*/
+    padding: 8px;
+    border-radius: 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.result pre code {
+    font-family: monospace !important;
+  color: rgb(171, 178, 191) !important;
+    text-shadow: rgba(0, 0, 0, 0.3) 0px 1px;
+}
+.result-user pre {
+    background-color: transparent;
+}
+
+.result span{
+    font-family: monospace;
+}
+
+
+.result table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.result th, .result td {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.result th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.result td {
+    background-color: #f9f9f9;
+    border-radius: 3px;
+}
+
+/* Headings */
+.result h1, .result h2, .result h3, .result h4, .result h5, .result h6 {
+    margin: 10px 0;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.result h1 { font-size: 2em; }
+.result h2 { font-size: 1.5em; }
+.result h3 { font-size: 1.17em; }
+.result h4 { font-size: 1em; }
+.result h5 { font-size: 0.83em; }
+.result h6 { font-size: 0.67em; }
+
+/* Paragraphs */
+.result p {
+    margin: 10px 0;
+    border-radius: 3px;
+}
+
+/* Blockquotes */
+.result blockquote {
+    border-left: 4px solid #ccc;
+    margin: 10px 0;
+    padding-left: 10px;
+    color: #666;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Lists */
+.result ul, .result ol {
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: transparent;
+    border-radius: 3px;
+}
+
+.result li {
+    margin: 5px 0;
+    border-radius: 3px;
+}
+
+/* Links */
+.result a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.result a:hover {
+    text-decoration: underline;
+}
+
+/* Images */
+.result img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+
+/* Horizontal Rules */
+.result hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+
+
+.loader {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.animated-bg {
+    border-radius: 4px;
+    border: none;
+    animation: loader 3s infinite linear;
+    background-color: #f6f7f8;
+    background: linear-gradient(to right, #9ed7ff, #ffffff, #9ed7ff);
+    background-size: 800px 50px;
+    height: 20px;
+}
+@keyframes loader {
+    0% {
+        background-position: -800px 0
+    }
+    100% {
+        background-position: 800px 0
+    }
+}
+.result-data p{
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.8;
+}
+@media (max-width:600px) {
+    .main-bottom input{
+        flex: none;
+        width: 140px;
+    }
+    .main-bottom img{
+        width: 20px;
+    }
+    .search-box{
+        padding: 5px 10px;
+    }
+    .search-box div{
+        gap: 5px;
+    }
+}

@@ -1,0 +1,70 @@
+.buttonContent {
+    display: flex;
+    width: 100%;
+    /*align-items: stretch;*/
+}
+
+.artifactButtonContainer {
+    display: flex;
+    background-color: transparent; /* No background for the button itself */
+
+    /*background-color: var(--artifact-button-icon-background);*/
+    border-radius: 7px;
+    overflow: hidden; /* Ensure child elements don't overflow rounded corners */
+    text-align: left;
+    border: 1.5px solid var(--artifact-button-border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.artifactButtonContainer:hover {
+    background-color: var(--artifact-button-background-color);
+    border-color: var(--artifact-button-border-color-hover);
+    box-shadow: 0 0 1px var(--artifact-button-border-color-hover);
+}
+
+.artifactIconContainer {
+    background-color: var(--artifact-button-icon-background);
+    border-right: 1.5px solid var(--artifact-button-border-color);
+    /*width: calc(var(--artifact-button-icon-size) + 16px); !* Icon size plus padding *!*/
+    /*height: calc(var(--artifact-button-icon-size) + 16px);*/
+    padding: 12px 10px 12px 10px;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.artifactIcon {
+    color: var(--artifact-button-icon-color);
+    /*width: 120px;*/
+}
+
+.textContainer {
+    background-color: var(--artifact-button-background-color);
+    width: 100%;
+    /*border-radius: 7px;*/
+    display: inline-flex;
+    flex-direction: column;
+    padding: 8px 15px 8px 10px;
+    /*margin-left: 9px;*/
+    margin-right: 0px;
+    flex-shrink: 0;
+}
+
+
+.artifactTitle {
+    flex-grow: 1;
+    color: var(--code-bar-text);
+    font-size: 14px;
+    font-weight: 550;
+    font-family: 'Poppins';
+}
+
+.artifactSubtext {
+    color: var(--artifact-button-subtext-color);
+    font-size: 12px;
+    font-weight: 400;
+    font-family: 'Poppins';
+}
