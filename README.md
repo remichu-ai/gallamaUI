@@ -31,7 +31,8 @@ Gallama UI is a companion frontend for [gallama](https://github.com/remichu-ai/g
    ```shell
    git clone https://github.com/yourusername/gallamaui.git
    cd gallamaui
-   npm run install
+   npm install
+   npm run gallama
    ```
 2. Recommend models:
 - Top choices:

@@ -27,6 +27,7 @@
     "dotenv": "^16.4.5",
     "eventsource": "^2.0.2",
     "framer-motion": "^11.3.28",
+    "gallamaUI": "file:..",
     "highlight.js": "^11.10.0",
     "html-react-parser": "^5.1.15",
     "jest-fetch-mock": "^3.0.3",
