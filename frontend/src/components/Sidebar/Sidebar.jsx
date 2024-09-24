@@ -17,7 +17,7 @@ const Sidebar = () => {
         setConversationTitle,
         sidebarRefreshTrigger
     } = useChatStore();
-    const { setShowSettingPage, setShowModelManagementPage } = useUIStore();
+    const { showModelManagementPage ,setShowSettingPage, setShowModelManagementPage } = useUIStore();
     const { inputText } = useInputStore();
 
     // Ensure the saved conversations state is initialized correctly
@@ -44,6 +44,10 @@ const Sidebar = () => {
     };
 
     const handleLoadConversation = async (id) => {
+        if(showModelManagementPage) {
+            setShowModelManagementPage()
+        }
+
         try {
             const response = await axios.get(`http://localhost:3000/api/conversations/${id}`);
             const conversation = response.data;
