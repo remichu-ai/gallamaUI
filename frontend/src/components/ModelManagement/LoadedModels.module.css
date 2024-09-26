@@ -33,6 +33,16 @@
     transition: transform 0.2s ease;
 }
 
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.refreshButton.spin svg {
+    animation: spin 500ms linear infinite;
+}
+
 .refreshButton:hover {
     transform: rotate(30deg);
 }

@@ -8,6 +8,7 @@ const useModelManagementStore = create(
             availableModels: [],
             taskStatus: {},
             loadedModels: {},  // New state to store loaded models
+            isLoading: false,
 
             fetchAvailableModels: async () => {
                 const endpoint = get().getServiceEndpoint()
@@ -18,6 +19,7 @@ const useModelManagementStore = create(
             },
 
             fetchLoadedModels: async () => {  // Updated function to fetch loaded models
+                set({isLoading: true})
                 const endpoint = get().getServiceEndpoint()
                 try {
                     const response = await fetch(`${endpoint}/list_loaded_models`)
@@ -31,9 +33,13 @@ const useModelManagementStore = create(
                     console.error("Error fetching loaded models: ", error)
                     set({loadedModels: {}})  // Clear the store if there's an error
                 }
+                setTimeout(() => {
+                    set({isLoading: false})
+                }, 500);
             },
 
             loadModel: async (model) => {
+                set({isLoading: true})
                 const endpoint = get().getServiceEndpoint();
                 const response = await fetch(`${endpoint}/add_model`, {
                     method: 'POST',
