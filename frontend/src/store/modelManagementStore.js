@@ -130,12 +130,15 @@ const useModelManagementStore = create(
             name: 'model-management-store',
             getStorage: () => localStorage,
             onRehydrateStorage: () => (state) => {
-                if (!Array.isArray(state?.availableModels)) {
-                    state.availableModels = []; // Ensure it's always an array
-                }
-                if (typeof state?.loadedModels !== 'object') {
-                    state.loadedModels = {}; // Ensure it's always an object
-                }
+                state.availableModels = []; // Ensure it's always an array
+                state.loadedModels = {}; // Ensure it's always an object
+
+                // if (!Array.isArray(state?.availableModels)) {
+                //     state.availableModels = []; // Ensure it's always an array
+                // }
+                // if (typeof state?.loadedModels !== 'object') {
+                //     state.loadedModels = {}; // Ensure it's always an object
+                // }
             }
         }
     )

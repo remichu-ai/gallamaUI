@@ -20,11 +20,28 @@ const chatCompletionOpenAI = async ({
 
     const controller = new AbortController();
 
+    // Process messages to handle base64 images
+    const processedMsgs = msgs.map(msg => {
+        if (msg.content && Array.isArray(msg.content)) {
+            return {
+                ...msg,
+                content: msg.content.map(item => {
+                    if (item.type === 'image_url' && item.image_url.url.startsWith('data:')) {
+                        // Keep the base64 data URL as is
+                        return item;
+                    }
+                    return item;
+                })
+            };
+        }
+        return msg;
+    });
+
     try {
         if (stream) {
             const completion = await openai.chat.completions.create({
                 model,
-                messages: msgs,
+                messages: processedMsgs,
                 stream: true,
                 tools:tools,
                 tool_choice: tool_choice,

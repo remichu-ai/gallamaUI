@@ -101,20 +101,33 @@ const useChatStore = create(persist(
             // Filter messages that have the role 'user'
             const userMessages = messages.filter(message => message.role === 'user');
 
+            // If no user messages, return default
+            if (userMessages.length === 0) return 'New Chat';
+
             // Collect the first numWords words from all user messages
             let words = [];
             for (const message of userMessages) {
-                const messageWords = message.content[0].content.split(' '); // Split the content by spaces to get words
-                words = [...words, ...messageWords];             // Add to the collected words
-                if (words.length >= numWords) {
-                    break;  // Stop if we have enough words
+                // Handle both array and string content
+                const content = Array.isArray(message.content) ? message.content : [{
+                    type: 'text',
+                    content: message.content
+                }];
+
+                // Find the first text content
+                const textContent = content.find(item => item.type === 'text')?.content;
+
+                if (textContent) {
+                    const messageWords = textContent.split(' '); // Split the content by spaces to get words
+                    words = [...words, ...messageWords];         // Add to the collected words
+                    if (words.length >= numWords) {
+                        break;  // Stop if we have enough words
+                    }
                 }
             }
 
-            // Return the first numWords words
-            return words.slice(0, numWords).join(' '); // Join them back into a string
+            // Return default if no text content found, otherwise return the first numWords
+            return words.length > 0 ? words.slice(0, numWords).join(' ') : 'New Chat';
         },
-
 
         setChunkSize: (size) => set({chunkSize: size}),
         setChunkDelay: (delay) => set({chunkDelay: delay}),
@@ -134,6 +147,14 @@ const useChatStore = create(persist(
                 let newVisibleArtifactId = state.visibleArtifactId;
                 let newArtifactIds = [...state.artifactIds];
 
+                // Handle message content as a sequence of text and images
+                if (Array.isArray(message.content)) {
+                    // Filter out empty text content
+                    message.content = message.content.filter(item =>
+                        item.type !== 'text' || (item.type === 'text' && item.content.trim() !== '')
+                    );
+                }
+
                 if (message.artifacts && Object.keys(message.artifacts).length > 0) {
                     const newMessageArtifactIds = Object.keys(message.artifacts);
                     newArtifactIds = [...new Set([...newArtifactIds, ...newMessageArtifactIds])];
@@ -142,30 +163,23 @@ const useChatStore = create(persist(
                         newVisibleArtifactId = newMessageArtifactIds[0];
                     }
 
-                    // Directly update artifact content
+                    // Process artifacts
                     Object.keys(message.artifacts).forEach(identifier => {
                         const artifact = message.artifacts[identifier];
-
-                        // Log artifact being processed
                         console.log("Processing artifact:", identifier, artifact);
 
-                        // Update the artifact content directly
                         if (artifact.content) {
                             if (!message.content.some(item => item.type === 'artifact' && item.identifier === identifier)) {
                                 message.content.push({type: 'artifact', identifier});
                             }
-
                             message.artifacts[identifier].content = artifact.content;
                         } else {
                             console.log(`No content found for artifact: ${identifier}`);
                         }
                     });
-                } else {
-                    console.log("No artifacts found in message");
                 }
 
-                // Save conversation after adding message
-                get().triggerSidebarRefresh(); // New line
+                get().triggerSidebarRefresh();
 
                 return {
                     messages: [...state.messages, {...message}],
@@ -174,7 +188,6 @@ const useChatStore = create(persist(
                 };
             });
         },
-
 
         updateLastMessage: (update) => {
             set((state) => {
@@ -204,7 +217,6 @@ const useChatStore = create(persist(
                             }
                         } else {
                             if (update.thinking) {
-                                //console.log('Updating thinking:', update.thinking);
                                 updatedMessage.thinking = (updatedMessage.thinking || '') + update.thinking;
                             }
                             if (update.content) {
@@ -218,6 +230,150 @@ const useChatStore = create(persist(
                 });
 
                 return {messages: updatedMessages};
+            });
+        },
+
+        getIntegratedMessages: () => {
+            const state = get();
+            return state.messages.map((message) => {
+                const integratedMessage = {...message};
+
+                // If content is already an array, process it
+                if (Array.isArray(message.content)) {
+                    // Check if any content item is of type image_url
+                    const hasImage = message.content.some(item => item.type === 'image_url');
+
+                    if (hasImage) {
+                        // Keep the array format for regular content and image_url
+                        integratedMessage.content = message.content.map(item => {
+                            if (item.type === 'artifact') {
+                                // For artifacts, maintain the original string format
+                                const artifact = message.artifacts[item.identifier];
+                                const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
+                                return {
+                                    type: 'text',
+                                    // for multi content part, the key used for text type is text instead of content
+                                    text: `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`
+                                };
+                            } else if (item.type === 'text') {
+                                return {
+                                    type: 'text',
+                                    // for multi content part, the key used for text type is text instead of content
+                                    text: item.content,
+                                };
+                            }
+
+                            return item;
+                        });
+                    } else {
+                        // Convert to string if no images
+                        integratedMessage.content = message.content
+                            .map(item => {
+                                if (item.type === 'text') {
+                                    return item.content;
+                                } else if (item.type === 'artifact') {
+                                    const artifact = message.artifacts[item.identifier];
+                                    const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
+                                    return `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`;
+                                }
+                                return '';
+                            })
+                            .join('');
+                    }
+                } else {
+                    // Convert old string format to array format
+                    integratedMessage.content = [{
+                        type: 'text',
+                        content: message.content
+                    }];
+                }
+
+                // Remove artifacts if content is in array format
+                if (Array.isArray(integratedMessage.content)) {
+                    delete integratedMessage.artifacts;
+                }
+
+                return integratedMessage;
+            });
+        },
+
+        getIntegratedMessagesWithText: () => {
+            const state = get();
+            return state.messages.map((message) => {
+                const integratedMessage = {...message};
+
+                if (Array.isArray(message.content)) {
+                    const hasImage = message.content.some(item => item.type === 'image_url');
+
+                    if (hasImage) {
+                        // First, create a new array with transformed items
+                        let contentArray = message.content.map((item, index) => {
+                            if (item.type === 'text') {
+                                return {
+                                    type: 'text',
+                                    text: `<text>${item.content}</text>`
+                                };
+                            } else if (item.type === 'artifact') {
+                                const artifact = message.artifacts[item.identifier];
+                                const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
+                                return {
+                                    type: 'text',
+                                    text: `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`
+                                };
+                            }
+                            return item; // Keep image_url items unchanged
+                        });
+
+                        // Then, add answer tags
+                        if (contentArray[0].type === 'text') {
+                            contentArray[0].content = '<answer>' + contentArray[0].content;
+                        } else {
+                            // If first item is not text (e.g., image), insert opening tag
+                            contentArray.unshift({
+                                type: 'text',
+                                text: '<answer>'
+                            });
+                        }
+
+                        if (contentArray[contentArray.length - 1].type === 'text') {
+                            contentArray[contentArray.length - 1].content += '</answer>';
+                        } else {
+                            // If last item is not text (e.g., image), append closing tag
+                            contentArray.push({
+                                type: 'text',
+                                text: '</answer>'
+                            });
+                        }
+
+                        integratedMessage.content = contentArray;
+                    } else {
+                        // For messages without images, convert to a single string with answer tags
+                        const contentString = message.content
+                            .map(item => {
+                                if (item.type === 'text') {
+                                    return `<text>${item.content}</text>`;
+                                } else if (item.type === 'artifact') {
+                                    const artifact = message.artifacts[item.identifier];
+                                    const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
+                                    return `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`;
+                                }
+                                return '';
+                            })
+                            .join('');
+
+                        integratedMessage.content = `<answer>${contentString.trim()}</answer>`;
+                    }
+                } else {
+                    // Convert old string format to answer-wrapped text
+                    integratedMessage.content = `<answer><text>${message.content}</text></answer>`;
+                }
+
+                // Remove artifacts property if content is processed
+                if (Array.isArray(integratedMessage.content) || typeof integratedMessage.content === 'string') {
+                    delete integratedMessage.artifacts;
+                }
+
+                return integratedMessage;
             });
         },
 
@@ -338,64 +494,6 @@ const useChatStore = create(persist(
                 }
             }
             return null;
-        },
-
-        getIntegratedMessages: () => {
-            const state = get();
-            return state.messages.map((message) => {
-                const integratedMessage = {...message};
-                let integratedContent = '';
-
-                if (Array.isArray(message.content)) {
-                    message.content.forEach((item) => {
-                        if (item.type === 'text') {
-                            integratedContent += item.content;
-                        } else if (item.type === 'artifact') {
-                            const artifact = message.artifacts[item.identifier];
-                            const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
-                            integratedContent += `
-<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">
-${artifact.content}
-</artifact>`;
-                        }
-                    });
-                }
-
-                integratedMessage.content = integratedContent.trim();
-                delete integratedMessage.artifacts;
-
-                return integratedMessage;
-            });
-        },
-
-        getIntegratedMessagesWithText: () => {
-            const state = get();
-            return state.messages.map((message) => {
-                const integratedMessage = {...message};
-                let formattedContent = '';
-
-                if (Array.isArray(message.content)) {
-                    message.content.forEach((item) => {
-                        if (item.type === 'text') {
-                            formattedContent += `<text>${item.content}</text>`;
-                        } else if (item.type === 'artifact') {
-                            const artifact = message.artifacts[item.identifier];
-                            const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
-                            formattedContent += `
-<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">
-${artifact.content}
-</artifact>`;
-                        }
-                    });
-                } else {
-                    console.error("Expected message.content to be an array, but got:", message.content);
-                }
-
-                integratedMessage.content = `<answer>${formattedContent.trim()}</answer>`;
-                delete integratedMessage.artifacts;
-
-                return integratedMessage;
-            });
         },
 
         navigateArtifact: (direction) => {

@@ -5,6 +5,7 @@ import styles from './LoadedModels.module.css';
 
 const LoadedModels = () => {
     const { isLoading, loadedModels, fetchLoadedModels, stopModelByPort } = useModelManagementStore();
+    console.log(loadedModels);
 
     useEffect(() => {
         fetchLoadedModels();

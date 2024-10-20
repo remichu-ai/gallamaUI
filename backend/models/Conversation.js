@@ -12,4 +12,8 @@ const ConversationSchema = new mongoose.Schema({
     }],
 }, { timestamps: true });
 
+// Add indexes for better query performance
+ConversationSchema.index({ createdAt: -1 });
+ConversationSchema.index({ updatedAt: -1 });
+
 module.exports = mongoose.model('Conversation', ConversationSchema);
