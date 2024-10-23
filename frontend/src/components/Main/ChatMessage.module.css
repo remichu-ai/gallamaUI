@@ -71,7 +71,7 @@
     box-sizing: border-box;
     flex-direction: column;
     overflow-x: hidden;
-    white-space: nowrap;
+    white-space: normal; /* Changed from nowrap to normal */
     border-radius: var(--border-radius);
     border: var(--chat-message-border-size) solid var(--chat-message-border-color);
     box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
@@ -94,6 +94,8 @@
     word-wrap: break-word;
     white-space: normal;
 }
+
+
 
 .chatMessageContentArtifactButton {
     margin-top: 5px;
@@ -127,4 +129,89 @@ li code{
 .preserveFormat {
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+.chatMessageContentImage {
+    margin: 8px 0;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.messageImage {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.messageImage:hover {
+    transform: scale(1.02);
+}
+
+/* Styles for the modal that shows the full-size image */
+.imageModal {
+    position: fixed;
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.imageModal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modalImage {
+    max-width: 80vw;  /* 80% of viewport width */
+    max-height: 80vh; /* 80% of viewport height */
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.closeButton {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+    background-color: #f0f0f0;
+}
+
+/* Optional: Add an overlay behind the popup */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modalOverlay.active {
+    opacity: 1;
+    visibility: visible;
 }

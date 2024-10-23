@@ -38,7 +38,7 @@ const Main = ({useRealDataInitialization = true}) => {
     }, [currentTheme]);
 
 
-    const { visibleArtifactId, getVisibleArtifact } = useChatStore()
+    const {visibleArtifactId, getVisibleArtifact} = useChatStore()
 
     useEffect(() => {
         console.log("Artifact ID changed:", visibleArtifactId);
@@ -64,7 +64,7 @@ const Main = ({useRealDataInitialization = true}) => {
                     <div className={styles.chatComContainer}>
                         {<ChatComponent/>}
                     </div>
-                    {visibleArtifactId!=null && showArtifact && (
+                    {visibleArtifactId != null && showArtifact && (
                         <div className={styles.artifactComContainer}>
                             <ArtifactViewer/>
                         </div>

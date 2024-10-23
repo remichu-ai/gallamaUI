@@ -95,6 +95,29 @@ const ModelManagement = () => {
         await loadModel(payload);
     };
 
+    const renderValue = (value) => {
+        // Check for undefined or null values
+        if (value === null || value === undefined) {
+            return 'N/A';  // Or return any placeholder you prefer
+        }
+
+        if (typeof value === 'object' && !Array.isArray(value)) {
+            // If value is an object, we render its key-value pairs
+            return (
+                <div>
+                    {Object.entries(value).map(([subKey, subValue]) => (
+                        <div key={subKey}>
+                            <strong>{subKey}:</strong> {String(subValue)}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        return Array.isArray(value) ? value.join(', ') : String(value);
+    };
+
+
     return (
         <div className={styles.container}>
             <div className={styles.settingContainer}>
@@ -102,6 +125,8 @@ const ModelManagement = () => {
                     <h2 className={styles.header}>Available Models</h2>
                     <Accordion allowToggle>
                         {availableModels.map((modelData) => {
+                            console.log('modelData:', modelData); // Check the structure of modelData
+
                             const {model, backend} = modelData;
 
                             return (
@@ -119,7 +144,7 @@ const ModelManagement = () => {
                                             if (key !== 'model' && key !== 'backend') {
                                                 return (
                                                     <div key={key}>
-                                                        <strong>{key}:</strong> {Array.isArray(value) ? value.join(', ') : value}
+                                                        <strong>{key}:</strong> {renderValue(value)}
                                                     </div>
                                                 );
                                             }
@@ -196,7 +221,8 @@ const ModelManagement = () => {
                                 />
                             </FormControl>
                             <FormControl mb={4} display="flex" alignItems="center">
-                                <FormLabel ml={2}>Tensor Parallel (Only for Qwen2/2.5-72B, Llama 3.1-70B and Mistral Large)</FormLabel>
+                                <FormLabel ml={2}>Tensor Parallel (Only for Qwen2/2.5-72B, Llama 3.1-70B and Mistral
+                                    Large)</FormLabel>
                                 <Checkbox
                                     name="tensor_parallel"
                                     isChecked={formData[selectedModel]?.tensor_parallel || false}
