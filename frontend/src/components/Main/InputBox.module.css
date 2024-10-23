@@ -108,6 +108,7 @@
     display: flex;
     height: fit-content;
     padding: 7px 8px 6px 16px;
+    position: relative; /* Added to support absolute positioning of dropdown */
 }
 
 .footer p {

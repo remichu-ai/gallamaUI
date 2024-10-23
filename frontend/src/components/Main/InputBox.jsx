@@ -7,6 +7,7 @@ import useModelManagementStore from "../../store/modelManagementStore.js";
 import styles from "./InputBox.module.css"
 import {assets} from "../../assets/assets.js";
 import useApiKeyStore from "../../store/apiKeyStore.js";
+import ModelSelector from "./ModelSelector.jsx";
 
 const InputBox = () => {
     const {inputText, setInputText, softClear, revertInput, clear} = useInputStore();
@@ -282,7 +283,7 @@ const InputBox = () => {
                 </div>
             </div>
             <div className={styles.footer}>
-                <p>{selectedModel}</p>
+                <ModelSelector />
             </div>
         </div>
     );
