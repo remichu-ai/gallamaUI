@@ -63,26 +63,26 @@ const useChatStore = create(persist(
                     console.log("No messages to save.");
                     return;
                 }
-
-                // First, try to save to backend
-                try {
-                    let response;
-                    if (conversation_id === "temp_id") {
-                        response = await axios.post('http://localhost:3000/api/conversations/save', {
-                            messages,
-                            title: conversation_title
-                        });
-                        set({conversation_id: response.data.id});
-                    } else {
-                        response = await axios.put(`http://localhost:3000/api/conversations/${conversation_id}`, {
-                            messages,
-                            title: conversation_title
-                        });
-                    }
-                    console.log("Conversation saved to backend:", response.data.id);
-                } catch (error) {
-                    console.error("Error saving to backend:", error);
-                }
+                //
+                // // First, try to save to backend
+                // try {
+                //     let response;
+                //     if (conversation_id === "temp_id") {
+                //         response = await axios.post('http://localhost:3000/api/conversations/save', {
+                //             messages,
+                //             title: conversation_title
+                //         });
+                //         set({conversation_id: response.data.id});
+                //     } else {
+                //         response = await axios.put(`http://localhost:3000/api/conversations/${conversation_id}`, {
+                //             messages,
+                //             title: conversation_title
+                //         });
+                //     }
+                //     console.log("Conversation saved to backend:", response.data.id);
+                // } catch (error) {
+                //     console.error("Error saving to backend:", error);
+                // }
 
                 // Then, try to save to localStorage with compression
                 try {

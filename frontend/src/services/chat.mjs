@@ -1,4 +1,4 @@
-import {chatCompletionOpenAI} from './openai/chatCompletionOpenAI.js';
+import { chatCompletionOpenAI } from './openai/chatCompletionOpenAI.js';
 import useApiKeyStore from "../store/apiKeyStore.js";
 import useUIStore from "../store/uiStore.js";
 import useChatStore from "../store/chatStore.js";
@@ -6,7 +6,7 @@ import useChatSettingStore from "../store/chatSettingStore.js";
 
 async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, stream = true) {
     const chatStore = useChatStore.getState();
-    const {setIsStreaming, setAbortController, saveCurrentConversation} = chatStore;
+    const { setIsStreaming, setAbortController, saveCurrentConversation } = chatStore;
 
     // Get API settings
     const apiKeyStore = useApiKeyStore.getState();
@@ -20,46 +20,28 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
     const useArtifact = chatSettings.useArtifact;
     const temperature = chatSettings.temperature;
     const systemPrompt = chatSettings.systemPrompt;
-    const useThinking = chatSettings.useThinking;  // Retrieve the thinking template
-    const thinking = chatSettings.thinking;
 
     try {
 
-        // Convert "return_thinking" to the required API format
-        const {returnThinking} = chatSettings;
-        let returnThinkingConverted;
-        switch (returnThinking) {
-            case "Yes":
-                returnThinkingConverted = true;
-                break;
-            case "No":
-                returnThinkingConverted = false;
-                break;
-            case "Seperate": // Note: ensure the spelling matches backend requirements.
-                returnThinkingConverted = "separate";
-                break;
-            default:
-                returnThinkingConverted = "separate"; // Default to False if not matched
-        }
+
 
         // Prepare extra body with settings, including 'return_thinking'
+        // Prepare extra body with settings
         const extra_body = {
             temperature: temperature,
-            ...(useArtifact && {artifact: "Fast"}),
-            ...(useThinking && thinking && {thinking_template: thinking}),  // Add thinking to extra_body if set
-            ...(returnThinkingConverted !== undefined && {return_thinking: returnThinkingConverted}) // Add 'return_thinking' if set
+            ...(useArtifact && { artifact: "Fast" }),
         };
 
         // Add system prompt if it exists
         if (systemPrompt) {
-            msgs.unshift({role: 'system', content: systemPrompt});
+            msgs.unshift({ role: 'system', content: systemPrompt });
         }
 
         const toggleChatComponentOnce = useUIStore.getState().toggleChatComponentOnce;
         toggleChatComponentOnce();
 
         // Add initial assistant message
-        addMessage({role: 'assistant', content: '', artifacts: {}});
+        addMessage({ role: 'assistant', content: '', artifacts: {} });
 
 
         // Start LLM generation
@@ -84,15 +66,17 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
                 break;
             }
 
-            const {content, artifact_meta, thinking} = chunk;
+            const content = chunk.content;
+            const artifact_meta = chunk.artifact_meta;
+            const thinking = chunk.thinking || chunk.reasoning || chunk.reasoning_content;
 
             if (thinking) {
                 //console.log("Received thinking:", thinking);
-                updateLastMessage({thinking});
+                updateLastMessage({ thinking });
             }
 
             if (content || artifact_meta) {
-                updateLastMessage({content, artifact_meta});
+                updateLastMessage({ content, artifact_meta });
             }
 
             // Check if streaming has been stopped
@@ -108,7 +92,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
             console.log('Request was aborted');
         } else {
             console.error('Error sending message and getting response:', error);
-            addMessage({role: 'system', content: 'An error occurred while processing your request.'});
+            addMessage({ role: 'system', content: 'An error occurred while processing your request.' });
         }
     } finally {
         setIsStreaming(false);
@@ -118,14 +102,14 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
 }
 
 async function sendMessageAndReturnResponse({
-                                                msgs,
-                                                stream = true,
-                                                tools = [],
-                                                tool_choice = "auto",
-                                                extra_body_overwrite = {}
-                                            }) {
+    msgs,
+    stream = true,
+    tools = [],
+    tool_choice = "auto",
+    extra_body_overwrite = {}
+}) {
     const chatStore = useChatStore.getState();
-    const {setIsStreaming, setAbortController, saveCurrentConversation} = chatStore;
+    const { setIsStreaming, setAbortController, saveCurrentConversation } = chatStore;
 
     // Get API settings
     const apiKeyStore = useApiKeyStore.getState();
@@ -138,20 +122,19 @@ async function sendMessageAndReturnResponse({
     const chatSettings = useChatSettingStore.getState();
     const temperature = chatSettings.temperature;
     const systemPrompt = chatSettings.systemPrompt;
-    const useThinking = chatSettings.useThinking;
-    const thinking = chatSettings.thinking;
+
 
     try {
         // Prepare extra body with settings
+        // Prepare extra body with settings
         const extra_body = {
             temperature,
-            ...(useThinking && thinking && {thinking_template: thinking}),
             ...extra_body_overwrite,
         };
 
         // Add system prompt if it exists
         if (systemPrompt) {
-            msgs.unshift({role: 'system', content: systemPrompt});
+            msgs.unshift({ role: 'system', content: systemPrompt });
         }
 
         if (stream) {
@@ -175,7 +158,7 @@ async function sendMessageAndReturnResponse({
                     break;
                 }
 
-                const {content} = chunk;
+                const { content } = chunk;
                 if (content) {
                     finalResponse += content;
                 }
@@ -216,4 +199,4 @@ async function sendMessageAndReturnResponse({
 }
 
 
-export {sendMessageAndGetResponse, sendMessageAndReturnResponse};
+export { sendMessageAndGetResponse, sendMessageAndReturnResponse };

@@ -24,7 +24,7 @@ Gallama UI is a companion frontend for [gallama](https://github.com/remichu-ai/g
 2. Install [Node.js](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) (version 20 or above recommended) for your platform.
 3. Install MongoDB Community. We recommend using [Docker](https://hub.docker.com/r/mongodb/mongodb-community-server).
 
-### Steps
+### Ste
 
 1. Clone this repository and install dependencies:
 

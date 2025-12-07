@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import thinkingTemplates from '../data/thinkingTemplates'; // Import the templates
 
 const useChatSettingStore = create(
     persist(
@@ -13,24 +12,7 @@ const useChatSettingStore = create(
             selectedModel: "default",
             setSelectedModel: (newModel) => set({ selectedModel: newModel }),
 
-            // New fields for chain of thought thinking
-            useThinking: false,
-            toggleUseThinking: () => set((state) => {
-                const newUseThinking = !state.useThinking;
-                // Update returnThinking to 'Seperate' if useThinking is enabled
-                return {
-                    useThinking: newUseThinking,
-                    returnThinking: newUseThinking ? 'Seperate' : state.returnThinking
-                };
-            }),
-            thinking: '',
-            returnThinkingOptions: ['Yes', 'No', 'Seperate'], // List of options
-            returnThinking: 'Seperate', // Default value
-            setThinking: (newThinking) => set({ thinking: newThinking.trim() }),
-            setReturnThinking: (newReturnThinking) => set({ returnThinking: newReturnThinking }),
-
             // XML template selection from external file
-            thinkingTemplates: thinkingTemplates,
             selectedTemplate: '',
             setSelectedTemplate: (template) => set({ selectedTemplate: template }),
         }),
