@@ -6,6 +6,8 @@ const useChatSettingStore = create(
         (set) => ({
             useArtifact: true,
             toggleUseArtifact: () => set((state) => ({ useArtifact: !state.useArtifact })),
+            useThinking: true,
+            toggleUseThinking: () => set((state) => ({ useThinking: !state.useThinking })),
             temperature: 0.3,
             setTemperature: (newTemperature) => set({ temperature: newTemperature }),
             modelList: ["default", "gpt-3.5-turbo", "gpt-4"],

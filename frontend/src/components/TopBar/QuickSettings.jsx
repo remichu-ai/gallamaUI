@@ -12,8 +12,8 @@ const QuickSettings = () => {
     } = useChatSettingStore();
 
     const {
-        showThinking,
-        toggleShowThinking
+        showReasoning,
+        toggleShowReasoning
     } = useUIStore();
 
     return (
@@ -39,8 +39,8 @@ const QuickSettings = () => {
             <label className={styles.quickSettingsLabel}>
                 <input
                     type="checkbox"
-                    checked={showThinking}
-                    onChange={toggleShowThinking}
+                    checked={showReasoning}
+                    onChange={toggleShowReasoning}
                     className={styles.quickSettingsCheckbox}
                 />
                 Show Thinking

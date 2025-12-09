@@ -55,34 +55,38 @@ const AnimatedReasoning = ({ isContentLoading }) => {
 };
 
 const ReasoningSection = ({ reasoning, isContentLoading }) => {
-    const [isVisible, setIsVisible] = useState(true);
     const { showReasoning } = useUIStore();
+    const [isVisible, setIsVisible] = useState(showReasoning);
+
+    useEffect(() => {
+        setIsVisible(showReasoning);
+    }, [showReasoning]);
 
     if (!reasoning) return null;
 
+    if (isContentLoading && !reasoning) {
+        return <AnimatedReasoning className={styles.animatedThinking} isContentLoading={isContentLoading} />;
+    }
+
     return (
-        showReasoning ?
-            (<div className={styles.thinkingSection}>
-                <div className={styles.header}>
-                    <span className={styles.headerTitle}>Reasoning Process</span>
-                    <button
-                        className={styles.toggleButton}
-                        onClick={() => setIsVisible(!isVisible)}
-                    >
-                        {isVisible ? 'Hide' : 'Show'}
-                    </button>
-                </div>
-                <div className={`${styles.content} ${!isVisible ? styles.hidden : ''}`}>
-                    {isVisible && (
-                        <div className={styles.textContent}>
-                            {reasoning}
-                        </div>
-                    )}
-                </div>
-            </div>)
-            : (
-                <AnimatedReasoning className={styles.animatedThinking} isContentLoading={isContentLoading} />
-            )
+        <div className={styles.thinkingSection}>
+            <div className={styles.header}>
+                <span className={styles.headerTitle}>Reasoning Process</span>
+                <button
+                    className={styles.toggleButton}
+                    onClick={() => setIsVisible(!isVisible)}
+                >
+                    {isVisible ? 'Hide' : 'Show'}
+                </button>
+            </div>
+            <div className={`${styles.content} ${!isVisible ? styles.hidden : ''}`}>
+                {isVisible && (
+                    <div className={styles.textContent}>
+                        {reasoning}
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 
