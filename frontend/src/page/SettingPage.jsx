@@ -36,8 +36,8 @@ const SettingsPage = () => {
         themes,
         currentTheme,
         setTheme,
-        showThinking,
-        toggleShowThinking
+        showReasoning,
+        toggleShowReasoning
     } = useUIStore();
 
 
@@ -187,16 +187,16 @@ const SettingsPage = () => {
                         </div>
 
                         {/* Chain of Thought Settings */}
-                        <h4 className={styles.subHeader}>Thinking Settings</h4>
+                        <h4 className={styles.subHeader}>Reasoning Settings</h4>
                         <div className={styles.settingGroup}>
                             <label className={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
-                                    checked={showThinking}
-                                    onChange={toggleShowThinking}
+                                    checked={showReasoning}
+                                    onChange={toggleShowReasoning}
                                     className={styles.checkbox}
                                 />
-                                Show Thinking
+                                Show Reasoning
                             </label>
                         </div>
                     </div>

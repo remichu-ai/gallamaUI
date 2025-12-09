@@ -68,11 +68,11 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
 
             const content = chunk.content;
             const artifact_meta = chunk.artifact_meta;
-            const thinking = chunk.thinking || chunk.reasoning || chunk.reasoning_content;
+            const reasoning = chunk.reasoning || chunk.reasoning_content || chunk.thinking;
 
-            if (thinking) {
-                //console.log("Received thinking:", thinking);
-                updateLastMessage({ thinking });
+            if (reasoning) {
+                //console.log("Received reasoning:", reasoning);
+                updateLastMessage({ reasoning });
             }
 
             if (content || artifact_meta) {

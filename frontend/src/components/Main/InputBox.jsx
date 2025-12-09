@@ -1,16 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useInputStore from '../../store/inputStore.js'
-import {sendMessageAndGetResponse, sendMessageAndReturnResponse} from "../../services/chat.mjs";
+import { sendMessageAndGetResponse, sendMessageAndReturnResponse } from "../../services/chat.mjs";
 import useChatStore from "../../store/chatStore.js";
 import useChatSettingStore from "../../store/chatSettingStore.js";
 import useModelManagementStore from "../../store/modelManagementStore.js";
 import styles from "./InputBox.module.css"
-import {assets} from "../../assets/assets.js";
+import { assets } from "../../assets/assets.js";
 import useApiKeyStore from "../../store/apiKeyStore.js";
 import ModelSelector from "./ModelSelector.jsx";
 
 const InputBox = () => {
-    const {inputText, setInputText, softClear, revertInput, clear} = useInputStore();
+    const { inputText, setInputText, softClear, revertInput, clear } = useInputStore();
     const [content, setContent] = useState([{ type: 'text', content: '' }]);
 
     const {
@@ -75,7 +75,7 @@ const InputBox = () => {
         await saveCurrentConversation();
 
         // Check for conversation title update
-        const {messages} = useChatStore.getState();
+        const { messages } = useChatStore.getState();
         if (messages.length === 4) {
             await delay(1500);
 
@@ -110,12 +110,13 @@ const InputBox = () => {
                 stream: false,
                 tools: tools,
                 tool_choice: "required",
-                extra_body_overwrite: {"thinking_template": ""}
+                extra_body_overwrite: { "thinking_template": "" }
             });
 
             let parsed_argument = JSON.parse(response.tool_calls[0].function.arguments)["new_title"];
             parsed_argument = parsed_argument.split(" ").slice(0, 5).join(" ");
             useChatStore.getState().setConversationTitle(parsed_argument);
+            await saveCurrentConversation();
         }
     };
 

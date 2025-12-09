@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box,
     Button, FormControl, FormLabel, Input, Checkbox, Select
 } from '@chakra-ui/react';
-import {Divider} from '@chakra-ui/react'
+import { Divider } from '@chakra-ui/react'
 import LoadedModels from '../components/ModelManagement/LoadedModels.jsx'
 import useModelManagementStore from '../store/modelManagementStore.js';
 import useUIStore from "../store/uiStore.js";
 import styles from './ModelManagement.module.css';
 
 const ModelManagement = () => {
-    const {availableModels, fetchAvailableModels, loadModel} = useModelManagementStore();
+    const { availableModels, fetchAvailableModels, loadModel } = useModelManagementStore();
     const [selectedModel, setSelectedModel] = useState(null);
     const [selectedModelData, setSelectedModelData] = useState(null); // Add a state to store model data
     const [formData, setFormData] = useState({});
@@ -41,7 +41,7 @@ const ModelManagement = () => {
     };
 
     const handleChange = (e, modelId) => {
-        const {name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
 
         if (name === 'cache_size') {
             setFormData(prev => ({
@@ -127,7 +127,7 @@ const ModelManagement = () => {
                         {availableModels.map((modelData) => {
                             console.log('modelData:', modelData); // Check the structure of modelData
 
-                            const {model, backend} = modelData;
+                            const { model, backend } = modelData;
 
                             return (
                                 <AccordionItem key={`${model}-${backend}`}>
@@ -136,7 +136,7 @@ const ModelManagement = () => {
                                             <Box flex="1" textAlign="left">
                                                 {model} (Backend: {backend})
                                             </Box>
-                                            <AccordionIcon/>
+                                            <AccordionIcon />
                                         </AccordionButton>
                                     </h2>
                                     <AccordionPanel pb={4}>
@@ -158,7 +158,7 @@ const ModelManagement = () => {
                 </div>
                 <div className={styles.settingColumn2}>
                     <div className={styles.loadedModelContainer}>
-                        <LoadedModels/>
+                        <LoadedModels />
                     </div>
                     {selectedModel && selectedModelData && (
                         <div className={styles.loadModelFormContainer}>
@@ -182,7 +182,7 @@ const ModelManagement = () => {
 
                             {/* Cache Size */}
                             <FormControl mb={4}>
-                                <FormLabel>Cache Size (must be >= max_seq_len). Leave blank to default to
+                                <FormLabel>Cache Size (must be &gt;= max_seq_len). Leave blank to default to
                                     max_seq_len</FormLabel>
                                 <Input
                                     name="cache_size"
@@ -267,7 +267,7 @@ const ModelManagement = () => {
                             </FormControl>
 
                             <Button colorScheme="blue" mt={4} onClick={() => handleSubmit(selectedModel)}
-                                    className={styles.saveButton}>
+                                className={styles.saveButton}>
                                 Load Model
                             </Button>
                         </div>

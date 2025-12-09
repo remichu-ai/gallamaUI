@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {assets} from "../../assets/assets.js";
+import { assets } from "../../assets/assets.js";
 import useChatStore from '../../store/chatStore.js';
 import useUIStore from "../../store/uiStore.js";
 import ArtifactButton from './ArtifactButton.jsx';
 import MarkdownText from './MarkdownText.jsx';
-import {ThinkingSection} from './ThinkingSection.jsx';
-import {CopyButtonChat} from './CopyButtonChat';
+import { ReasoningSection } from './ReasoningSection.jsx';
+import { CopyButtonChat } from './CopyButtonChat';
 import styles from './ChatMessage.module.css';
 
 const ImageModal = ({ src, alt, isOpen, onClose, clickPosition }) => {
@@ -103,15 +103,15 @@ const getRoleIconCSS = (role) => {
     }
 };
 
-const ChatMessage = ({message}) => {
+const ChatMessage = ({ message }) => {
     const [modalImage, setModalImage] = useState({
         src: '',
         isOpen: false,
         clickPosition: null
     });
 
-    const {setVisibleArtifactId} = useChatStore();
-    const {showThinking} = useUIStore();
+    const { setVisibleArtifactId } = useChatStore();
+    const { showReasoning } = useUIStore();
 
     const handleImageClick = (url, e) => {
         setModalImage({
@@ -131,7 +131,7 @@ const ChatMessage = ({message}) => {
                     return (
                         <div className={styles.chatMessageContentMarkdownText} key={index}>
                             {message.role === 'assistant' ? (
-                                <MarkdownText content={item.content}/>
+                                <MarkdownText content={item.content} />
                             ) : (
                                 <span className={styles.preserveFormat}>
                                     {item.content}
@@ -181,14 +181,14 @@ const ChatMessage = ({message}) => {
         <>
             <div className={styles.chatMessageContainer}>
                 <div className={`${styles.roleIcon} ${getRoleIconCSS(message.role)}`}>
-                    <img src={getIcon(message.role)} alt=""/>
+                    <img src={getIcon(message.role)} alt="" />
                 </div>
                 <div className={styles.chatMessageWrapper}>
                     <div className={`${styles.chatMessageContent} ${getRoleCSS(message.role)}`}>
-                        <ThinkingSection thinking={message.thinking} isContentLoading={isContentLoading}/>
+                        <ReasoningSection reasoning={message.reasoning} isContentLoading={isContentLoading} />
                         {renderMessageContent(message.content)}
                     </div>
-                    <CopyButtonChat text={copyText} className={styles.copyButton}/>
+                    <CopyButtonChat text={copyText} className={styles.copyButton} />
                 </div>
             </div>
             <ImageModal

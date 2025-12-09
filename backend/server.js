@@ -8,12 +8,21 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/gallama', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log('Connected to MongoDB'))
-    .catch((err) => console.error('Failed to connect to MongoDB', err));
+const connectWithRetry = () => {
+    console.log('MongoDB connection with retry');
+    mongoose.connect('mongodb://127.0.0.1:27017/gallama', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+        .then(() => console.log('Connected to MongoDB'))
+        .catch((err) => {
+            console.error('Failed to connect to MongoDB', err);
+            console.log('Retrying in 5 seconds...');
+            setTimeout(connectWithRetry, 5000);
+        });
+};
+
+connectWithRetry();
 
 // Middleware
 app.use(bodyParser.json());

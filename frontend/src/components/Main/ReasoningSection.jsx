@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import useUIStore from "../../store/uiStore.js";
-import styles from './ThinkingSection.module.css';
+import styles from './ReasoningSection.module.css';
 
-const thinkingWords = [
-    { word: 'thinking', probability: 0.6 },
-    { word: 'reasoning', probability: 0.2 },
+const reasoningWords = [
+    { word: 'reasoning', probability: 0.6 },
+    { word: 'thinking', probability: 0.2 },
     { word: 'processing', probability: 0.2 },
 ];
 
@@ -12,17 +12,17 @@ const getRandomWord = () => {
     const randomValue = Math.random();
     let cumulativeProbability = 0;
 
-    for (const { word, probability } of thinkingWords) {
+    for (const { word, probability } of reasoningWords) {
         cumulativeProbability += probability;
         if (randomValue <= cumulativeProbability) {
             return word;
         }
     }
 
-    return thinkingWords[0].word;
+    return reasoningWords[0].word;
 };
 
-const AnimatedThinking = ({ isContentLoading }) => {
+const AnimatedReasoning = ({ isContentLoading }) => {
     const [dots, setDots] = useState('.');
     const [currentWord, setCurrentWord] = useState(getRandomWord());
 
@@ -54,17 +54,17 @@ const AnimatedThinking = ({ isContentLoading }) => {
     return <span className={styles.animatedThinking}>{currentWord} {dots}</span>;
 };
 
-const ThinkingSection = ({ thinking, isContentLoading }) => {
+const ReasoningSection = ({ reasoning, isContentLoading }) => {
     const [isVisible, setIsVisible] = useState(true);
-    const { showThinking } = useUIStore();
+    const { showReasoning } = useUIStore();
 
-    if (!thinking) return null;
+    if (!reasoning) return null;
 
     return (
-        showThinking ?
+        showReasoning ?
             (<div className={styles.thinkingSection}>
                 <div className={styles.header}>
-                    <span className={styles.headerTitle}>Thinking Process</span>
+                    <span className={styles.headerTitle}>Reasoning Process</span>
                     <button
                         className={styles.toggleButton}
                         onClick={() => setIsVisible(!isVisible)}
@@ -75,15 +75,15 @@ const ThinkingSection = ({ thinking, isContentLoading }) => {
                 <div className={`${styles.content} ${!isVisible ? styles.hidden : ''}`}>
                     {isVisible && (
                         <div className={styles.textContent}>
-                            {thinking}
+                            {reasoning}
                         </div>
                     )}
                 </div>
             </div>)
             : (
-                <AnimatedThinking className={styles.animatedThinking} isContentLoading={isContentLoading} />
+                <AnimatedReasoning className={styles.animatedThinking} isContentLoading={isContentLoading} />
             )
     );
 };
 
-export { ThinkingSection, AnimatedThinking };
+export { ReasoningSection, AnimatedReasoning };
