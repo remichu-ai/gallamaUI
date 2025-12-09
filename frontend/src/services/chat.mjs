@@ -30,7 +30,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
         const extra_body = {
             temperature: temperature,
             ...(useArtifact && { artifact: "Fast" }),
-            ...(chatSettings.useThinking && { reasoning_effort: "medium" }),
+            reasoning_effort: chatSettings.useThinking ? "medium" : null,
         };
 
         // Add system prompt if it exists
@@ -131,7 +131,7 @@ async function sendMessageAndReturnResponse({
         // Prepare extra body with settings
         const extra_body = {
             temperature,
-            ...(chatSettings.useThinking && { reasoning_effort: "medium" }),
+            reasoning_effort: chatSettings.useThinking ? "medium" : null,
             ...extra_body_overwrite,
         };
 

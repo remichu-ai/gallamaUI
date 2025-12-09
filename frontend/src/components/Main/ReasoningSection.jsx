@@ -58,9 +58,27 @@ const ReasoningSection = ({ reasoning, isContentLoading }) => {
     const { showReasoning } = useUIStore();
     const [isVisible, setIsVisible] = useState(showReasoning);
 
+    const [dots, setDots] = useState('');
+
     useEffect(() => {
         setIsVisible(showReasoning);
     }, [showReasoning]);
+
+    useEffect(() => {
+        if (!isContentLoading) {
+            setDots('');
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setDots(prevDots => {
+                if (prevDots.length >= 3) return '';
+                return prevDots + '.';
+            });
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, [isContentLoading]);
 
     if (!reasoning) return null;
 
@@ -71,7 +89,7 @@ const ReasoningSection = ({ reasoning, isContentLoading }) => {
     return (
         <div className={styles.thinkingSection}>
             <div className={styles.header}>
-                <span className={styles.headerTitle}>Reasoning Process</span>
+                <span className={styles.headerTitle}>Reasoning Process{isContentLoading ? dots : ''}</span>
                 <button
                     className={styles.toggleButton}
                     onClick={() => setIsVisible(!isVisible)}
