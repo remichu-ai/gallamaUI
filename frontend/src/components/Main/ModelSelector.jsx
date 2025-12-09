@@ -26,6 +26,13 @@ const ModelSelector = () => {
     fetchLoadedModels();
   }, []);
 
+  useEffect(() => {
+    const modelKeys = Object.keys(loadedModels);
+    if (!selectedModel && modelKeys.length === 1) {
+      storeSetSelectedModel('gallama', modelKeys[0]);
+    }
+  }, [loadedModels, selectedModel, storeSetSelectedModel]);
+
   const handleModelSelect = (modelName) => {
     storeSetSelectedModel('gallama', modelName);
     setIsOpen(false);
