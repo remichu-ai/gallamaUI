@@ -15,6 +15,12 @@ const useChatSettingStore = create(
             // XML template selection from external file
             selectedTemplate: '',
             setSelectedTemplate: (template) => set({ selectedTemplate: template }),
+
+            // Image resize settings
+            maxImageWidth: 1024,
+            setMaxImageWidth: (width) => set({ maxImageWidth: width }),
+            maxImageHeight: 1024,
+            setMaxImageHeight: (height) => set({ maxImageHeight: height }),
         }),
         {
             name: 'chat-settings-storage', // Name of the item in the storage (must be unique)

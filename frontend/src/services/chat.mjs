@@ -93,6 +93,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
         } else {
             console.error('Error sending message and getting response:', error);
             addMessage({ role: 'system', content: 'An error occurred while processing your request.' });
+            throw error;
         }
     } finally {
         setIsStreaming(false);

@@ -17,7 +17,11 @@ const SettingsPage = () => {
         setTemperature,
         systemPrompt,
         setSystemPrompt,
-        saveSettings
+        saveSettings,
+        maxImageWidth,
+        setMaxImageWidth,
+        maxImageHeight,
+        setMaxImageHeight
     } = useChatSettingStore();
 
     const {
@@ -197,6 +201,31 @@ const SettingsPage = () => {
                                     className={styles.checkbox}
                                 />
                                 Show Reasoning
+                            </label>
+                        </div>
+
+                        {/* Image Resize Settings */}
+                        <h4 className={styles.subHeader}>Image Resize Settings</h4>
+                        <div className={styles.settingGroup}>
+                            <label className={styles.blockLabel}>
+                                Max Width:
+                                <input
+                                    type="number"
+                                    value={maxImageWidth}
+                                    onChange={(e) => setMaxImageWidth(Number(e.target.value))}
+                                    className={styles.textInput}
+                                />
+                            </label>
+                        </div>
+                        <div className={styles.settingGroup}>
+                            <label className={styles.blockLabel}>
+                                Max Height:
+                                <input
+                                    type="number"
+                                    value={maxImageHeight}
+                                    onChange={(e) => setMaxImageHeight(Number(e.target.value))}
+                                    className={styles.textInput}
+                                />
                             </label>
                         </div>
                     </div>

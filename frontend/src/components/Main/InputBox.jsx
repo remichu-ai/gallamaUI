@@ -9,6 +9,34 @@ import { assets } from "../../assets/assets.js";
 import useApiKeyStore from "../../store/apiKeyStore.js";
 import ModelSelector from "./ModelSelector.jsx";
 
+const resizeImage = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL(file.type));
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
 const InputBox = () => {
     const { inputText, setInputText, softClear, revertInput, clear } = useInputStore();
     const [content, setContent] = useState([{ type: 'text', content: '' }]);
@@ -31,6 +59,7 @@ const InputBox = () => {
     } = useApiKeyStore();
 
     const chatSettings = useChatSettingStore.getState();
+    const { maxImageWidth, maxImageHeight } = useChatSettingStore();
     const [selectedModel, setSelectedModel] = useState(getSelectedModel());
     const inputRef = useRef();
 
@@ -63,15 +92,28 @@ const InputBox = () => {
             ? getIntegratedMessagesWithText()
             : getIntegratedMessages();
 
-        await sendMessageAndGetResponse(
-            integratedMessages,
-            addMessage,
-            updateLastMessage
-        );
+        // Capture current state for restoration on error
+        const previousContent = [...content];
+        const previousInputText = inputText;
 
-        // Reset input state
+        // Reset input state immediately
         setContent([{ type: 'text', content: '' }]);
         setInputText("");
+
+        try {
+            await sendMessageAndGetResponse(
+                integratedMessages,
+                addMessage,
+                updateLastMessage
+            );
+        } catch (error) {
+            // Restore input state on error
+            console.error("Restoring input due to error:", error);
+            setContent(previousContent);
+            setInputText(previousInputText);
+            return; // Exit early to prevent saving empty state or further processing
+        }
+
         await saveCurrentConversation();
 
         // Check for conversation title update
@@ -167,7 +209,7 @@ const InputBox = () => {
         adjustTextareaHeight();
     };
 
-    const handlePaste = (e) => {
+    const handlePaste = async (e) => {
         const items = e.clipboardData.items;
         let handled = false;
 
@@ -175,18 +217,18 @@ const InputBox = () => {
             if (items[i].type.indexOf('image') !== -1) {
                 handled = true;
                 const blob = items[i].getAsFile();
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    setContent(prevContent => [
-                        ...prevContent,
-                        {
-                            type: 'image_url',
-                            image_url: { url: event.target.result }
-                        },
-                        { type: 'text', content: '' } // Add new empty text input after image
-                    ]);
-                };
-                reader.readAsDataURL(blob);
+
+                // Resize the image
+                const resizedDataUrl = await resizeImage(blob, maxImageWidth || 1024, maxImageHeight || 1024);
+
+                setContent(prevContent => [
+                    ...prevContent,
+                    {
+                        type: 'image_url',
+                        image_url: { url: resizedDataUrl }
+                    },
+                    { type: 'text', content: '' } // Add new empty text input after image
+                ]);
             }
         }
 

@@ -25,7 +25,8 @@ const connectWithRetry = () => {
 connectWithRetry();
 
 // Middleware
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors()); // Use the CORS middleware
 app.use('/api/conversations', conversationRoutes);
 
