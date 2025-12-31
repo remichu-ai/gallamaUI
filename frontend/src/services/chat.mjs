@@ -19,6 +19,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
     const chatSettings = useChatSettingStore.getState();
     const useArtifact = chatSettings.useArtifact;
     const temperature = chatSettings.temperature;
+    const topP = chatSettings.topP;
     const systemPrompt = chatSettings.systemPrompt;
 
     try {
@@ -29,6 +30,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
         // Prepare extra body with settings
         const extra_body = {
             temperature: temperature,
+            top_p: topP,
             ...(useArtifact && { artifact: "Fast" }),
             reasoning_effort: chatSettings.useThinking ? "medium" : null,
         };
@@ -42,7 +44,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
         toggleChatComponentOnce();
 
         // Add initial assistant message
-        addMessage({ role: 'assistant', content: '', artifacts: {} });
+        addMessage({ role: 'assistant', content: [], artifacts: {} });
 
 
         // Start LLM generation
@@ -62,6 +64,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
         setAbortController(controller);
 
         for await (const chunk of response) {
+            console.log("Chunk received:", chunk);
             if (chunk.content === 'DONE') {
                 console.log("Stream ended");
                 break;
@@ -123,6 +126,7 @@ async function sendMessageAndReturnResponse({
     // Get chat settings
     const chatSettings = useChatSettingStore.getState();
     const temperature = chatSettings.temperature;
+    const topP = chatSettings.topP;
     const systemPrompt = chatSettings.systemPrompt;
 
 
@@ -131,6 +135,7 @@ async function sendMessageAndReturnResponse({
         // Prepare extra body with settings
         const extra_body = {
             temperature,
+            top_p: topP,
             reasoning_effort: chatSettings.useThinking ? "medium" : null,
             ...extra_body_overwrite,
         };

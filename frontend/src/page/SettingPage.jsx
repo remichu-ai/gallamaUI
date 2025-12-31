@@ -15,6 +15,8 @@ const SettingsPage = () => {
         toggleUseArtifact,
         temperature,
         setTemperature,
+        topP,
+        setTopP,
         systemPrompt,
         setSystemPrompt,
         saveSettings,
@@ -146,14 +148,31 @@ const SettingsPage = () => {
                                 Temperature:
                                 <input
                                     type="range"
-                                    min="0"
-                                    max="1"
+                                    min="0.1"
+                                    max="2"
                                     step="0.1"
                                     value={temperature}
                                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
                                     className={styles.rangeInput}
                                 />
                                 {temperature}
+                            </label>
+                        </div>
+
+                        {/* Top-P Setting */}
+                        <div className={styles.settingGroup}>
+                            <label className={styles.blockLabel}>
+                                Top-P:
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.01"
+                                    value={topP}
+                                    onChange={(e) => setTopP(parseFloat(e.target.value))}
+                                    className={styles.rangeInput}
+                                />
+                                {topP}
                             </label>
                         </div>
                         {/* System Prompt Setting */}

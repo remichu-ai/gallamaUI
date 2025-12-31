@@ -26,7 +26,9 @@ const useChatStore = create(persist(
             abortController: null,
             visibleArtifactId: null,
             artifactIds: [],
-            isViewingLatestArtifact: true
+            isViewingLatestArtifact: true,
+            chunkQueue: [],
+            isProcessingChunks: false
         }),
 
         // parameter to stop streaming
@@ -247,47 +249,55 @@ const useChatStore = create(persist(
         },
 
         updateLastMessage: (update) => {
-            set((state) => {
-                const updatedMessages = state.messages.map((msg, index) => {
-                    if (index === state.messages.length - 1) {
-                        const updatedMessage = { ...msg };
-                        updatedMessage.content = updatedMessage.content || [];
-                        updatedMessage.artifacts = updatedMessage.artifacts || {};
+            const state = get();
 
-                        if (update.artifact_meta) {
-                            if (update.artifact_meta.tag_type === "artifact") {
-                                const { identifier } = update.artifact_meta;
+            // 1. Handle Reasoning (Synchronous Update)
+            if (update.reasoning) {
+                set((state) => {
+                    const messages = [...state.messages];
+                    const lastIndex = messages.length - 1;
+                    if (lastIndex >= 0) {
+                        const lastMsg = { ...messages[lastIndex] };
+                        lastMsg.reasoning = (lastMsg.reasoning || '') + update.reasoning;
+                        messages[lastIndex] = lastMsg;
+                        return { messages };
+                    }
+                    return {};
+                });
+            }
 
-                                if (!updatedMessage.artifacts[identifier]) {
-                                    get().queueChunkedContent(updatedMessage, 'newArtifact', {
-                                        identifier,
-                                        artifactMeta: update.artifact_meta,
-                                    });
-                                }
+            // 2. Handle Content & Artifacts (Queued Update)
+            if (update.content || update.artifact_meta) {
+                // Get the latest state again to ensure valid reference (though processNextChunk works independently)
+                const currentState = get();
+                const lastMessage = currentState.messages[currentState.messages.length - 1];
 
-                                get().queueChunkedContent(updatedMessage, 'artifactContent', {
-                                    identifier,
-                                    content: update.content,
-                                });
-                            } else if (update.artifact_meta.tag_type === "text") {
-                                get().queueChunkedContent(updatedMessage, 'content', update.content);
-                            }
-                        } else {
-                            if (update.reasoning) {
-                                updatedMessage.reasoning = (updatedMessage.reasoning || '') + update.reasoning;
-                            }
-                            if (update.content) {
-                                get().queueChunkedContent(updatedMessage, 'content', update.content);
-                            }
+                if (!lastMessage) return;
+
+                if (update.artifact_meta) {
+                    if (update.artifact_meta.tag_type === "artifact") {
+                        const { identifier } = update.artifact_meta;
+                        // Initialize artifacts object if missing (safety check)
+                        const artifacts = lastMessage.artifacts || {};
+
+                        if (!artifacts[identifier]) {
+                            get().queueChunkedContent(lastMessage, 'newArtifact', {
+                                identifier,
+                                artifactMeta: update.artifact_meta,
+                            });
                         }
 
-                        return updatedMessage;
+                        get().queueChunkedContent(lastMessage, 'artifactContent', {
+                            identifier,
+                            content: update.content,
+                        });
+                    } else if (update.artifact_meta.tag_type === "text") {
+                        get().queueChunkedContent(lastMessage, 'content', update.content);
                     }
-                    return msg;
-                });
-
-                return { messages: updatedMessages };
-            });
+                } else if (update.content) {
+                    get().queueChunkedContent(lastMessage, 'content', update.content);
+                }
+            }
         },
 
         getIntegratedMessages: () => {
@@ -465,18 +475,41 @@ const useChatStore = create(persist(
                         return { isProcessingChunks: false };
                     }
 
-                    const { target, propertyName, content } = state.chunkQueue[0];
+                    const { propertyName, content } = state.chunkQueue[0];
                     const updatedMessages = [...state.messages];
-                    const lastMessage = updatedMessages[updatedMessages.length - 1];
+
+                    if (updatedMessages.length === 0) {
+                        // Should not happen during streaming usually
+                        return {
+                            chunkQueue: [],
+                            isProcessingChunks: false
+                        };
+                    }
+
+                    const lastMessageIndex = updatedMessages.length - 1;
+                    const lastMessage = { ...updatedMessages[lastMessageIndex] };
+                    updatedMessages[lastMessageIndex] = lastMessage;
+
+                    // Ensure arrays and objects are cloned for immutability
+                    if (lastMessage.content) {
+                        lastMessage.content = [...lastMessage.content];
+                    }
+                    if (lastMessage.artifacts) {
+                        lastMessage.artifacts = { ...lastMessage.artifacts };
+                    }
+
+                    if (typeof lastMessage.content === 'string') {
+                        lastMessage.content = lastMessage.content ? [{ type: 'text', content: lastMessage.content }] : [];
+                    }
 
                     if (propertyName === 'newArtifact') {
-                        if (!target.artifacts[content.identifier]) {
-                            target.artifacts[content.identifier] = {
+                        if (!lastMessage.artifacts[content.identifier]) {
+                            lastMessage.artifacts[content.identifier] = {
                                 ...content.artifactMeta,
                                 content: '',
                             };
-                            if (!target.content.some(item => item.type === 'artifact' && item.identifier === content.identifier)) {
-                                target.content.push({ type: 'artifact', identifier: content.identifier });
+                            if (!lastMessage.content.some(item => item.type === 'artifact' && item.identifier === content.identifier)) {
+                                lastMessage.content.push({ type: 'artifact', identifier: content.identifier });
                             }
 
                             set(state => ({
@@ -485,14 +518,17 @@ const useChatStore = create(persist(
                             }));
                         }
                     } else if (propertyName === 'artifactContent') {
-                        if (target.artifacts[content.identifier]) {
-                            target.artifacts[content.identifier].content += content.content;
+                        if (lastMessage.artifacts[content.identifier]) {
+                            lastMessage.artifacts[content.identifier] = { ...lastMessage.artifacts[content.identifier] };
+                            lastMessage.artifacts[content.identifier].content += content.content;
                         }
                     } else if (propertyName === 'content') {
-                        if (target[propertyName].length > 0 && target[propertyName][target[propertyName].length - 1].type === 'text') {
-                            target[propertyName][target[propertyName].length - 1].content += content;
+                        if (lastMessage.content.length > 0 && lastMessage.content[lastMessage.content.length - 1].type === 'text') {
+                            const lastItem = { ...lastMessage.content[lastMessage.content.length - 1] };
+                            lastItem.content += content;
+                            lastMessage.content[lastMessage.content.length - 1] = lastItem;
                         } else {
-                            target[propertyName].push({ type: 'text', content });
+                            lastMessage.content.push({ type: 'text', content });
                         }
                     }
 
@@ -617,6 +653,32 @@ const useChatStore = create(persist(
         name: 'chat-storage', // Name for localStorage
         getStorage:
             () => localStorage, // Use localStorage to persist state
+        partialize: (state) => ({
+            messages: state.messages,
+            conversation_id: state.conversation_id,
+            conversation_title: state.conversation_title,
+            visibleArtifactId: state.visibleArtifactId,
+            artifactIds: state.artifactIds,
+            isViewingLatestArtifact: state.isViewingLatestArtifact,
+            enableChunking: state.enableChunking,
+            chunkSize: state.chunkSize,
+            chunkDelay: state.chunkDelay,
+        }),
+        version: 1,
+        migrate: (persistedState, version) => {
+            if (version === 0) {
+                // Clean up transient state from version 0
+                const {
+                    isProcessingChunks,
+                    chunkQueue,
+                    isStreaming,
+                    abortController,
+                    ...rest
+                } = persistedState;
+                return rest;
+            }
+            return persistedState;
+        },
     }
 ))
     ;
