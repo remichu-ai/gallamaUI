@@ -10,10 +10,7 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB
 const connectWithRetry = () => {
     console.log('MongoDB connection with retry');
-    mongoose.connect('mongodb://127.0.0.1:27017/gallama', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    mongoose.connect('mongodb://127.0.0.1:27017/gallama')
         .then(() => console.log('Connected to MongoDB'))
         .catch((err) => {
             console.error('Failed to connect to MongoDB', err);

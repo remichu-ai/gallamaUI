@@ -1,9 +1,9 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 const useInputStore = create((set, get) => ({
     inputText: '',
     backupInputText: '',
-    setInputText: (text) => set({inputText: text}),
+    setInputText: (text) => set({ inputText: text }),
     softClear: () => set((state) => ({
         backupInputText: state.inputText,
         inputText: ''
