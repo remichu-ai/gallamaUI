@@ -1,8 +1,11 @@
 .markdownContainer {
     max-width: 100%;
-    word-wrap: break-word; /* Breaks long words */
-    overflow-wrap: break-word; /* Ensures that long words break properly */
-    overflow: auto; /* Enables scrolling when content overflows */
+    word-wrap: break-word;
+    /* Breaks long words */
+    overflow-wrap: break-word;
+    /* Ensures that long words break properly */
+    overflow: auto;
+    /* Enables scrolling when content overflows */
     /*white-space: pre-wrap; !* Preserves whitespace and line breaks *!*/
 }
 
@@ -11,16 +14,22 @@
 }
 
 .markdownContainer code {
-    font-family: 'Poppins', sans-serif;
-    overflow-wrap: break-word; /* Ensures that long words break properly */
-    word-break: break-all; /* Breaks long words and lines */
-    overflow: auto; /* Enables scrolling when content overflows */
+    font-family: 'Courier New', Courier, monospace;
+    overflow-wrap: break-word;
+    /* Ensures that long words break properly */
+    word-break: break-word;
+    /* Use break-word instead of break-all to avoid breaking in the middle of a word unless necessary */
+    overflow: auto;
+    /* Enables scrolling when content overflows */
 }
 
 .markdownContainer pre {
-    padding: 0; /* Padding inside the code block */
-    overflow-x: auto; /* Horizontal scrolling */
-    white-space: pre-wrap; /* Wraps text while preserving whitespace */
+    padding: 0;
+    /* Padding inside the code block */
+    overflow-x: auto;
+    /* Horizontal scrolling */
+    white-space: pre-wrap;
+    /* Wraps text while preserving whitespace */
 }
 
 .markdownContainer table {
@@ -30,12 +39,12 @@
 
 .markdownContainer th,
 .markdownContainer td {
-    border: 2px solid black  ;
+    border: 2px solid black;
     padding: 6px;
 }
 
 .markdownContainer th {
-    background-color: hsl(75,20.1%,56.1%);
+    background-color: hsl(75, 20.1%, 56.1%);
     text-align: left;
 }
 
@@ -43,3 +52,33 @@
     background-color: #fef3e0;
 }
 
+.codeBlockWrapper {
+    position: relative;
+}
+
+.copyButton {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: #a9a9b3;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    z-index: 10;
+}
+
+.codeBlockWrapper:hover .copyButton {
+    opacity: 1;
+}
+
+.copyButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}

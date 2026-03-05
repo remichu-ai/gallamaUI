@@ -2,29 +2,39 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    margin-bottom: 1.5%; /* distance between chat message */
+    margin-bottom: 1.5%;
+    /* distance between chat message */
     position: relative;
 }
 
 .chatMessageWrapper {
     position: relative;
+    flex: 1;
 }
 
 .copyButton {
-    position: absolute; /* Position the button absolutely */
-    bottom: 10px; /* Adjust as needed */
-    right: 10px; /* Adjust as needed */
-    opacity: 0; /* Start invisible */
-    transition: opacity 0.3s ease; /* Smooth transition for hover */
+    position: absolute;
+    /* Position the button absolutely */
+    bottom: 10px;
+    /* Adjust as needed */
+    right: 10px;
+    /* Adjust as needed */
+    opacity: 0;
+    /* Start invisible */
+    transition: opacity 0.3s ease;
+    /* Smooth transition for hover */
 }
 
 .chatMessageWrapper:hover .copyButton {
-    opacity: 1; /* Show the button on hover */
+    opacity: 1;
+    /* Show the button on hover */
 }
 
 .copyButtonWrapper {
-    position: relative; /* or absolute based on your layout */
-    margin-top: 5px; /* Add spacing as needed */
+    position: relative;
+    /* or absolute based on your layout */
+    margin-top: 5px;
+    /* Add spacing as needed */
 }
 
 .roleIcon {
@@ -40,7 +50,8 @@
 }
 
 .roleIconUser {
-    width: 40px; /* Slightly larger for user icon */
+    width: 40px;
+    /* Slightly larger for user icon */
     height: 40px;
 }
 
@@ -57,21 +68,21 @@
 
 .chatMessageContent {
     display: flex;
-    flex-wrap: wrap;
     flex-grow: 1;
     align-items: flex-start;
     align-self: flex-start;
     color: var(--text-color);
     max-width: var(--r-max-chat-width);
     font-size: 1em;
-    width: 100%;
-    min-width: 100px;
+    width: fit-content;
+    /* min-width: 100px; removed to prevent forced wrapping logic */
     padding: 10px 10px 10px 12px;
     margin-bottom: 5px;
     box-sizing: border-box;
     flex-direction: column;
     overflow-x: hidden;
-    white-space: normal; /* Changed from nowrap to normal */
+    white-space: normal;
+    /* Changed from nowrap to normal */
     border-radius: var(--border-radius);
     border: var(--chat-message-border-size) solid var(--chat-message-border-color);
     box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
@@ -89,7 +100,7 @@
     align-items: flex-start;
     margin-bottom: 5px;
     margin-left: 3px;
-    margin-right: 1%;
+    margin-right: 5px;
     overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;
@@ -108,22 +119,26 @@ p code {
     background-color: var(--code-bg-color);
     padding: 2px 6px;
     border-radius: 8px;
-    color: rgb(0,0,0,0.9);
+    color: rgb(0, 0, 0, 0.9);
     font-size: 0.7em;
     font-family: "Space Mono", monospace !important;
-    display: inline-block; /* Ensures the code element is treated as an inline-block for centering */
-    vertical-align: middle; /* Adjust vertical alignment */
+    display: inline-block;
+    /* Ensures the code element is treated as an inline-block for centering */
+    vertical-align: middle;
+    /* Adjust vertical alignment */
 }
 
-li code{
+li code {
     background-color: var(--code-bg-color);
     padding: 2px 6px;
     border-radius: 8px;
-    color: rgb(0,0,0,0.9);
+    color: rgb(0, 0, 0, 0.9);
     font-size: 0.7em;
     font-family: "Space Mono", monospace !important;
-    display: inline-block; /* Ensures the code element is treated as an inline-block for centering */
-    vertical-align: middle; /* Adjust vertical alignment */
+    display: inline-block;
+    /* Ensures the code element is treated as an inline-block for centering */
+    vertical-align: middle;
+    /* Adjust vertical alignment */
 }
 
 .preserveFormat {
@@ -168,8 +183,10 @@ li code{
 }
 
 .modalImage {
-    max-width: 80vw;  /* 80% of viewport width */
-    max-height: 80vh; /* 80% of viewport height */
+    max-width: 80vw;
+    /* 80% of viewport width */
+    max-height: 80vh;
+    /* 80% of viewport height */
     object-fit: contain;
     border-radius: 8px;
 }
