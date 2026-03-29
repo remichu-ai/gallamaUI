@@ -93,6 +93,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Delete all conversations
+router.delete('/all', async (req, res) => {
+    try {
+        const result = await Conversation.deleteMany({});
+        res.status(200).json({
+            message: 'All conversations deleted successfully',
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Delete conversation by ID
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;

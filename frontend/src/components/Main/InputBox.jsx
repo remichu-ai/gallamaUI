@@ -49,7 +49,6 @@ const InputBox = () => {
         addMessage,
         updateLastMessage,
         getIntegratedMessages,
-        getIntegratedMessagesWithText,
         isStreaming,
         stopGeneration
     } = useChatStore();
@@ -88,9 +87,7 @@ const InputBox = () => {
         }
         await saveCurrentConversation();
 
-        let integratedMessages = chatSettings.useArtifact
-            ? getIntegratedMessagesWithText()
-            : getIntegratedMessages();
+        const integratedMessages = getIntegratedMessages();
 
         // Capture current state for restoration on error
         const previousContent = [...content];
@@ -147,7 +144,7 @@ const InputBox = () => {
                 }
             }];
 
-            let response = await sendMessageAndReturnResponse({
+            const response = await sendMessageAndReturnResponse({
                 msgs: integratedMessagesForTitle,
                 stream: false,
                 tools: tools,
@@ -155,9 +152,39 @@ const InputBox = () => {
                 extra_body_overwrite: { "thinking_template": "" }
             });
 
-            let parsed_argument = JSON.parse(response.tool_calls[0].function.arguments)["new_title"];
-            parsed_argument = parsed_argument.split(" ").slice(0, 5).join(" ");
-            useChatStore.getState().setConversationTitle(parsed_argument);
+            const rawArguments = response?.tool_calls?.[0]?.function?.arguments;
+            let parsedArgument;
+
+            if (rawArguments) {
+                try {
+                    parsedArgument = JSON.parse(rawArguments)?.new_title;
+                } catch (error) {
+                    console.error("Failed to parse generated title arguments:", rawArguments, error);
+                    return;
+                }
+            } else {
+                const fallbackTitle = Array.isArray(response?.content)
+                    ? response.content
+                        .filter((item) => item?.type === 'text')
+                        .map((item) => item.content ?? '')
+                        .join(' ')
+                    : response?.content;
+
+                if (typeof fallbackTitle === 'string' && fallbackTitle.trim()) {
+                    parsedArgument = fallbackTitle.trim();
+                } else {
+                    console.warn("Title generation returned neither tool call arguments nor plain text title:", response);
+                    return;
+                }
+            }
+
+            if (!parsedArgument || typeof parsedArgument !== 'string') {
+                console.warn("Title generation returned an invalid title:", response);
+                return;
+            }
+
+            parsedArgument = parsedArgument.split(" ").slice(0, 5).join(" ");
+            useChatStore.getState().setConversationTitle(parsedArgument);
             await saveCurrentConversation();
         }
     };

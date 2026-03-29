@@ -1,5 +1,9 @@
 import {create} from 'zustand'
 import {persist} from 'zustand/middleware'
+import {
+    API_ENDPOINT_OPTIONS,
+    DEFAULT_API_ENDPOINT_TYPE
+} from '../services/api/endpointTypes.js';
 
 const useApiKeyStore = create(
     persist(
@@ -28,6 +32,8 @@ const useApiKeyStore = create(
             return {
                 apiKeys: initialApiKeys,
                 selectedService: "gallama", // default service
+                apiEndpointOptions: API_ENDPOINT_OPTIONS,
+                selectedApiEndpointType: DEFAULT_API_ENDPOINT_TYPE,
                 services,
                 availableModels: {},
                 selectedModels: {}, // Store selected model for each service
@@ -38,6 +44,19 @@ const useApiKeyStore = create(
                 clearApiKey: (service) => set(state => ({
                     apiKeys: {...state.apiKeys, [service]: 'NA'}
                 })),
+
+                selectApiEndpointType: (apiEndpointType) => set((state) => {
+                    const isValidApiEndpointType = state.apiEndpointOptions.some(
+                        (option) => option.value === apiEndpointType
+                    );
+
+                    if (!isValidApiEndpointType) {
+                        console.warn(`API endpoint type ${apiEndpointType} not found. Keeping current selection.`);
+                        return {};
+                    }
+
+                    return { selectedApiEndpointType: apiEndpointType };
+                }),
 
                 selectService: (serviceName) =>
                     set((state) => {
@@ -51,6 +70,11 @@ const useApiKeyStore = create(
                 getSelectedServiceEndpoint: () => {
                     const state = get()
                     return state.services[state.selectedService]?.endpoint
+                },
+
+                getSelectedApiEndpointType: () => {
+                    const state = get();
+                    return state.selectedApiEndpointType;
                 },
 
                 setAvailableModels: (service, models) => set(state => {

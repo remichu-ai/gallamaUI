@@ -1,18 +1,17 @@
 .container {
-    margin: 0 auto;
-    padding-left: 40px;
-    padding-right: 40px;
+    margin: 0;
+    padding: 24px 32px 32px;
     width: 100%;
-    height: 100vh;
-    overflow-x: auto;
+    max-width: 1680px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
     scrollbar-width: thin;
     scrollbar-color: #888 #f1f1f1;
-    box-sizing: border-box;
-    padding-top: 20px;
-    padding-bottom: 20px;   /* Some space to the bottom of the web page*/
 }
 
 .container::-webkit-scrollbar {
@@ -32,145 +31,420 @@
     background: #555;
 }
 
-.loadedModelContainer {
-    width: 100%;
-    /*flex: 2;*/
-}
-
-.loadModelFormContainer {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    width: 100%;
-    border-radius: var(--border-radius);
-    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
-    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-    background-color: var(--r-message-background);
-    padding: 10px;
-}
-
-
 .settingContainer {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+    gap: 24px;
     width: 100%;
-    justify-content: space-between;
+    align-items: start;
+}
+
+.settingColumn1,
+.loadModelFormContainer,
+.emptySelectionCard {
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 80%, transparent);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 8%, transparent) 0, transparent 32%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--form-control-bg) 95%, var(--input-box-background-color) 5%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 92%, black 8%) 100%
+        );
+    box-shadow: 0 10px 24px -26px rgba(0, 0, 0, 0.22);
 }
 
 .settingColumn1 {
-    padding: 10px;
-    flex: 1;
-    flex-direction: column;
-    margin-right: 40px;
-    width: 100%;
     display: flex;
-    box-sizing: border-box;
-    border-radius: var(--border-radius);
-    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
-    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
-    background-color: var(--r-message-background);
-    padding-right: 20px; /* Add some padding to separate content from the border */
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+    min-height: 0;
+    max-height: calc(100vh - 110px);
+    padding: 18px;
+    overflow: hidden;
 }
 
 .settingColumn2 {
-    flex: 1;
-    box-sizing: border-box;
-    flex-direction: column;
     display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
 }
 
-.divider {
-    height: 100px;
+.panelHeader,
+.loadModelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
 }
 
 .header {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 16px;
+    margin: 0;
+    font-size: 1.3rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--text-color);
 }
 
 .subHeader {
-    font-size: 1rem;
-    font-weight: normal;
-    margin-bottom: 8px;
-    margin-top: 1rem;
+    margin: 8px 0 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--text-color) 78%, transparent);
+    word-break: break-word;
 }
 
-.settingGroup {
-    margin-bottom: 16px;
-    max-width: 100%;
+.panelHint,
+.formIntro {
+    margin: 10px 0 0;
+    max-width: 58ch;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--text-color) 82%, transparent);
 }
 
-.checkboxLabel {
-    display: flex;
+.countPill,
+.backendPill,
+.selectedPill {
+    display: inline-flex;
     align-items: center;
+    min-height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border: 1px solid transparent;
 }
 
-.checkbox {
-    margin-left: 8px;
-    background-color: white;
-    cursor: pointer;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--r-font-color); /* Add a visible border when unchecked */
-    border-radius: 4px; /* Slightly rounded corners */
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+.countPill {
+    color: color-mix(in srgb, var(--text-color) 82%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 88%, var(--r-accent2) 12%);
+    border-color: color-mix(in srgb, var(--form-control-border) 22%, transparent);
 }
 
-.checkbox:hover {
-    border-color: var(--r-accent); /* Change the border color on hover to show interactivity */
+.backendPill {
+    color: color-mix(in srgb, var(--text-color) 84%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 86%, var(--r-accent2) 14%);
+    border-color: color-mix(in srgb, var(--form-control-border) 18%, transparent);
 }
 
-/*.checkbox:checked {*/
-/*    background-color: #007bff; !* Indicate it is checked *!*/
-/*    border-color: #007bff;*/
-/*}*/
+.selectedPill {
+    color: var(--text-color);
+    background: color-mix(in srgb, var(--r-accent2) 22%, var(--form-control-bg) 78%);
+    border-color: color-mix(in srgb, var(--r-accent2) 30%, transparent);
+}
 
-.blockLabel {
+.accordionScroller {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-right: -4px;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--r-accent2) 46%, transparent) transparent;
+}
+
+.accordionScroller::-webkit-scrollbar {
+    width: 6px;
+}
+
+.accordionScroller::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--r-accent2) 40%, transparent);
+    border-radius: 999px;
+}
+
+.modelAccordion {
     display: flex;
     flex-direction: column;
-    font-weight: 600;
+    gap: 10px;
+}
+
+.modelItem {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 16%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 80%, transparent);
+}
+
+.modelTrigger {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px !important;
+    background: transparent !important;
+    border: 0;
+}
+
+.modelTrigger:hover {
+    background: color-mix(in srgb, var(--r-accent2) 8%, transparent) !important;
+}
+
+.modelButtonContent {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.modelTopLine {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.modelName {
+    font-size: 1rem;
+    line-height: 1.28;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.modelPath {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--text-color) 74%, transparent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accordionIcon {
+    margin-top: 2px;
+    color: color-mix(in srgb, var(--text-color) 72%, transparent);
+}
+
+.modelPanel {
+    padding: 0 16px 16px !important;
+}
+
+.modelFieldGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.modelField {
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--form-control-bg) 84%, transparent);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 12%, transparent);
+}
+
+.fieldLabel {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
+}
+
+.fieldValue {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    overflow-wrap: anywhere;
+}
+
+.objectValue {
+    display: grid;
+    gap: 4px;
+}
+
+.objectValueRow {
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.objectValueRow strong {
+    margin-right: 4px;
+}
+
+.loadedModelContainer {
+    width: 100%;
+}
+
+.loadModelFormContainer,
+.emptySelectionCard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    padding: 18px;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.formControl {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 16%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 80%, transparent);
+}
+
+.formControlWide {
+    grid-column: 1 / -1;
+}
+
+.formLabel {
+    margin: 0 0 8px !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    color: color-mix(in srgb, var(--text-color) 82%, transparent) !important;
 }
 
 .textInput,
 .selectInput {
-    /*width: 100%;*/
-    /*min-width: 450px;*/
+    width: 100%;
+    min-width: 0;
     box-sizing: border-box;
-    padding: 8px;
-    margin-top: 8px;
-    font-size: 1rem;
-    border: 1px solid var(--r-font-color);
-    border-radius: 4px;
+    padding: 9px 12px !important;
+    font-size: 0.94rem !important;
+    color: var(--form-control-text) !important;
+    background: color-mix(in srgb, var(--form-control-bg) 96%, white 4%) !important;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 28%, transparent) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
 }
 
-.saveButton,
-.loadButton {
-    background-color: var(--r-accent);
-    color: white;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid var(--r-border-color);
-    cursor: pointer;
-    transition: 0.1s;
+.textInput::placeholder {
+    color: color-mix(in srgb, var(--form-control-text) 54%, transparent);
+}
+
+.textInput:focus,
+.selectInput:focus {
+    border-color: color-mix(in srgb, var(--r-accent2) 48%, transparent) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--r-accent2) 20%, transparent) !important;
+}
+
+.checkboxRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.checkboxInput {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex: 0 0 auto;
+    accent-color: var(--r-accent2);
+}
+
+.checkboxCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--text-color) 78%, transparent);
+}
+
+.checkboxCopy strong {
+    font-size: 0.92rem;
+    color: var(--text-color);
 }
 
 .saveButton {
-    margin-bottom: 20px;
+    align-self: flex-start;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 22%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--form-control-bg) 84%, var(--r-accent2) 16%);
+    color: var(--text-color);
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.loadButton {
-    margin-top: 10px;
+.saveButton:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--form-control-bg) 78%, var(--r-accent2) 22%);
+    border-color: color-mix(in srgb, var(--r-accent2) 26%, transparent);
 }
 
-.saveButton:hover,
-.loadButton:hover {
-    background-color: var(--r-accent2);
-    border: 1px solid var(--r-border-color);
+.saveButton:active {
+    transform: translateY(0);
+}
+
+.emptySelectionCard {
+    min-height: 220px;
+    justify-content: center;
+}
+
+.emptyState {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px dashed color-mix(in srgb, var(--r-accent2) 28%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 76%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--text-color) 82%, transparent);
 }
 
 .errorText {
     color: darkred;
     font-size: 0.875rem;
+}
+
+@media (max-width: 1180px) {
+    .settingContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .settingColumn1 {
+        max-height: none;
+    }
+
+    .accordionScroller {
+        max-height: 520px;
+    }
+}
+
+@media (max-width: 820px) {
+    .container {
+        padding: 18px 18px 24px;
+    }
+
+    .settingContainer {
+        gap: 18px;
+    }
+
+    .panelHeader,
+    .loadModelHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .modelFieldGrid,
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
 }

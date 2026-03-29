@@ -2,7 +2,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: var(--r-max-chat-input-box-width);
+    width: 100%;
+    max-width: none;
+    min-width: 0;
     min-height: var(--r-min-chat-input-box-height);
 }
 
@@ -37,9 +39,9 @@
 .textareaContainer textarea {
     color: var(--text-color);
     width: 100%;
-    max-width: var(--r-max-chat-input-box-width);
+    max-width: 100%;
     margin: 0;
-    padding: 12px 8px 8px 14px;
+    padding: 14px 8px 10px 14px;
     box-sizing: border-box;
     resize: none;
     overflow: hidden;
@@ -107,7 +109,7 @@
 .footer {
     display: flex;
     height: fit-content;
-    padding: 7px 8px 6px 16px;
+    padding: 7px 8px 6px 22px;
     position: relative; /* Added to support absolute positioning of dropdown */
 }
 

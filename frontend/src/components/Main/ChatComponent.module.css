@@ -1,36 +1,65 @@
 .chatComponentContainer {
     display: flex;
     flex: 1;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    margin: 0 0 10px;
+    padding-inline: clamp(18px, 4vw, 40px);
+    box-sizing: border-box;
+    height: calc(100vh - var(--top-bar-height) - var(--additional-vh-spacing));
+    gap: clamp(10px, 1.6vw, 18px);
+}
+
+.chatRail {
+    display: flex;
+    flex: 1;
+    min-width: 0;
     flex-direction: column;
     align-items: center;
-    margin: 0 5px 10px;
-    height: calc(100vh - var(--top-bar-height) - var(--additional-vh-spacing));
-    max-width: var(--r-max-chat-input-box-width);
 }
 
 .chatComponentMessageList {
     display: flex;
     height: 100%;
-    min-width: 60%;
-    max-width: 85%;
+    width: min(100%, var(--r-chat-rail-max-width));
+    max-width: var(--r-chat-rail-max-width);
+    min-width: 0;
     flex-grow: 1; /* Allow the message list to grow and take up available space */
-
     overflow-y: auto; /* Enable scrolling for the message list if content overflows */
     flex-direction: column;
-    padding: 16px; /* Optional: add padding to the messages */
+    padding: 18px 30px 16px 12px;
     min-height: 0; /* Allows flex item to shrink below content size */
+    box-sizing: border-box;
 }
 
 .chatComponentContainerInputBox {
     display: flex;
     height: min-content; /* to ensure when the bar is empty, it only occupy 1 row */
-    width: 90%;
+    width: min(100%, var(--r-chat-input-rail-max-width));
+    max-width: var(--r-chat-input-rail-max-width);
+    min-width: 0;
     background-color: var(--input-box-background-color);
-    margin-left: 29px;
+    margin: 0 auto;
     padding-right: 5px;
     border-radius: var(--border-radius);
-    border: var(--chat-message-border-size) solid var(--chat-message-border-color);
-    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    border: var(--chat-message-border-size) solid var(--input-box-border-color);
+    box-shadow: var(--input-box-shadow);
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
+@media (max-width: 1180px) {
+    .chatComponentContainer {
+        padding-right: 92px;
+    }
+}
+
+@media (max-width: 720px) {
+    .chatComponentContainer {
+        padding-inline: 14px;
+        padding-right: 14px;
+    }
+}

@@ -1,38 +1,49 @@
 .sidebarContainer {
+    --sidebar-collapsed-width: 68px;
+    --sidebar-expanded-width: 320px;
+    --sidebar-icon-size: 22px;
+    --sidebar-item-horizontal-padding: 10px;
+    --sidebar-text-gap: 8px;
     display: flex;
     flex-direction: column;
     height: 100%;
+    box-sizing: border-box;
     background-color: var(--side-bar-bg-color);
-    padding-left: 6px;
-    width: var(--side-bar-width);
-    transition: width 0.3s ease, background-color 0.3s ease;
+    padding: 10px 10px 12px;
+    width: var(--sidebar-collapsed-width);
+    transition: width 0.28s ease, background-color 0.28s ease, box-shadow 0.28s ease;
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     z-index: 10;
-    --divider-color: rgba(0, 0, 0, 0.05);
+    --divider-color: color-mix(in srgb, var(--ui-icon-color) 18%, transparent);
+    overflow: hidden;
 }
 
-.sidebarContainer:hover {
-    width: calc(var(--side-bar-width) + 300px);
-    max-width: calc(var(--side-bar-width) + 300px);
+.expanded {
+    width: var(--sidebar-expanded-width);
     background-color: var(--side-bar-hover-color);
+    box-shadow: 12px 0 32px -26px rgba(0, 0, 0, 0.45);
 }
-
 
 .sidebarTop {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-top: 5px;
+    gap: 4px;
+    padding-top: 2px;
     border-bottom: 1px solid var(--divider-color);
-    padding-bottom: 5px;
-    margin-bottom: 10px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.collapsed .sidebarTop {
+    align-items: center;
 }
 
 .sidebarMiddle {
-    flex-grow: 1; /* This will make it expand to fill available space */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -47,80 +58,200 @@
     display: none; /* Hide scrollbar */
 }
 
-.sidebarBottom {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    padding-top: 5px;
-    margin-top: 10px;
-    border-top: 1px solid var(--divider-color);
-}
-
 .conversationList {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
+    padding-top: 4px;
 }
 
+.sectionLabel {
+    opacity: 0;
+    visibility: hidden;
+    padding: 0 12px 6px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ui-icon-color) 52%, var(--side-bar-bg-color) 48%);
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
 
+.expanded .sectionLabel {
+    opacity: 1;
+    visibility: visible;
+}
 
-.clearMessages, .settings, .modelManagement {
+.sidebarToggle,
+.clearMessages,
+.settings,
+.modelManagement {
     display: flex;
     align-items: center;
     white-space: nowrap;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+    min-height: 42px;
+    border-radius: 14px;
+    box-sizing: border-box;
+}
+
+.sidebarToggle {
+    width: 42px;
+    min-height: 42px;
+    justify-content: center;
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--ui-icon-color) 18%, transparent);
+    color: var(--ui-icon-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebarToggle:hover {
+    background: color-mix(in srgb, var(--ui-icon-color) 10%, transparent);
+    border-color: color-mix(in srgb, var(--ui-icon-color) 28%, transparent);
+}
+
+.expanded .sidebarToggle {
+    align-self: flex-end;
+}
+
+.clearMessages,
+.settings,
+.modelManagement {
+    cursor: pointer;
+    padding: 0 var(--sidebar-item-horizontal-padding);
+}
+
+.clearMessages:hover,
+.settings:hover,
+.modelManagement:hover {
+    background: color-mix(in srgb, var(--ui-icon-color) 10%, transparent);
+}
+
+.collapsed .clearMessages,
+.collapsed .settings,
+.collapsed .modelManagement {
+    align-self: flex-start;
+    width: 42px;
+    justify-content: center;
+    padding: 0;
+}
+
+.iconSlot {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
 }
 
 .menuIcon {
-    padding: 4px;
-    width: calc(var(--side-bar-width) - 5px);
-    height: calc(var(--side-bar-width) - 5px);
+    --icon-shift-x: 0px;
+    width: 20px;
+    height: 20px;
     color: var(--ui-icon-color);
     stroke: var(--ui-icon-color);
     box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    transform: translateX(var(--icon-shift-x));
     transition: transform 0.3s ease-in-out;
 }
 
 .menuIcon:hover {
-    transform: scale(1.03);
+    transform: translateX(var(--icon-shift-x)) scale(1.03);
+}
+
+.collapsed .toggleIcon {
+    --icon-shift-x: -1px;
+}
+
+.collapsed .newChatIcon {
+    --icon-shift-x: 8px;
+}
+
+.collapsed .modelManagementIcon {
+    --icon-shift-x: 7px;
+}
+
+.collapsed .settingsIcon {
+    --icon-shift-x: 6px;
 }
 
 .menuText {
     opacity: 0;
     visibility: hidden;
-    margin-left: 0px;
-    font-size: 14px;
+    margin-left: var(--sidebar-text-gap);
+    font-size: 16px;
     color: var(--ui-icon-color);
     white-space: nowrap;
     overflow: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-
-
-.sidebarContainer:hover .menuText {
+.expanded .menuText {
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.3s ease, visibility 0s 0.05s;
+}
+
+.conversationText {
+    opacity: 0;
+    visibility: hidden;
+    font-size: 16px;
+    color: var(--ui-icon-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.expanded .conversationText {
+    opacity: 1;
+    visibility: visible;
 }
 
 .conversationItem {
     display: flex;
-    justify-content: space-between; /* This will space the children evenly */
+    justify-content: space-between;
     align-items: center;
+    position: relative;
+    gap: 8px;
     padding: 8px 12px;
-    border-radius: 4px;
-    margin-bottom: 8px;
+    border-radius: 12px;
+    margin-bottom: 4px;
     background-color: var(--conversation-item-bg-color, #f0f0f0);
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
-    width: 90%;
+    width: 100%;
+    box-sizing: border-box;
 }
 
+.collapsed .conversationItem {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+}
 
 .conversationItem:hover {
+    background-color: var(--conversation-item-hover-bg-color, #e0e0e0);
+    color: var(--conversation-item-hover-color, #333);
+}
+
+.conversationItemActive {
+    background-color: var(--conversation-item-hover-bg-color, #e0e0e0);
+    color: var(--conversation-item-hover-color, #333);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ui-icon-color) 12%, transparent);
+}
+
+.conversationItemActive:hover {
     background-color: var(--conversation-item-hover-bg-color, #e0e0e0);
     color: var(--conversation-item-hover-color, #333);
 }
@@ -142,6 +273,12 @@
     padding: 8px;
 }
 
+.conversationItemActive .deleteButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Style for the delete icon (three dots) */
 .deleteButton {
     width: 24px;
@@ -156,41 +293,63 @@
 .deleteButton::before {
     content: '•••';
     font-size: 16px;
-    color: #333;
+    color: var(--ui-icon-color);
     display: block;
     text-align: center;
 }
 
 /* Mini box style */
 .deleteBox {
-    /*display: none;*/
     position: absolute;
-    top: 100%; /* Position it directly below the delete button */
-    left: 0; /* Align it to the left of the delete button */
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    top: calc(100% - 2px);
+    right: 8px;
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color, #fff) 82%, white 18%) 0%,
+            color-mix(in srgb, var(--form-control-border) 42%, var(--r-background-color, #fff) 58%) 100%
+        );
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, #a14d43 22%);
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.28);
     padding: 8px;
     z-index: 100;
+    min-width: 112px;
 }
 
-/* Position the delete box based on button's width */
 .deleteBox button {
-    background-color: hsl(0, 65%, 60%);
-    color: #fff;
+    width: 100%;
+    display: block;
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color, #fff) 82%, white 18%) 0%,
+            color-mix(in srgb, var(--form-control-border) 42%, var(--r-background-color, #fff) 58%) 100%
+        );
+    color: color-mix(in srgb, #8b332b 72%, var(--r-font-color) 28%);
+    font-weight: 700;
     border: none;
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 4px;
+    margin-top: 0;
+    box-shadow: none;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .deleteBox button:hover {
-    background-color: hsl(0, 100%, 71%);
+    background:
+        linear-gradient(
+            180deg,
+            #f8eddc 0%,
+            #edd2a6 100%
+        );
+    color: color-mix(in srgb, #6e241d 78%, var(--r-font-color) 22%);
+    box-shadow: 0 0 0 1px rgba(150, 118, 64, 0.14);
+    transform: translateY(-1px);
 }
 
 /* Show the mini box on clicking the delete button */
-.conversationItem.active .deleteBox {
+.conversationItemActive .deleteBox {
     display: block;
 }

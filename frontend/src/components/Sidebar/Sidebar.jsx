@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { assets } from '../../assets/assets';
+import React, { useState, useEffect } from 'react';
+import { DatabaseZap, PanelLeftClose, PanelLeftOpen, Settings2, SquarePen } from 'lucide-react';
 import useUIStore from "../../store/uiStore.js";
 import useChatStore from "../../store/chatStore.js";
 import useInputStore from '../../store/inputStore.js';
@@ -17,14 +17,18 @@ const Sidebar = () => {
         setConversationTitle,
         sidebarRefreshTrigger
     } = useChatStore();
-    const { showModelManagementPage ,setShowSettingPage, setShowModelManagementPage } = useUIStore();
+    const {
+        showModelManagementPage,
+        setShowSettingPage,
+        setShowModelManagementPage,
+        sidebarExtended,
+        setSidebarExtended,
+    } = useUIStore();
     const { inputText } = useInputStore();
 
     // Ensure the saved conversations state is initialized correctly
     const [savedConversations, setSavedConversations] = useState([]);
     const [activeDeleteId, setActiveDeleteId] = useState(null);
-    const deleteButtonRefs = useRef({});
-
     const fetchConversations = async () => {
         try {
             const response = await axios.get('http://localhost:3000/api/conversations');
@@ -91,24 +95,56 @@ const Sidebar = () => {
     }, [sidebarRefreshTrigger]);
 
     return (
-        <div className={styles.sidebarContainer}>
+        <div className={`${styles.sidebarContainer} ${sidebarExtended ? styles.expanded : styles.collapsed}`}>
             <div className={styles.sidebarTop}>
+                <button
+                    type="button"
+                    className={styles.sidebarToggle}
+                    onClick={setSidebarExtended}
+                    aria-label={sidebarExtended ? 'Collapse sidebar' : 'Expand sidebar'}
+                >
+                    <span className={styles.iconSlot}>
+                        {sidebarExtended ? (
+                            <PanelLeftClose className={`${styles.menuIcon} ${styles.toggleIcon}`} />
+                        ) : (
+                            <PanelLeftOpen className={`${styles.menuIcon} ${styles.toggleIcon}`} />
+                        )}
+                    </span>
+                </button>
+
                 <div className={styles.clearMessages} onClick={clearMessages}>
-                    <assets.NewIcon className={styles.menuIcon} />
+                    <span className={styles.iconSlot}>
+                        <SquarePen className={`${styles.menuIcon} ${styles.newChatIcon}`} />
+                    </span>
                     <span className={styles.menuText}>New Chat</span>
+                </div>
+
+                <div className={styles.modelManagement} onClick={setShowModelManagementPage}>
+                    <span className={styles.iconSlot}>
+                        <DatabaseZap className={`${styles.menuIcon} ${styles.modelManagementIcon}`} />
+                    </span>
+                    <span className={styles.menuText}>Model Management</span>
+                </div>
+
+                <div className={styles.settings} onClick={setShowSettingPage}>
+                    <span className={styles.iconSlot}>
+                        <Settings2 className={`${styles.menuIcon} ${styles.settingsIcon}`} />
+                    </span>
+                    <span className={styles.menuText}>Settings</span>
                 </div>
             </div>
 
             <div className={styles.sidebarMiddle}>
+                <div className={styles.sectionLabel}>Recent</div>
                 <div className={styles.conversationList}>
                     {savedConversations.slice().reverse().map((conversation) => (
                         <div
                             key={conversation._id}
-                            className={`${styles.conversationItem} ${conversation._id === conversation_id ? styles.active : ''}`}
+                            className={`${styles.conversationItem} ${conversation._id === conversation_id ? styles.conversationItemActive : ''}`}
                             onMouseLeave={() => setActiveDeleteId(null)}
                         >
                             <span
-                                className={styles.menuText}
+                                className={styles.conversationText}
                                 onClick={() => handleLoadConversation(conversation._id)}
                             >
                                 {conversation.title || "New Chat"} {/* Fallback to 'New Chat' if no title */}
@@ -116,32 +152,18 @@ const Sidebar = () => {
                             <button
                                 className={styles.deleteButton}
                                 onClick={(e) => handleClickDeleteButton(e, conversation._id)}
-                                ref={(el) => deleteButtonRefs.current[conversation._id] = el}
+                                aria-label={`Open actions for ${conversation.title || "New Chat"}`}
                             />
                             {activeDeleteId === conversation._id && (
                                 <div
                                     className={styles.deleteBox}
-                                    style={{
-                                        top: deleteButtonRefs.current[conversation._id]?.getBoundingClientRect().bottom + window.scrollY,
-                                        left: deleteButtonRefs.current[conversation._id]?.getBoundingClientRect().left + window.scrollX
-                                    }}
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     <button onClick={() => handleDeleteConversation(conversation._id)}>Delete</button>
                                 </div>
                             )}
                         </div>
                     ))}
-                </div>
-            </div>
-
-            <div className={styles.sidebarBottom}>
-                <div className={styles.modelManagement} onClick={setShowModelManagementPage}>
-                    <img src={assets.model_management_icon} alt="Model Management" className={styles.menuIcon} />
-                    <span className={styles.menuText}>Model Management</span>
-                </div>
-                <div className={styles.settings} onClick={setShowSettingPage}>
-                    <assets.SettingIcon className={styles.menuIcon} />
-                    <span className={styles.menuText}>Settings</span>
                 </div>
             </div>
         </div>

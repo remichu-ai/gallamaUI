@@ -1,6 +1,23 @@
 import OpenAI from "openai";
+import { flattenStreamText, pickPreferredStreamText } from '../streamText.js';
 
 const NEWLINE = "$NEWLINE$"
+
+const normalizeStreamToolCalls = (toolCalls = []) => {
+    if (!Array.isArray(toolCalls) || toolCalls.length === 0) {
+        return [];
+    }
+
+    return toolCalls.map((toolCall, index) => ({
+        index: toolCall?.index ?? index,
+        id: toolCall?.id ?? toolCall?.call_id ?? null,
+        type: toolCall?.type ?? 'function',
+        function: {
+            name: toolCall?.function?.name ?? '',
+            arguments: flattenStreamText(toolCall?.function?.arguments ?? ''),
+        },
+    }));
+};
 
 const chatCompletionOpenAI = async ({
     apiKey,
@@ -53,7 +70,27 @@ const chatCompletionOpenAI = async ({
                 for await (const chunk of completion) {
                     const delta = chunk.choices[0]?.delta;
                     if (delta) {
-                        yield delta;
+                        const content = flattenStreamText(delta.content);
+                        const reasoning = pickPreferredStreamText([
+                            delta.reasoning,
+                            delta.reasoning_content,
+                            delta.thinking,
+                            delta.reasoning_details,
+                        ]);
+
+                        const normalizedChunk = {
+                            ...(content && { content }),
+                            ...(reasoning && { reasoning }),
+                        };
+
+                        const toolCalls = normalizeStreamToolCalls(delta.tool_calls);
+                        if (toolCalls.length > 0) {
+                            normalizedChunk.tool_calls = toolCalls;
+                        }
+
+                        if (Object.keys(normalizedChunk).length > 0) {
+                            yield normalizedChunk;
+                        }
                     }
                 }
             };

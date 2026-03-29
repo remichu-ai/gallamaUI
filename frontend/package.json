@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "mock": "VITE_TESTING=true vite --host",
-    "test": "jest",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -50,6 +50,7 @@
     "sse": "^0.0.8",
     "sse.js": "^2.8.0",
     "uuid": "^13.0.0",
+    "yaml": "2.8.1",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

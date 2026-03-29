@@ -1,6 +1,8 @@
 .chatMessageList {
     height: 100%; /* Adjust this value based on your needs */
     width: 100%; /* Or any specific width */
+    padding-right: 32px;
+    box-sizing: border-box;
     overflow-wrap: break-word;
     overflow-y: auto;   /* scroll appear when needed only */
     scrollbar-width: thin;

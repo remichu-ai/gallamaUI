@@ -20,8 +20,6 @@ export const initializeWithMockData = (mockType = 'advanced') => {
             break;
         case 'advanced':
             selectedMockMessages = mockMessages;
-            // Set the visible artifact ID (adjust based on mockType if needed)
-            chatStore.setVisibleArtifactId('bst-with-search');
             break;
         // Add more cases as needed
         default:
@@ -36,7 +34,6 @@ export const initializeWithMockData = (mockType = 'advanced') => {
 
     // Set UI state
     uiStore.showChatComponent = true;
-    uiStore.showArtifact = true;
 };
 
 export const initializeWithRealData = async () => {
@@ -49,7 +46,6 @@ export const initializeWithRealData = async () => {
     // Clear existing messages and set initial UI state
     chatStore.clearMessages();
     uiStore.showChatComponent = true;
-    uiStore.showArtifact = true;
 
     try {
         // Fetch both available and loaded models
@@ -104,7 +100,6 @@ export const initializeWithRealData = async () => {
             loadedModels: Object.keys(loadedModels),
             uiState: {
                 showChatComponent: uiStore.showChatComponent,
-                showArtifact: uiStore.showArtifact
             }
         });
 

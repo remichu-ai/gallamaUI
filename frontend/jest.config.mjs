@@ -4,7 +4,7 @@ export default {
     '**/?(*.)+(spec|mock).mjs'
   ],
   transform: {
-    '^.+\\.mjs$': 'babel-jest',
+    '^.+\\.[jm]js$': 'babel-jest',
   },
   moduleFileExtensions: ['js', 'mjs'],
 };

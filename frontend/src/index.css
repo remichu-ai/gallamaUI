@@ -153,6 +153,9 @@
 body {
     /*font-family: 'Poppins', monospace;*/
     font-family: var(--primary-font);
+    background: var(--page-bg-color);
+    color: var(--text-color);
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 
@@ -161,6 +164,15 @@ html, body, #root {
     padding: 0;
     height: 100%;
     overflow: hidden;
+}
+
+input, textarea, select, button {
+    font: inherit;
+}
+
+::placeholder {
+    color: var(--form-control-placeholder);
+    opacity: 1;
 }
 
 #root {

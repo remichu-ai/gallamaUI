@@ -188,20 +188,6 @@ display: block;
 }
 
 
-.result-artifact{
-    display: flex;
-    flex-direction: column;
-    width: 90%; /* Adjust width to ensure it takes full width with some padding */
-    border-radius: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 12px;
-    padding-right: 12px;
-    background-color: #f0f4f9;
-}
-
-
-
 /*AI Squad mode*/
 .result-human, .result-agent {
     display: flex;
@@ -241,13 +227,6 @@ display: block;
 
 .result p code{
     background-color: #D3D3D3;
-}
-
-.artifact-text p code{
-    background-color: #dbd9d9
-}
-.artifact-text li code{
-    background-color: #dbd9d9
 }
 
 .result pre {

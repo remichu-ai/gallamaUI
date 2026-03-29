@@ -2,8 +2,8 @@
   "name": "gallamaUI",
   "version": "1.0.0",
   "scripts": {
-    "start": "concurrently \"npm run dev --prefix frontend\" \"node backend/server.js\"",
-    "frontend": "npm run dev --prefix frontend",
+    "start": "concurrently \"npm run dev --prefix frontend -- --host\" \"node backend/server.js\"",
+    "frontend": "npm run dev --prefix frontend -- --host",
     "backend": "node backend/server.js",
     "gallama": "npm install --prefix frontend && npm install --prefix backend"
   },

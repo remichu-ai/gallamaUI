@@ -2,6 +2,13 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-right: 20px;
+}
+
+@media (max-width: 720px) {
+    .quickSettings {
+        margin-right: 0;
+    }
 }
 
 .quickSettingsLabel {
@@ -22,13 +29,13 @@
     height: 16px;
     border: 1px solid var(--top-bar-text-color);
     border-radius: 3px;
-    background-color: white;
+    background-color: var(--quick-toggle-bg);
     display: inline-block;
     position: relative;
 }
 
 .quickSettingsCheckbox:checked {
-    background-color: white;
+    background-color: var(--quick-toggle-bg);
 }
 
 .quickSettingsCheckbox:checked::after {
@@ -37,5 +44,5 @@
     position: absolute;
     top: -1px;
     left: 2px;
-    color: black;
+    color: var(--quick-toggle-check);
 }

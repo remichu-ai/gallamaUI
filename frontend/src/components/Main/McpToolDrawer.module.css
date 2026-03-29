@@ -1,0 +1,268 @@
+.drawerShell {
+    --mcp-drawer-width: min(360px, 30vw);
+    --mcp-drawer-tab-width: 112px;
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+    margin-left: clamp(10px, 1.6vw, 18px);
+    width: var(--mcp-drawer-tab-width);
+    transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.drawerFrame {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    padding-top: 18px;
+    width: 100%;
+}
+
+.closed {
+    width: var(--mcp-drawer-tab-width);
+}
+
+.open {
+    width: var(--mcp-drawer-width);
+}
+
+.drawerPanel {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 55%, transparent);
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--input-box-background-color) 92%, white 8%) 0%, color-mix(in srgb, var(--input-box-background-color) 96%, var(--r-accent2) 4%) 100%);
+    box-shadow:
+        0 18px 40px -26px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    transform-origin: top right;
+    transition:
+        opacity 0.26s ease,
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.28s ease;
+}
+
+.drawerHeader {
+    padding: 18px 18px 16px;
+    border-bottom: 1px solid color-mix(in srgb, var(--r-border-color) 20%, transparent);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.drawerEyebrow {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.62;
+}
+
+.drawerTitle {
+    margin: 6px 0 0;
+    font-size: 1.1rem;
+}
+
+.drawerBody {
+    flex: 1;
+    min-height: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+}
+
+.drawerTab {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 16px 16px 0 0;
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 45%, transparent);
+    background: color-mix(in srgb, var(--input-box-background-color) 92%, var(--r-accent2) 8%);
+    color: inherit;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 26px -18px rgba(0, 0, 0, 0.45);
+    transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s ease,
+        background-color 0.2s ease;
+}
+
+.drawerTab:hover {
+    background: color-mix(in srgb, var(--input-box-background-color) 86%, var(--r-accent2) 14%);
+}
+
+.open .drawerTab {
+    transform: translateY(0);
+    border-radius: 16px 16px 0 0;
+    border-bottom-color: color-mix(in srgb, var(--input-box-background-color) 94%, transparent);
+}
+
+.closed .drawerTab {
+    transform: translateY(8px);
+    border-radius: 16px 0 0 16px;
+}
+
+.open .drawerPanel {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+}
+
+.closed .drawerPanel {
+    opacity: 0;
+    transform: translateX(22px) scale(0.98);
+    filter: blur(4px);
+    pointer-events: none;
+}
+
+.switchRow,
+.serverHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.switchRow {
+    margin-top: 16px;
+}
+
+.switchCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.switchHint,
+.serverMeta,
+.serverUrl,
+.emptyState p {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    opacity: 0.74;
+}
+
+.serverCard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 18%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 46%, transparent);
+}
+
+.serverIdentity {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.serverTitleRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.serverUrl {
+    word-break: break-word;
+}
+
+.emptyState {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--form-control-bg) 64%, transparent);
+}
+
+.emptyState p {
+    margin: 4px 0 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.switchTrack {
+    position: relative;
+    width: 52px;
+    height: 30px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--r-border-color) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 42%, transparent);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.switchTrack::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: color-mix(in srgb, white 80%, var(--r-background-color) 20%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+}
+
+.switch input:checked + .switchTrack {
+    background: color-mix(in srgb, var(--r-accent2) 64%, var(--r-accent) 36%);
+    border-color: color-mix(in srgb, var(--r-accent2) 74%, transparent);
+}
+
+.switch input:checked + .switchTrack::after {
+    transform: translateX(22px);
+}
+
+@media (max-width: 1180px) {
+    .drawerShell {
+        --mcp-drawer-width: min(360px, calc(100vw - 28px));
+        position: fixed;
+        right: 14px;
+        top: calc(var(--top-bar-height) + 14px);
+        bottom: 18px;
+        z-index: 10;
+        margin-left: 0;
+    }
+
+    .drawerFrame {
+        padding-top: 18px;
+    }
+
+    .open {
+        width: var(--mcp-drawer-width);
+    }
+}
+
+@media (max-width: 720px) {
+    .drawerShell {
+        --mcp-drawer-width: calc(100vw - 28px);
+    }
+}

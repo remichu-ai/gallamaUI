@@ -1,6 +1,14 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import {
+    TOOL_PAYLOAD_FORMAT_JSON,
+    TOOL_PAYLOAD_FORMAT_YAML,
+} from '../services/toolTraceFormatting.js';
 
-const useUIStore = create((set) => ({
+const DEFAULT_TRACE_DISPLAY_MODE = 'modern';
+const DEFAULT_TOOL_PAYLOAD_FORMAT = TOOL_PAYLOAD_FORMAT_YAML;
+
+const useUIStore = create(persist((set) => ({
     showChatComponent: false,
     toggleChatComponent: () => set((state) => ({ showChatComponent: !state.showChatComponent })),
     toggleChatComponentOnce: () => set((state) => {
@@ -9,13 +17,6 @@ const useUIStore = create((set) => ({
         }
         return state;
     }),
-
-    // artifact
-    showArtifact: false,
-    toggleArtifact: () => set((state) => ({ showArtifact: !state.showArtifact })),
-    toggleArtifactToTrue: () => set(() => ({ showArtifact: true })),
-
-
     // side bar element
     sidebarExtended: false,
     setSidebarExtended: () => set((state) => ({ sidebarExtended: !state.sidebarExtended })),
@@ -36,11 +37,33 @@ const useUIStore = create((set) => ({
 
     showReasoning: true,
     toggleShowReasoning: () => set((state) => ({ showReasoning: !state.showReasoning })),
+    traceDisplayMode: DEFAULT_TRACE_DISPLAY_MODE,
+    hasExplicitTraceDisplayMode: false,
+    setTraceDisplayMode: (mode) => set((state) => (
+        mode === 'retro' || mode === 'modern'
+            ? {
+                traceDisplayMode: mode,
+                hasExplicitTraceDisplayMode: true,
+            }
+            : state
+    )),
+    toolPayloadFormat: DEFAULT_TOOL_PAYLOAD_FORMAT,
+    hasExplicitToolPayloadFormat: false,
+    setToolPayloadFormat: (format) => set((state) => (
+        format === TOOL_PAYLOAD_FORMAT_JSON || format === TOOL_PAYLOAD_FORMAT_YAML
+            ? {
+                toolPayloadFormat: format,
+                hasExplicitToolPayloadFormat: true,
+            }
+            : state
+    )),
+    showMcpToolDrawer: true,
+    toggleMcpToolDrawer: () => set((state) => ({ showMcpToolDrawer: !state.showMcpToolDrawer })),
+    setShowMcpToolDrawer: (value) => set({ showMcpToolDrawer: Boolean(value) }),
 
 
     // New theme-related state and actions
-    // themes: ['light', 'claude', 'retro'],
-    themes: ['retro'],
+    themes: ['retro', 'moonlight', 'moonlight-dark'],
     currentTheme: 'retro', // default theme
     setTheme: (theme) => set((state) => {
         if (state.themes.includes(theme)) {
@@ -52,6 +75,49 @@ const useUIStore = create((set) => ({
         const currentIndex = state.themes.indexOf(state.currentTheme);
         const nextIndex = (currentIndex + 1) % state.themes.length;
         return { currentTheme: state.themes[nextIndex] };
+    }),
+}), {
+    name: 'ui-store',
+    storage: createJSONStorage(() => localStorage),
+    version: 2,
+    migrate: (persistedState) => {
+        if (!persistedState || typeof persistedState !== 'object') {
+            return persistedState;
+        }
+
+        const hasExplicitTraceDisplayMode = Boolean(persistedState.hasExplicitTraceDisplayMode);
+        const hasExplicitToolPayloadFormat = Boolean(persistedState.hasExplicitToolPayloadFormat);
+        const persistedTraceDisplayMode = persistedState.traceDisplayMode;
+        const persistedToolPayloadFormat = persistedState.toolPayloadFormat;
+
+        return {
+            ...persistedState,
+            traceDisplayMode: (
+                hasExplicitTraceDisplayMode
+                && (persistedTraceDisplayMode === 'retro' || persistedTraceDisplayMode === 'modern')
+            )
+                ? persistedTraceDisplayMode
+                : DEFAULT_TRACE_DISPLAY_MODE,
+            toolPayloadFormat: (
+                hasExplicitToolPayloadFormat
+                && (
+                    persistedToolPayloadFormat === TOOL_PAYLOAD_FORMAT_JSON
+                    || persistedToolPayloadFormat === TOOL_PAYLOAD_FORMAT_YAML
+                )
+            )
+                ? persistedToolPayloadFormat
+                : DEFAULT_TOOL_PAYLOAD_FORMAT,
+            hasExplicitTraceDisplayMode,
+            hasExplicitToolPayloadFormat,
+        };
+    },
+    partialize: (state) => ({
+        currentTheme: state.currentTheme,
+        showReasoning: state.showReasoning,
+        traceDisplayMode: state.traceDisplayMode,
+        toolPayloadFormat: state.toolPayloadFormat,
+        hasExplicitTraceDisplayMode: state.hasExplicitTraceDisplayMode,
+        hasExplicitToolPayloadFormat: state.hasExplicitToolPayloadFormat,
     }),
 }));
 

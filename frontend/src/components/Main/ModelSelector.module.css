@@ -1,0 +1,74 @@
+.selectorRoot {
+    position: relative;
+    font-family: var(--primary-font);
+    min-width: 0;
+}
+
+.selectorButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--r-accent2) 68%, var(--text-color) 32%);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.selectorButton:hover {
+    color: color-mix(in srgb, var(--r-accent2) 82%, var(--text-color) 18%);
+}
+
+.selectorLabel {
+    display: inline-block;
+    max-width: min(260px, 55vw);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.selectorIcon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: block;
+    stroke-width: 2.4;
+}
+
+.dropdown {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    min-width: 240px;
+    max-width: min(320px, 80vw);
+    background: var(--modal-surface, var(--input-box-background-color));
+    border: 1px solid var(--input-box-border-color);
+    border-radius: 12px;
+    box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    z-index: 50;
+}
+
+.option {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    line-height: 1.3;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.option:hover {
+    background: color-mix(in srgb, var(--r-accent2) 14%, transparent);
+    color: color-mix(in srgb, var(--r-accent2) 72%, var(--text-color) 28%);
+}
+
+.emptyState {
+    padding: 10px 14px;
+    color: var(--input-box-footer-font-color);
+    font-size: 0.92rem;
+}

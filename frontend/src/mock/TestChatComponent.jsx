@@ -11,15 +11,12 @@ import MockCodeBlock from "./MockCodeBlock.jsx";
 import MockMarkdownText from "./MockMarkdownText.jsx";
 import ChatMessage from "../components/Main/ChatMessage.jsx";
 
-import ArtifactButtonTestContainer from "./MockArtifactButton.jsx";
-import ArtifactViewer from "../components/Main/ArtifactViewer.jsx";
 import MockChatMessage from "./MockChatMessage.jsx";
 import ChatMessageList from "../components/Main/ChatMessageList.jsx";
 import {ChatComponent} from "../components/Main/ChatComponent.jsx";
 import Main from "../page/Main.jsx";
 import InputBox from "../components/Main/InputBox.jsx";
 import Sidebar from "../components/Sidebar/Sidebar.jsx";
-import App from "../../archived/App.jsx";
 import SettingsPage from "../page/SettingPage.jsx";
 import TopBar from "../components/TopBar/TopBar.jsx";
 
@@ -35,7 +32,6 @@ const TestComponent = () => {
         initializeWithMockData('advanced');        // 'basic' or 'advanced'
         const uiStore = useUIStore.getState();
         uiStore.showChatComponent = true;
-        uiStore.showArtifact = true;
     }, []);
 
     const {currentTheme} = useUIStore();
@@ -50,9 +46,7 @@ const TestComponent = () => {
         <div>
             {/*<MockCodeBlock/>*/}
             {/*<MockMarkdownText/>*/}
-            {/*<ArtifactButtonTestContainer/>*/}
             {/*<MockChatMessage/>*/}
-            {/*<ArtifactViewer/>*/}
             {/*<ChatMessageList/>*/}
             {/*<ChatComponent/>*/}
             {/*<InputBox/>*/}
@@ -62,7 +56,6 @@ const TestComponent = () => {
             {/*</div>*/}
             {/*<TopBar/>*/}
             <Main useRealDataInitialization={false} />
-            {/*<App/>*/}
         </div>
     )
 };

@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { assets } from "../../assets/assets.js";
-import useChatStore from '../../store/chatStore.js';
-import useUIStore from "../../store/uiStore.js";
-import ArtifactButton from './ArtifactButton.jsx';
 import MarkdownText from './MarkdownText.jsx';
-import { ReasoningSection } from './ReasoningSection.jsx';
+import AssistantTraceSection from './AssistantTraceSection.jsx';
 import { CopyButtonChat } from './CopyButtonChat';
 import styles from './ChatMessage.module.css';
 
@@ -103,15 +100,34 @@ const getRoleIconCSS = (role) => {
     }
 };
 
+const getRoleContainerCSS = (role) => {
+    switch (role) {
+        case 'user':
+            return styles.chatMessageContainerUser;
+        case 'assistant':
+            return styles.chatMessageContainerAssistant;
+        default:
+            return '';
+    }
+};
+
+const getRoleWrapperCSS = (role) => {
+    switch (role) {
+        case 'user':
+            return styles.chatMessageWrapperUser;
+        case 'assistant':
+            return styles.chatMessageWrapperAssistant;
+        default:
+            return '';
+    }
+};
+
 const ChatMessage = ({ message }) => {
     const [modalImage, setModalImage] = useState({
         src: '',
         isOpen: false,
         clickPosition: null
     });
-
-    const { setVisibleArtifactId } = useChatStore();
-    const { showReasoning } = useUIStore();
 
     const handleImageClick = (url, e) => {
         setModalImage({
@@ -150,19 +166,6 @@ const ChatMessage = ({ message }) => {
                             />
                         </div>
                     )
-                } else if (item.type === 'artifact') {
-                    const artifact = message.artifacts[item.identifier];
-                    return (
-                        <div className={styles.chatMessageContentArtifactButton} key={index}>
-                            <ArtifactButton
-                                key={item.identifier}
-                                title={artifact.title}
-                                identifier={item.identifier}
-                                type={artifact.artifact_type}
-                                onClick={() => setVisibleArtifactId(item.identifier)}
-                            />
-                        </div>
-                    );
                 }
                 return null;
             });
@@ -174,18 +177,29 @@ const ChatMessage = ({ message }) => {
 
     // Check if message.content is an array before mapping
     const copyText = Array.isArray(message.content)
-        ? message.content.map(item => item.content).join(' ')
+        ? message.content
+            .map((item) => item.content ?? '')
+            .filter(Boolean)
+            .join(' ')
         : '';
 
     return (
         <>
-            <div className={styles.chatMessageContainer}>
+            <div className={`${styles.chatMessageContainer} ${getRoleContainerCSS(message.role)}`}>
                 <div className={`${styles.roleIcon} ${getRoleIconCSS(message.role)}`}>
                     <img src={getIcon(message.role)} alt="" />
                 </div>
-                <div className={styles.chatMessageWrapper}>
+                <div className={`${styles.chatMessageWrapper} ${getRoleWrapperCSS(message.role)}`}>
                     <div className={`${styles.chatMessageContent} ${getRoleCSS(message.role)}`}>
-                        <ReasoningSection reasoning={message.reasoning} isContentLoading={isContentLoading} />
+                        {message.role === 'assistant' && (
+                            <AssistantTraceSection
+                                reasoning={message.reasoning}
+                                traceItems={message.trace_items}
+                                responseItems={message.response_items}
+                                toolCalls={message.tool_calls}
+                                isContentLoading={isContentLoading}
+                            />
+                        )}
                         {renderMessageContent(message.content)}
                     </div>
                     <CopyButtonChat text={copyText} className={styles.copyButton} />

@@ -2,8 +2,209 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 import { compress, decompress } from 'lz-string';
+import { normalizeToolCallsToTraceItems } from '../services/api/requestTransforms.js';
 
 const MAX_LOCAL_STORAGE_SIZE = 4.5 * 1024 * 1024; // 4.5MB safety limit for image
+const CHUNK_FLUSH_TIMEOUT_MS = 5000;
+const CHUNK_FLUSH_POLL_MS = 10;
+
+const getResponseItemMergeKey = (item, fallbackIndex) => {
+    if (item?.id) {
+        return item.id;
+    }
+
+    if (item?.type && item?.call_id) {
+        return `${item.type}:${item.call_id}`;
+    }
+
+    if (item?.type && item?.name) {
+        return `${item.type}:${item.name}:${fallbackIndex}`;
+    }
+
+    return `response-item:${fallbackIndex}`;
+};
+
+const mergeResponseItems = (existingItems = [], incomingItems = []) => {
+    const mergedItems = [...existingItems];
+    const keyToIndex = new Map(
+        mergedItems.map((item, index) => [getResponseItemMergeKey(item, index), index]),
+    );
+
+    incomingItems.forEach((item, incomingIndex) => {
+        const key = getResponseItemMergeKey(item, `${existingItems.length + incomingIndex}`);
+        const existingIndex = keyToIndex.get(key);
+
+        if (existingIndex === undefined) {
+            keyToIndex.set(key, mergedItems.length);
+            mergedItems.push(item);
+            return;
+        }
+
+        mergedItems[existingIndex] = item;
+    });
+
+    return mergedItems;
+};
+
+const getToolCallMergeKey = (toolCall, fallbackIndex) => {
+    if (toolCall?.id) {
+        return toolCall.id;
+    }
+
+    if (toolCall?.call_id) {
+        return toolCall.call_id;
+    }
+
+    if (toolCall?.index !== undefined) {
+        return `tool-call-index:${toolCall.index}`;
+    }
+
+    if (toolCall?.function?.name) {
+        return `tool-call:${toolCall.function.name}:${fallbackIndex}`;
+    }
+
+    return `tool-call:${fallbackIndex}`;
+};
+
+const mergeToolCallChunk = (existingToolCall = {}, incomingToolCall = {}) => {
+    const existingArguments = existingToolCall.function?.arguments ?? '';
+    const incomingArguments = incomingToolCall.function?.arguments ?? '';
+    const mergedArguments = (
+        typeof existingArguments === 'string'
+        && typeof incomingArguments === 'string'
+        && existingArguments
+        && incomingArguments
+        && incomingArguments !== existingArguments
+    )
+        ? `${existingArguments}${incomingArguments}`
+        : incomingArguments || existingArguments;
+
+    return {
+        ...existingToolCall,
+        ...incomingToolCall,
+        function: {
+            ...(existingToolCall.function ?? {}),
+            ...(incomingToolCall.function ?? {}),
+            ...(mergedArguments ? { arguments: mergedArguments } : {}),
+        },
+    };
+};
+
+const mergeToolCalls = (existingToolCalls = [], incomingToolCalls = []) => {
+    const mergedToolCalls = [...existingToolCalls];
+    const keyToIndex = new Map(
+        mergedToolCalls.map((toolCall, index) => [getToolCallMergeKey(toolCall, index), index]),
+    );
+
+    incomingToolCalls.forEach((toolCall, incomingIndex) => {
+        const key = getToolCallMergeKey(toolCall, `${existingToolCalls.length + incomingIndex}`);
+        const existingIndex = keyToIndex.get(key);
+
+        if (existingIndex === undefined) {
+            keyToIndex.set(key, mergedToolCalls.length);
+            mergedToolCalls.push(toolCall);
+            return;
+        }
+
+        mergedToolCalls[existingIndex] = mergeToolCallChunk(mergedToolCalls[existingIndex], toolCall);
+    });
+
+    return mergedToolCalls;
+};
+
+const appendReasoningTraceItem = (existingTraceItems = [], reasoning = '') => {
+    if (!reasoning) {
+        return existingTraceItems;
+    }
+
+    const traceItems = [...existingTraceItems];
+    const lastIndex = traceItems.length - 1;
+    const lastItem = traceItems[lastIndex];
+
+    if (lastItem?.type === 'reasoning') {
+        traceItems[lastIndex] = {
+            ...lastItem,
+            text: `${lastItem.text ?? ''}${reasoning}`,
+        };
+        return traceItems;
+    }
+
+    const reasoningCount = traceItems.filter((item) => item?.type === 'reasoning').length;
+    traceItems.push({
+        id: `synthetic-reasoning:${reasoningCount}`,
+        type: 'reasoning',
+        label: 'Reasoning',
+        text: reasoning,
+    });
+    return traceItems;
+};
+
+const getTraceToolMergeKey = (item, fallbackIndex) => {
+    if (item?.call_id) {
+        return item.call_id;
+    }
+
+    if (item?.id) {
+        return item.id;
+    }
+
+    if (item?.name) {
+        return `${item.name}:${fallbackIndex}`;
+    }
+
+    return `trace-tool:${fallbackIndex}`;
+};
+
+const mergeToolTraceItems = (existingTraceItems = [], incomingToolCalls = []) => {
+    const incomingTraceItems = incomingToolCalls
+        .map((toolCall, index) => {
+            const [traceItem] = normalizeToolCallsToTraceItems([toolCall]);
+            if (!traceItem) {
+                return null;
+            }
+
+            const mergeKey = getToolCallMergeKey(toolCall, index);
+            return {
+                ...traceItem,
+                id: traceItem.id ?? `synthetic-tool:${mergeKey}`,
+                call_id: traceItem.call_id ?? mergeKey,
+            };
+        })
+        .filter(Boolean);
+    if (incomingTraceItems.length === 0) {
+        return existingTraceItems;
+    }
+
+    const traceItems = [...existingTraceItems];
+    const keyToIndex = new Map(
+        traceItems
+            .map((item, index) => (
+                item?.type === 'tool_call'
+                    ? [getTraceToolMergeKey(item, index), index]
+                    : null
+            ))
+            .filter(Boolean),
+    );
+
+    incomingTraceItems.forEach((item, incomingIndex) => {
+        const key = getTraceToolMergeKey(item, `${traceItems.length + incomingIndex}`);
+        const existingIndex = keyToIndex.get(key);
+
+        if (existingIndex === undefined) {
+            keyToIndex.set(key, traceItems.length);
+            traceItems.push(item);
+            return;
+        }
+
+        traceItems[existingIndex] = {
+            ...traceItems[existingIndex],
+            ...item,
+            argumentsValue: item.argumentsValue || traceItems[existingIndex].argumentsValue,
+        };
+    });
+
+    return traceItems;
+};
 
 const useChatStore = create(persist(
     (set, get) => ({
@@ -24,9 +225,6 @@ const useChatStore = create(persist(
             conversation_title: "New Chat",
             isStreaming: false,
             abortController: null,
-            visibleArtifactId: null,
-            artifactIds: [],
-            isViewingLatestArtifact: true,
             chunkQueue: [],
             isProcessingChunks: false
         }),
@@ -45,20 +243,35 @@ const useChatStore = create(persist(
             }
         },
 
-        // artifact parameters
-        visibleArtifactId: null,
-        artifactIds: [],
-        isViewingLatestArtifact: true,
-
         // handle smoothing of streaming
         enableChunking: true,
         chunkSize: 3,
         chunkDelay: 25,
         chunkQueue: [],
 
+        waitForPendingChunks: async (timeoutMs = CHUNK_FLUSH_TIMEOUT_MS) => {
+            const startTime = Date.now();
+
+            while (true) {
+                const { chunkQueue, isProcessingChunks } = get();
+                if (chunkQueue.length === 0 && !isProcessingChunks) {
+                    return true;
+                }
+
+                if (Date.now() - startTime >= timeoutMs) {
+                    console.warn("Timed out waiting for pending message chunks to finish processing.");
+                    return false;
+                }
+
+                await new Promise((resolve) => setTimeout(resolve, CHUNK_FLUSH_POLL_MS));
+            }
+        },
+
 
         // Define the saveCurrentConversation function
         saveCurrentConversation: async () => {
+            await get().waitForPendingChunks();
+
             const { messages, conversation_id, conversation_title } = get();
 
             if (messages.length === 0) {
@@ -82,6 +295,7 @@ const useChatStore = create(persist(
                     });
                 }
                 console.log("Conversation saved to backend:", response.data.id);
+                get().triggerSidebarRefresh();
             } catch (error) {
                 console.error("Error saving to backend:", error);
             }
@@ -203,9 +417,6 @@ const useChatStore = create(persist(
                     get().setConversationTitle("New Chat")
                 }
 
-                let newVisibleArtifactId = state.visibleArtifactId;
-                let newArtifactIds = [...state.artifactIds];
-
                 // Handle message content as a sequence of text and images
                 if (Array.isArray(message.content)) {
                     // Filter out empty text content
@@ -214,44 +425,20 @@ const useChatStore = create(persist(
                     );
                 }
 
-                if (message.artifacts && Object.keys(message.artifacts).length > 0) {
-                    const newMessageArtifactIds = Object.keys(message.artifacts);
-                    newArtifactIds = [...new Set([...newArtifactIds, ...newMessageArtifactIds])];
-
-                    if (state.isViewingLatestArtifact) {
-                        newVisibleArtifactId = newMessageArtifactIds[0];
-                    }
-
-                    // Process artifacts
-                    Object.keys(message.artifacts).forEach(identifier => {
-                        const artifact = message.artifacts[identifier];
-                        console.log("Processing artifact:", identifier, artifact);
-
-                        if (artifact.content) {
-                            if (!message.content.some(item => item.type === 'artifact' && item.identifier === identifier)) {
-                                message.content.push({ type: 'artifact', identifier });
-                            }
-                            message.artifacts[identifier].content = artifact.content;
-                        } else {
-                            console.log(`No content found for artifact: ${identifier}`);
-                        }
-                    });
-                }
-
                 get().triggerSidebarRefresh();
 
+                const nextMessage = {
+                    ...message,
+                    ...(Array.isArray(message.trace_items) ? { trace_items: [...message.trace_items] } : {}),
+                };
+
                 return {
-                    messages: [...state.messages, { ...message }],
-                    visibleArtifactId: newVisibleArtifactId,
-                    artifactIds: newArtifactIds,
+                    messages: [...state.messages, nextMessage],
                 };
             });
         },
 
         updateLastMessage: (update) => {
-            const state = get();
-
-            // 1. Handle Reasoning (Synchronous Update)
             if (update.reasoning) {
                 set((state) => {
                     const messages = [...state.messages];
@@ -259,6 +446,10 @@ const useChatStore = create(persist(
                     if (lastIndex >= 0) {
                         const lastMsg = { ...messages[lastIndex] };
                         lastMsg.reasoning = (lastMsg.reasoning || '') + update.reasoning;
+                        lastMsg.trace_items = appendReasoningTraceItem(
+                            Array.isArray(lastMsg.trace_items) ? lastMsg.trace_items : [],
+                            update.reasoning,
+                        );
                         messages[lastIndex] = lastMsg;
                         return { messages };
                     }
@@ -266,37 +457,69 @@ const useChatStore = create(persist(
                 });
             }
 
-            // 2. Handle Content & Artifacts (Queued Update)
-            if (update.content || update.artifact_meta) {
-                // Get the latest state again to ensure valid reference (though processNextChunk works independently)
+            if (
+                update.tool_calls
+                || update.response_items
+                || update.replace_response_items
+                || update.response_id
+                || update.previous_response_id
+                || update.response_item_id
+            ) {
+                set((state) => {
+                    const messages = [...state.messages];
+                    const lastIndex = messages.length - 1;
+                    if (lastIndex < 0) {
+                        return {};
+                    }
+
+                    const lastMessage = { ...messages[lastIndex] };
+                    const incomingToolCalls = Array.isArray(update.tool_calls) ? update.tool_calls : [];
+                    const incomingResponseItems = Array.isArray(update.response_items) ? update.response_items : [];
+
+                    if (incomingToolCalls.length > 0) {
+                        lastMessage.tool_calls = mergeToolCalls(
+                            Array.isArray(lastMessage.tool_calls) ? lastMessage.tool_calls : [],
+                            incomingToolCalls,
+                        );
+                        lastMessage.trace_items = mergeToolTraceItems(
+                            Array.isArray(lastMessage.trace_items) ? lastMessage.trace_items : [],
+                            incomingToolCalls,
+                        );
+                    }
+
+                    if (update.replace_response_items) {
+                        lastMessage.response_items = [...incomingResponseItems];
+                    } else if (incomingResponseItems.length > 0) {
+                        lastMessage.response_items = mergeResponseItems(
+                            Array.isArray(lastMessage.response_items) ? lastMessage.response_items : [],
+                            incomingResponseItems,
+                        );
+                    }
+
+                    if (update.response_id !== undefined) {
+                        lastMessage.response_id = update.response_id;
+                    }
+
+                    if (update.previous_response_id !== undefined) {
+                        lastMessage.previous_response_id = update.previous_response_id;
+                    }
+
+                    if (update.response_item_id !== undefined) {
+                        lastMessage.response_item_id = update.response_item_id;
+                    }
+
+                    messages[lastIndex] = lastMessage;
+                    return { messages };
+                });
+            }
+
+            if (
+                update.content
+            ) {
                 const currentState = get();
                 const lastMessage = currentState.messages[currentState.messages.length - 1];
-
                 if (!lastMessage) return;
-
-                if (update.artifact_meta) {
-                    if (update.artifact_meta.tag_type === "artifact") {
-                        const { identifier } = update.artifact_meta;
-                        // Initialize artifacts object if missing (safety check)
-                        const artifacts = lastMessage.artifacts || {};
-
-                        if (!artifacts[identifier]) {
-                            get().queueChunkedContent(lastMessage, 'newArtifact', {
-                                identifier,
-                                artifactMeta: update.artifact_meta,
-                            });
-                        }
-
-                        get().queueChunkedContent(lastMessage, 'artifactContent', {
-                            identifier,
-                            content: update.content,
-                        });
-                    } else if (update.artifact_meta.tag_type === "text") {
-                        get().queueChunkedContent(lastMessage, 'content', update.content);
-                    }
-                } else if (update.content) {
-                    get().queueChunkedContent(lastMessage, 'content', update.content);
-                }
+                get().queueChunkedContent(lastMessage, 'content', update.content);
             }
         },
 
@@ -305,139 +528,28 @@ const useChatStore = create(persist(
             return state.messages.map((message) => {
                 const integratedMessage = { ...message };
 
-                // If content is already an array, process it
                 if (Array.isArray(message.content)) {
-                    // Check if any content item is of type image_url
                     const hasImage = message.content.some(item => item.type === 'image_url');
 
-                    if (hasImage) {
-                        // Keep the array format for regular content and image_url
-                        integratedMessage.content = message.content.map(item => {
-                            if (item.type === 'artifact') {
-                                // For artifacts, maintain the original string format
-                                const artifact = message.artifacts[item.identifier];
-                                const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
+                    integratedMessage.content = hasImage
+                        ? message.content.map((item) => {
+                            if (item.type === 'text') {
                                 return {
                                     type: 'text',
-                                    // for multi content part, the key used for text type is text instead of content
-                                    text: `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`
-                                };
-                            } else if (item.type === 'text') {
-                                return {
-                                    type: 'text',
-                                    // for multi content part, the key used for text type is text instead of content
                                     text: item.content,
                                 };
                             }
 
                             return item;
-                        });
-                    } else {
-                        // Convert to string if no images
-                        integratedMessage.content = message.content
-                            .map(item => {
-                                if (item.type === 'text') {
-                                    return item.content;
-                                } else if (item.type === 'artifact') {
-                                    const artifact = message.artifacts[item.identifier];
-                                    const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
-                                    return `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`;
-                                }
-                                return '';
-                            })
+                        })
+                        : message.content
+                            .map(item => item.type === 'text' ? item.content : '')
                             .join('');
-                    }
                 } else {
-                    // Convert old string format to array format
                     integratedMessage.content = [{
                         type: 'text',
                         content: message.content
                     }];
-                }
-
-                // Remove artifacts if content is in array format
-                if (Array.isArray(integratedMessage.content)) {
-                    delete integratedMessage.artifacts;
-                }
-
-                return integratedMessage;
-            });
-        },
-
-        getIntegratedMessagesWithText: () => {
-            const state = get();
-            return state.messages.map((message) => {
-                const integratedMessage = { ...message };
-
-                if (Array.isArray(message.content)) {
-                    const hasImage = message.content.some(item => item.type === 'image_url');
-
-                    if (hasImage) {
-                        // First, create a new array with transformed items
-                        let contentArray = message.content.map((item, index) => {
-                            if (item.type === 'text') {
-                                return {
-                                    type: 'text',
-                                    text: `<text>${item.content}</text>`
-                                };
-                            } else if (item.type === 'artifact') {
-                                const artifact = message.artifacts[item.identifier];
-                                const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
-                                return {
-                                    type: 'text',
-                                    text: `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`
-                                };
-                            }
-                            return item; // Keep image_url items unchanged
-                        });
-
-                        // Then, add answer tags
-                        if (contentArray[0].type === 'text') {
-                            contentArray[0].content = '<answer>' + contentArray[0].content;
-                        } else {
-                            // If first item is not text (e.g., image), insert opening tag
-                            contentArray.unshift({
-                                type: 'text',
-                                text: '<answer>'
-                            });
-                        }
-
-                        if (contentArray[contentArray.length - 1].type === 'text') {
-                            contentArray[contentArray.length - 1].content += '</answer>';
-                        } else {
-                            // If last item is not text (e.g., image), append closing tag
-                            contentArray.push({
-                                type: 'text',
-                                text: '</answer>'
-                            });
-                        }
-
-                        integratedMessage.content = contentArray;
-                    } else {
-                        // For messages without images, convert to a single string with answer tags
-                        const contentString = message.content
-                            .map(item => {
-                                if (item.type === 'text') {
-                                    return `<text>${item.content}</text>`;
-                                } else if (item.type === 'artifact') {
-                                    const artifact = message.artifacts[item.identifier];
-                                    const languageAttr = artifact.language ? ` language="${artifact.language}"` : '';
-                                    return `\n<artifact identifier="${item.identifier}" type="${artifact.artifact_type}"${languageAttr} title="${artifact.title}">\n${artifact.content}\n</artifact>\n`;
-                                }
-                                return '';
-                            })
-                            .join('');
-
-                        integratedMessage.content = `<answer>${contentString.trim()}</answer>`;
-                    }
-                } else {
-                    // Convert old string format to answer-wrapped text
-                    integratedMessage.content = `<answer><text>${message.content}</text></answer>`;
-                }
-
-                // Remove artifacts property if content is processed
-                if (Array.isArray(integratedMessage.content) || typeof integratedMessage.content === 'string') {
-                    delete integratedMessage.artifacts;
                 }
 
                 return integratedMessage;
@@ -446,13 +558,7 @@ const useChatStore = create(persist(
 
         queueChunkedContent: (target, propertyName, content) => {
             const state = get();
-            let chunks;
-
-            if (propertyName === 'newArtifact' || propertyName === 'artifactContent') {
-                chunks = [content];
-            } else {
-                chunks = state.enableChunking ? get().chunkText(content) : [content];
-            }
+            const chunks = state.enableChunking ? get().chunkText(content) : [content];
 
             set(state => ({
                 chunkQueue: [
@@ -494,35 +600,11 @@ const useChatStore = create(persist(
                     if (lastMessage.content) {
                         lastMessage.content = [...lastMessage.content];
                     }
-                    if (lastMessage.artifacts) {
-                        lastMessage.artifacts = { ...lastMessage.artifacts };
-                    }
-
                     if (typeof lastMessage.content === 'string') {
                         lastMessage.content = lastMessage.content ? [{ type: 'text', content: lastMessage.content }] : [];
                     }
 
-                    if (propertyName === 'newArtifact') {
-                        if (!lastMessage.artifacts[content.identifier]) {
-                            lastMessage.artifacts[content.identifier] = {
-                                ...content.artifactMeta,
-                                content: '',
-                            };
-                            if (!lastMessage.content.some(item => item.type === 'artifact' && item.identifier === content.identifier)) {
-                                lastMessage.content.push({ type: 'artifact', identifier: content.identifier });
-                            }
-
-                            set(state => ({
-                                artifactIds: [...new Set([...state.artifactIds, content.identifier])],
-                                visibleArtifactId: state.isViewingLatestArtifact ? content.identifier : state.visibleArtifactId
-                            }));
-                        }
-                    } else if (propertyName === 'artifactContent') {
-                        if (lastMessage.artifacts[content.identifier]) {
-                            lastMessage.artifacts[content.identifier] = { ...lastMessage.artifacts[content.identifier] };
-                            lastMessage.artifacts[content.identifier].content += content.content;
-                        }
-                    } else if (propertyName === 'content') {
+                    if (propertyName === 'content') {
                         if (lastMessage.content.length > 0 && lastMessage.content[lastMessage.content.length - 1].type === 'text') {
                             const lastItem = { ...lastMessage.content[lastMessage.content.length - 1] };
                             lastItem.content += content;
@@ -568,42 +650,6 @@ const useChatStore = create(persist(
             }
 
             return chunks;
-        },
-
-        setVisibleArtifactId: (id) => set((state) => ({
-            visibleArtifactId: id,
-            isViewingLatestArtifact: state.artifactIds.indexOf(id) === state.artifactIds.length - 1,
-        })),
-
-        clearVisibleArtifact: () => set({ visibleArtifactId: null, isViewingLatestArtifact: false }),
-
-        getVisibleArtifact: () => {
-            const state = get();
-            if (!state.visibleArtifactId) return null;
-
-            for (const message of state.messages) {
-                if (message.artifacts && message.artifacts[state.visibleArtifactId]) {
-                    return message.artifacts[state.visibleArtifactId];
-                }
-            }
-            return null;
-        },
-
-        navigateArtifact: (direction) => {
-            const state = get();
-            const currentIndex = state.artifactIds.indexOf(state.visibleArtifactId);
-            let newIndex;
-
-            if (direction === 'next') {
-                newIndex = (currentIndex + 1) % state.artifactIds.length;
-            } else {
-                newIndex = (currentIndex - 1 + state.artifactIds.length) % state.artifactIds.length;
-            }
-
-            set({
-                visibleArtifactId: state.artifactIds[newIndex],
-                isViewingLatestArtifact: newIndex === state.artifactIds.length - 1,
-            });
         },
 
         // New function to trigger sidebar refresh
@@ -657,9 +703,6 @@ const useChatStore = create(persist(
             messages: state.messages,
             conversation_id: state.conversation_id,
             conversation_title: state.conversation_title,
-            visibleArtifactId: state.visibleArtifactId,
-            artifactIds: state.artifactIds,
-            isViewingLatestArtifact: state.isViewingLatestArtifact,
             enableChunking: state.enableChunking,
             chunkSize: state.chunkSize,
             chunkDelay: state.chunkDelay,

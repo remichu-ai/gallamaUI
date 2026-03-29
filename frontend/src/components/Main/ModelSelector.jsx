@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import useApiKeyStore from "../../store/apiKeyStore.js";
 import useModelManagementStore from "../../store/modelManagementStore.js";
+import styles from './ModelSelector.module.css';
 
 const ModelSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,27 +45,28 @@ const ModelSelector = () => {
   );
 
   return (
-    <div className="relative font-mono" ref={dropdownRef}>
-      <div
-        className="flex items-center cursor-pointer text-gray-600 hover:text-gray-800"
+    <div className={styles.selectorRoot} ref={dropdownRef}>
+      <button
+        type="button"
+        className={styles.selectorButton}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="truncate max-w-[200px]">
+        <span className={styles.selectorLabel}>
           {selectedModel || 'No model selected'}
         </span>
         {isOpen ? (
-          <ChevronUp className="w-4 h-4 ml-1 flex-shrink-0" />
+          <ChevronUp className={styles.selectorIcon} />
         ) : (
-          <ChevronDown className="w-4 h-4 ml-1 flex-shrink-0" />
+          <ChevronDown className={styles.selectorIcon} />
         )}
-      </div>
+      </button>
 
       {isOpen && availableModels.length > 0 && (
-        <div className="absolute bottom-full left-0 mb-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50">
-          {availableModels.map(([modelName, modelInfo]) => (
+        <div className={styles.dropdown}>
+          {availableModels.map(([modelName]) => (
             <div
               key={modelName}
-              className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-gray-700"
+              className={styles.option}
               onClick={() => handleModelSelect(modelName)}
             >
               {modelName}
@@ -74,8 +76,10 @@ const ModelSelector = () => {
       )}
 
       {isOpen && availableModels.length === 0 && !selectedModel && (
-        <div className="absolute bottom-full left-0 mb-1 w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 p-3 text-gray-500">
+        <div className={styles.dropdown}>
+          <div className={styles.emptyState}>
           No models available
+          </div>
         </div>
       )}
     </div>

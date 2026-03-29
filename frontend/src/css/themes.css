@@ -30,9 +30,12 @@
     --r-message-background: hsl(75,20.1%,56.1%);  /* #9AA679 */
     --r-background-color: #FEFAE0;
 
-    --r-max-chat-width: 800px;
-    --r-max-chat-input-box-width: 1000px;
-    --r-min-chat-input-box-height: 60px;
+    --r-max-chat-width: 1040px;
+    --r-max-user-chat-width: 760px;
+    --r-max-chat-input-box-width: 1180px;
+    --r-chat-rail-max-width: 1180px;
+    --r-chat-input-rail-max-width: 1180px;
+    --r-min-chat-input-box-height: 68px;
     --r-border-color: #1a120f;
     --code-bg-color: transparent;
     --side-bar-hover-color: transparent;
@@ -40,14 +43,57 @@
     --conversation-item-hover-bg-color: rgba(139, 105, 92, 1);
     --conversation-item-hover-color: --r-font-color;
 
-    /* artifact */
-    /*--r-artifact-background: #1C2023;  */
-    --r-artifact-background: #1C2830;
-
     /* thinking */
     --r-background-thinking-color: #a0a25d;
     --r-thinking-tag-background-color: #b3b57d;
     --r-thinking-tag-color: #1a120f;
+
+    --form-control-bg: rgba(255, 252, 240, 0.96);
+    --form-control-text: var(--r-font-color);
+    --form-control-border: var(--r-border-color);
+    --form-control-placeholder: rgba(26, 18, 15, 0.55);
+    --form-control-focus: color-mix(in srgb, var(--r-accent2) 45%, white);
+    --quick-toggle-bg: rgba(255, 252, 240, 0.92);
+    --quick-toggle-check: var(--r-font-color);
+    --modal-surface: rgba(255, 250, 224, 0.98);
+    --modal-shadow: rgba(26, 18, 15, 0.18);
+    --modal-close-bg: rgba(255, 250, 224, 0.98);
+    --modal-close-color: var(--r-font-color);
+    --ui-icon-filter: none;
+    --copy-button-bg: var(--r-accent2);
+    --copy-button-text: #fffaf0;
+    --role-icon-filter: none;
+    --role-icon-shadow: drop-shadow(0 1px 2px rgba(26, 18, 15, 0.16));
+    --input-box-border-color: var(--chat-message-border-color);
+    --input-box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) var(--shadow-color);
+    --page-grain-opacity: 0;
+    --page-grain-noise-fine-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.9' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/feComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.75'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    --page-grain-noise-coarse-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='19' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.55'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 160px 160px, 240px 240px;
+    --page-grain-position: 0 0;
+    --page-grain-color: transparent;
+    --page-grain-blend-mode: soft-light;
+    --page-grain-filter: contrast(1.12) brightness(1.01);
+
+    --modern-trace-thinking-icon-color: color-mix(in srgb, var(--r-accent2) 70%, var(--text-color) 30%);
+    --modern-trace-tool-icon-color: color-mix(in srgb, var(--r-font-color-accent) 78%, var(--text-color) 22%);
+    --modern-trace-title-color: color-mix(in srgb, var(--text-color) 66%, transparent 34%);
+    --modern-trace-meta-color: color-mix(in srgb, var(--r-font-color-accent) 72%, transparent 28%);
+    --modern-trace-divider-color: color-mix(in srgb, var(--chat-message-border-color) 42%, transparent 58%);
+    --modern-trace-body-title-color: color-mix(in srgb, var(--text-color) 62%, transparent 38%);
+    --modern-trace-body-color: color-mix(in srgb, var(--text-color) 84%, transparent 16%);
+    --modern-trace-muted-color: color-mix(in srgb, var(--r-font-color-accent) 76%, transparent 24%);
+    --modern-trace-label-color: color-mix(in srgb, var(--r-font-color-accent) 70%, transparent 30%);
+    --modern-trace-detail-color: color-mix(in srgb, var(--text-color) 72%, transparent 28%);
+    --modern-trace-error-color: color-mix(in srgb, #ff8d8d 62%, var(--text-color) 38%);
+
+    --markdown-table-border-color: black;
+    --markdown-table-header-bg: hsl(75, 20.1%, 56.1%);
+    --markdown-table-header-text: inherit;
+    --markdown-table-row-odd-bg: transparent;
+    --markdown-table-row-even-bg: #fef3e0;
+    --markdown-table-cell-text: inherit;
 }
 
 /* Retro Theme */
@@ -80,7 +126,7 @@
     --bg-color: var(--r-background-color);
     --text-color: var(--r-font-color);
 
-    --scroll-bar-color: var(--r-font-color);
+    --scroll-bar-color: rgba(26, 18, 15, 0.42);
 
     --chat-message-background-user: #c8bf9e;
     --chat-message-background-assistant: var(--r-message-background);
@@ -96,20 +142,240 @@
     --chat-message-thinking-border-size: var(--border-size);
     --chat-message-thinking-border-color: var(--r-border-color);
 
-    /*--artifact-button-background-color: var(--ecru);*/
-    --artifact-top-bar-font-size: 20px;
-    --artifact-content-bg-color: var(--r-artifact-background);
-    --artifact-button-subtext-color: var(--r-font-color);
-    /*--artifact-button-icon-background: var(--wheat-2);*/
-    --artifact-button-icon-color: var(--r-font-color);
-    --artifact-button-border-color: var(--r-border-color);
-    --artifact-button-border-color-hover: rgba(139, 105, 92, 1);
-    --artifact-button-icon-size: 25px;
-
-    --input-box-background-color: var(--ecru);
+    --input-box-background-color: color-mix(in srgb, var(--r-background-color) 92%, var(--r-accent) 8%);
     --input-box-footer-font-color: var(--r-font-color);
-    --code-bg-color: hsl(196, 20.2%, 56.3%);
+    --code-bg-color: color-mix(in srgb, var(--r-accent2) 38%, white);
     --side-bar-hover-color: #f1edd6;
+    --page-grain-opacity: 0.22;
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 150px 150px, 230px 230px;
+    --page-grain-position: 0 0, 11px 7px;
+    --page-grain-color: rgba(126, 100, 78, 0.12);
+    --page-grain-blend-mode: soft-light;
+    --page-grain-filter: contrast(1.22) brightness(1.02) sepia(0.08);
+}
+
+[data-theme="moonlight"] {
+    --primary-font: 'Poppins', sans-serif;
+    --code-font: 'JetBrains Mono', monospace;
+    --border-radius: 14px;
+    --border-size: 2px;
+    --page-bg-color:
+        radial-gradient(circle at 18% 14%, rgba(255, 248, 219, 0.20) 0 1px, transparent 2px),
+        radial-gradient(circle at 41% 24%, rgba(255, 248, 219, 0.18) 0 1.2px, transparent 2.2px),
+        radial-gradient(circle at 72% 18%, rgba(255, 248, 219, 0.22) 0 1.1px, transparent 2.1px),
+        radial-gradient(circle at 84% 31%, rgba(255, 248, 219, 0.16) 0 1px, transparent 2px),
+        radial-gradient(circle at 12% 61%, rgba(255, 248, 219, 0.16) 0 1.2px, transparent 2.4px),
+        radial-gradient(circle at 77% 67%, rgba(255, 248, 219, 0.20) 0 1px, transparent 2px),
+        linear-gradient(180deg, #334652 0%, #273844 42%, #202a31 100%);
+
+    --shadow-color: rgba(8, 10, 14, 0.34);
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 14px;
+    --shadow-blur: 28px;
+    --shadow-spread: -14px;
+
+    --top-bar-bg-color: transparent;
+    --top-bar-text-color: #f1d56a;
+    --top-bar-height: 32px;
+    --top-bar-font-size: 26px;
+
+    --additional-vh-spacing: 30px;
+
+    --side-bar-width: 30px;
+    --side-bar-bg-color: transparent;
+    --side-bar-space-to-chat: 0px;
+    --ui-icon-color: #f6eddd;
+
+    --bg-color: #24323a;
+    --text-color: #f6eddd;
+    --scroll-bar-color: rgba(246, 237, 221, 0.42);
+
+    --chat-message-background-user: #d5c3ab;
+    --chat-message-background-assistant: #6f8195;
+    --chat-message-text-user: #31241c;
+    --chat-message-border-size: var(--border-size);
+    --chat-message-border-color: #e7d8bf;
+    --code-bar: #283740;
+    --code-bar-text: #f6eddd;
+    --code-border-color: #e7d8bf;
+    --code-text: #f6eddd;
+
+    --chat-message-thinking-background: #556770;
+    --chat-message-thinking-color: #f6eddd;
+    --chat-message-thinking-border-size: var(--border-size);
+    --chat-message-thinking-border-color: #e7d8bf;
+
+    --input-box-background-color: rgba(44, 58, 72, 0.95);
+    --input-box-footer-font-color: #d6c9b1;
+    --input-box-border-color: rgba(231, 216, 191, 0.9);
+    --input-box-shadow:
+        0 18px 34px -22px rgba(4, 8, 12, 0.72),
+        inset 0 1px 0 rgba(255, 248, 232, 0.06),
+        0 0 0 1px rgba(108, 132, 156, 0.08);
+    --code-bg-color: #4d5f67;
+    --conversation-item-bg-color: transparent;
+    --conversation-item-hover-bg-color: #3a4d56;
+    --conversation-item-hover-color: #f6eddd;
+    --side-bar-hover-color: rgba(50, 68, 77, 0.8);
+
+    --form-control-bg: rgba(46, 60, 68, 0.96);
+    --form-control-text: #f6eddd;
+    --form-control-border: #d8c7aa;
+    --form-control-placeholder: rgba(246, 237, 221, 0.5);
+    --form-control-focus: color-mix(in srgb, #d2b35f 62%, white);
+    --quick-toggle-bg: rgba(57, 75, 84, 0.96);
+    --quick-toggle-check: #f6eddd;
+    --modal-surface: rgba(39, 51, 58, 0.98);
+    --modal-shadow: rgba(0, 0, 0, 0.35);
+    --modal-close-bg: rgba(57, 75, 84, 0.98);
+    --modal-close-color: #f6eddd;
+    --ui-icon-filter: brightness(0) saturate(100%) invert(94%) sepia(18%) saturate(292%) hue-rotate(343deg) brightness(101%) contrast(95%);
+    --copy-button-bg: #c08a63;
+    --copy-button-text: #fff7f1;
+    --role-icon-filter: brightness(0) saturate(100%) invert(94%) sepia(18%) saturate(292%) hue-rotate(343deg) brightness(101%) contrast(95%);
+    --page-grain-opacity: 0.17;
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 155px 155px, 235px 235px;
+    --page-grain-position: 0 0, 9px 13px;
+    --page-grain-color: rgba(243, 235, 219, 0.08);
+    --page-grain-filter: contrast(1.2) brightness(1.02);
+
+    --r-font-color-accent: #d8c3a5;
+    --r-background-thinking-color: #556770;
+    --r-thinking-tag-background-color: #70828a;
+    --r-thinking-tag-color: #f6eddd;
+
+    --modern-trace-thinking-icon-color: rgba(184, 210, 221, 0.92);
+    --modern-trace-tool-icon-color: rgba(222, 193, 156, 0.88);
+    --modern-trace-title-color: rgba(246, 237, 221, 0.8);
+    --modern-trace-meta-color: rgba(216, 195, 165, 0.74);
+    --modern-trace-divider-color: rgba(231, 216, 191, 0.36);
+    --modern-trace-body-title-color: rgba(246, 237, 221, 0.62);
+    --modern-trace-body-color: rgba(246, 237, 221, 0.92);
+    --modern-trace-muted-color: rgba(214, 201, 177, 0.74);
+    --modern-trace-label-color: rgba(214, 201, 177, 0.7);
+    --modern-trace-detail-color: rgba(246, 237, 221, 0.8);
+    --modern-trace-error-color: #ffb4b4;
+
+    --markdown-table-border-color: rgba(231, 216, 191, 0.72);
+    --markdown-table-header-bg: #70806c;
+    --markdown-table-header-text: #f6eddd;
+    --markdown-table-row-odd-bg: rgba(255, 248, 232, 0.02);
+    --markdown-table-row-even-bg: rgba(255, 248, 232, 0.08);
+    --markdown-table-cell-text: #f6eddd;
+}
+
+[data-theme="moonlight-dark"] {
+    --primary-font: 'Poppins', sans-serif;
+    --code-font: 'JetBrains Mono', monospace;
+    --border-radius: 14px;
+    --border-size: 2px;
+    --page-bg-color:
+        radial-gradient(circle at 18% 14%, rgba(244, 235, 212, 0.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 41% 24%, rgba(244, 235, 212, 0.10) 0 1.2px, transparent 2.2px),
+        radial-gradient(circle at 72% 18%, rgba(244, 235, 212, 0.13) 0 1.1px, transparent 2.1px),
+        radial-gradient(circle at 84% 31%, rgba(244, 235, 212, 0.09) 0 1px, transparent 2px),
+        radial-gradient(circle at 12% 61%, rgba(244, 235, 212, 0.08) 0 1.2px, transparent 2.4px),
+        radial-gradient(circle at 77% 67%, rgba(244, 235, 212, 0.10) 0 1px, transparent 2px),
+        linear-gradient(180deg, #263540 0%, #1d2a33 45%, #151b21 100%);
+
+    --shadow-color: rgba(0, 0, 0, 0.42);
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 14px;
+    --shadow-blur: 30px;
+    --shadow-spread: -14px;
+
+    --top-bar-bg-color: transparent;
+    --top-bar-text-color: #dcc36d;
+    --top-bar-height: 32px;
+    --top-bar-font-size: 26px;
+
+    --additional-vh-spacing: 30px;
+
+    --side-bar-width: 30px;
+    --side-bar-bg-color: transparent;
+    --side-bar-space-to-chat: 0px;
+    --ui-icon-color: #e4ddd0;
+
+    --bg-color: #1b252d;
+    --text-color: #e4ddd0;
+    --scroll-bar-color: rgba(228, 221, 208, 0.34);
+
+    --chat-message-background-user: #cfbca3;
+    --chat-message-background-assistant: #60758a;
+    --chat-message-text-user: #2b2019;
+    --chat-message-border-size: var(--border-size);
+    --chat-message-border-color: #dbcdb3;
+    --code-bar: #222c33;
+    --code-bar-text: #e4ddd0;
+    --code-border-color: #dbcdb3;
+    --code-text: #e4ddd0;
+
+    --chat-message-thinking-background: #4d5f67;
+    --chat-message-thinking-color: #e4ddd0;
+    --chat-message-thinking-border-size: var(--border-size);
+    --chat-message-thinking-border-color: #dbcdb3;
+
+    --input-box-background-color: rgba(28, 39, 48, 0.97);
+    --input-box-footer-font-color: #cfc3af;
+    --input-box-border-color: rgba(219, 205, 179, 0.88);
+    --input-box-shadow:
+        0 22px 42px -24px rgba(0, 0, 0, 0.78),
+        inset 0 1px 0 rgba(247, 238, 221, 0.05),
+        0 0 0 1px rgba(111, 137, 166, 0.08);
+    --code-bg-color: #46565d;
+    --conversation-item-bg-color: transparent;
+    --conversation-item-hover-bg-color: #31414a;
+    --conversation-item-hover-color: #e4ddd0;
+    --side-bar-hover-color: rgba(44, 59, 68, 0.86);
+
+    --form-control-bg: rgba(35, 46, 54, 0.98);
+    --form-control-text: #e4ddd0;
+    --form-control-border: #d3c4a8;
+    --form-control-placeholder: rgba(228, 221, 208, 0.48);
+    --form-control-focus: color-mix(in srgb, #c9ac63 55%, white);
+    --quick-toggle-bg: rgba(43, 56, 64, 0.96);
+    --quick-toggle-check: #e4ddd0;
+    --modal-surface: rgba(28, 38, 45, 0.98);
+    --modal-shadow: rgba(0, 0, 0, 0.42);
+    --modal-close-bg: rgba(43, 56, 64, 0.98);
+    --modal-close-color: #ece4d7;
+    --ui-icon-filter: brightness(0) saturate(100%) invert(91%) sepia(14%) saturate(329%) hue-rotate(342deg) brightness(97%) contrast(91%);
+    --copy-button-bg: #b88665;
+    --copy-button-text: #fff8f2;
+    --role-icon-filter: brightness(0) saturate(100%) invert(91%) sepia(14%) saturate(329%) hue-rotate(342deg) brightness(97%) contrast(91%);
+    --page-grain-opacity: 0.32;
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 145px 145px, 215px 215px;
+    --page-grain-position: 0 0, 13px 9px;
+    --page-grain-color: rgba(238, 229, 210, 0.12);
+    --page-grain-blend-mode: soft-light;
+    --page-grain-filter: contrast(1.32) brightness(1.01);
+
+    --r-font-color-accent: #ccb694;
+    --r-background-thinking-color: #4d5f67;
+    --r-thinking-tag-background-color: #62737b;
+    --r-thinking-tag-color: #e4ddd0;
+
+    --modern-trace-thinking-icon-color: rgba(181, 202, 214, 0.88);
+    --modern-trace-tool-icon-color: rgba(208, 182, 148, 0.84);
+    --modern-trace-title-color: rgba(228, 221, 208, 0.8);
+    --modern-trace-meta-color: rgba(204, 182, 148, 0.72);
+    --modern-trace-divider-color: rgba(219, 205, 179, 0.34);
+    --modern-trace-body-title-color: rgba(228, 221, 208, 0.6);
+    --modern-trace-body-color: rgba(228, 221, 208, 0.92);
+    --modern-trace-muted-color: rgba(207, 195, 175, 0.72);
+    --modern-trace-label-color: rgba(207, 195, 175, 0.68);
+    --modern-trace-detail-color: rgba(228, 221, 208, 0.79);
+    --modern-trace-error-color: #ffb4b4;
+
+    --markdown-table-border-color: rgba(219, 205, 179, 0.7);
+    --markdown-table-header-bg: #63706b;
+    --markdown-table-header-text: #ece4d7;
+    --markdown-table-row-odd-bg: rgba(244, 235, 212, 0.02);
+    --markdown-table-row-even-bg: rgba(244, 235, 212, 0.07);
+    --markdown-table-cell-text: #e4ddd0;
 }
 
 
@@ -153,18 +419,15 @@
     --code-border: #ddd;
     --code-text: #333333;
 
-    --artifact-button-background-color: #f4f4f4;
-    --artifact-content-bg: #ffffff;
-    --artifact-button-subtext-color: #666666;
-    --artifact-button-icon-background: #e0e0e0;
-    --artifact-button-icon-color: #666666;
-    --artifact-button-border-color: rgba(100, 100, 100, 0.5);
-    --artifact-button-border-color-hover: rgba(100, 100, 100, 1);
-    --artifact-button-icon-size: 25px;
-
     --input-box-background-color: #f4f4f4;
     --input-box-footer-font-color: #666666;
     --code-bg-color: red;
+    --page-grain-opacity: 0.08;
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 165px 165px, 245px 245px;
+    --page-grain-position: 0 0, 8px 10px;
+    --page-grain-color: rgba(74, 63, 52, 0.05);
+    --page-grain-filter: contrast(1.12) brightness(1.02);
 }
 
 [data-theme="claude"] {
@@ -207,18 +470,15 @@
     --code-border: #555;
     --code-text: #ffffff;
 
-    --artifact-button-background-color: #2f2f2c;
-    --artifact-content-bg-color: #282c34;
-    --artifact-button-subtext-color: #a6a39a;
-    --artifact-button-icon-background: rgb(33, 32, 28);
-    --artifact-button-icon-color: #a6a39a;
-    --artifact-button-border-color: rgb(92, 99, 112, 0.5);
-    --artifact-button-border-color-hover: rgb(92, 99, 112, 1);
-    --artifact-button-icon-size: 25px;
-
     --input-box-background-color: #393937;
     --input-box-footer-font-color: #a6a39a;
     --code-bg-color: red;
+    --page-grain-opacity: 0.15;
+    --page-grain-image: var(--page-grain-noise-fine-image), var(--page-grain-noise-coarse-image);
+    --page-grain-size: 155px 155px, 225px 225px;
+    --page-grain-position: 0 0, 10px 12px;
+    --page-grain-color: rgba(231, 223, 208, 0.08);
+    --page-grain-filter: contrast(1.2) brightness(1.01);
 }
 
 /*!* themes.css *!*/
@@ -272,15 +532,6 @@
 /*    --code-border-color: var(--r-border-color);*/
 /*    --code-text: var(--r-font-color);*/
 
-/*    --artifact-button-background-color: var(--ecru);*/
-/*    --artifact-content-bg-color: var(--r-message-background);*/
-/*    --artifact-button-subtext-color: var(--r-font-color);*/
-/*    --artifact-button-icon-background: var(--wheat-2);*/
-/*    --artifact-button-icon-color: var(--r-font-color);*/
-/*    --artifact-button-border-color: var(--r-border-color);*/
-/*    --artifact-button-border-color-hover: rgba(139, 105, 92, 1);*/
-/*    --artifact-button-icon-size: 25px;*/
-
 /*    --input-box-background-color: var(--ecru);*/
 /*    --input-box-footer-font-color: var(--r-font-color);*/
 /*    --code-bg-color: rgba(129,178,154, 0.5);*/
@@ -327,15 +578,6 @@
 /*    --code-border: #ddd;*/
 /*    --code-text: #333333;*/
 
-/*    --artifact-button-background-color: #f4f4f4;*/
-/*    --artifact-content-bg: #ffffff;*/
-/*    --artifact-button-subtext-color: #666666;*/
-/*    --artifact-button-icon-background: #e0e0e0;*/
-/*    --artifact-button-icon-color: #666666;*/
-/*    --artifact-button-border-color: rgba(100, 100, 100, 0.5);*/
-/*    --artifact-button-border-color-hover: rgba(100, 100, 100, 1);*/
-/*    --artifact-button-icon-size: 25px;*/
-
 /*    --input-box-background-color: #f4f4f4;*/
 /*    --input-box-footer-font-color: #666666;*/
 /*    --code-bg-color: red;*/
@@ -381,17 +623,7 @@
 /*    --code-border: #555;*/
 /*    --code-text: #ffffff;*/
 
-/*    --artifact-button-background-color: #2f2f2c;*/
-/*    --artifact-content-bg-color: #282c34;*/
-/*    --artifact-button-subtext-color: #a6a39a;*/
-/*    --artifact-button-icon-background: rgb(33, 32, 28);*/
-/*    --artifact-button-icon-color: #a6a39a;*/
-/*    --artifact-button-border-color: rgb(92, 99, 112, 0.5);*/
-/*    --artifact-button-border-color-hover: rgb(92, 99, 112, 1);*/
-/*    --artifact-button-icon-size: 25px;*/
-
 /*    --input-box-background-color: #393937;*/
 /*    --input-box-footer-font-color: #a6a39a;*/
 /*    --code-bg-color: red;*/
 /*}*/
-

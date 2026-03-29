@@ -1,0 +1,147 @@
+.traceSection {
+    width: 100%;
+    border: 1px solid color-mix(in srgb, var(--chat-message-border-color) 70%, transparent 30%);
+    border-radius: 16px;
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--chat-message-background-user) 12%, transparent 88%) 0%, transparent 100%),
+        color-mix(in srgb, var(--chat-message-thinking-background) 78%, transparent 22%);
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--r-thinking-tag-background-color) 80%, transparent 20%);
+    border-bottom: 1px solid color-mix(in srgb, var(--chat-message-border-color) 60%, transparent 40%);
+}
+
+.headerTitle {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--r-thinking-tag-color);
+}
+
+.toggleButton {
+    border: none;
+    background: transparent;
+    color: var(--r-thinking-tag-color);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.traceList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+}
+
+.traceItem {
+    position: relative;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--chat-message-background-user) 7%, transparent 93%);
+    border: 1px solid color-mix(in srgb, var(--chat-message-border-color) 55%, transparent 45%);
+}
+
+.traceTopRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.traceBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--r-thinking-tag-color);
+    background: color-mix(in srgb, var(--r-thinking-tag-background-color) 86%, white 14%);
+}
+
+.traceStatus {
+    font-size: 0.74rem;
+    color: var(--r-font-color-accent);
+    text-transform: capitalize;
+}
+
+.traceHeading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.traceName {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.traceServer {
+    font-size: 0.82rem;
+    color: var(--r-font-color-accent);
+}
+
+.traceText {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.detailGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.detailLabel {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--r-font-color-accent);
+}
+
+.detailValue {
+    margin: 0;
+    padding: 10px 11px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--chat-message-thinking-background) 68%, black 8%);
+    border: 1px solid color-mix(in srgb, var(--chat-message-border-color) 52%, transparent 48%);
+    color: var(--text-color);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.84rem;
+    font-family: "JetBrains Mono", "Space Mono", monospace;
+}
+
+.detailValueLine {
+    display: block;
+}
+
+.detailValueKey {
+    color: color-mix(in srgb, var(--text-color) 72%, black 28%);
+}
+
+.detailValuePrefix {
+    opacity: 0.92;
+}
+
+.detailValueError {
+    color: #ffb4b4;
+    border-color: color-mix(in srgb, #e36d6d 45%, transparent 55%);
+}

@@ -5,8 +5,6 @@ import styles from './QuickSettings.module.css';
 
 const QuickSettings = () => {
     const {
-        useArtifact,
-        toggleUseArtifact,
         useThinking,
         toggleUseThinking
     } = useChatSettingStore();
@@ -18,15 +16,6 @@ const QuickSettings = () => {
 
     return (
         <div className={styles.quickSettings}>
-            <label className={styles.quickSettingsLabel}>
-                <input
-                    type="checkbox"
-                    checked={useArtifact}
-                    onChange={toggleUseArtifact}
-                    className={styles.quickSettingsCheckbox}
-                />
-                Use Artifact
-            </label>
             <label className={styles.quickSettingsLabel}>
                 <input
                     type="checkbox"

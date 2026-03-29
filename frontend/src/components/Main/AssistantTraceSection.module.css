@@ -1,0 +1,233 @@
+.traceStack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 2px 0 14px;
+}
+
+.traceStackHeader {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 40px;
+}
+
+.traceStackButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--modern-trace-meta-color);
+    opacity: 0.86;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: opacity 0.18s ease, color 0.18s ease;
+}
+
+.traceStackButton:hover,
+.traceStackButton:focus-visible {
+    color: var(--modern-trace-title-color);
+    opacity: 1;
+}
+
+.traceItem {
+    width: 100%;
+}
+
+.traceToggle {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+.traceIconWrap {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.traceIconThinking {
+    color: var(--modern-trace-thinking-icon-color);
+}
+
+.traceIconTool {
+    color: var(--modern-trace-tool-icon-color);
+}
+
+.traceToggleCopy {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.traceToggleTitle {
+    font-size: 0.9rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--modern-trace-title-color);
+    letter-spacing: -0.01em;
+}
+
+.traceMeta {
+    font-size: 0.9rem;
+    color: var(--modern-trace-meta-color);
+    opacity: 0.78;
+}
+
+.disclosureArrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--modern-trace-meta-color);
+    opacity: 0;
+    transform: translate(-4px, 2px);
+    transition: opacity 0.18s ease, transform 0.18s ease, color 0.18s ease;
+}
+
+.disclosureArrowVisible {
+    opacity: 1;
+    transform: translateY(2px);
+    color: var(--modern-trace-title-color);
+}
+
+.traceToggle:hover .disclosureArrow,
+.traceToggle:focus-visible .disclosureArrow,
+.traceStackButton:hover .disclosureArrow,
+.traceStackButton:focus-visible .disclosureArrow {
+    opacity: 1;
+    transform: translateY(2px);
+    color: var(--modern-trace-title-color);
+}
+
+.traceBody {
+    display: grid;
+    grid-template-columns: 1px minmax(0, 1fr);
+    gap: 0 22px;
+    margin-top: 8px;
+    margin-left: 39px;
+}
+
+.traceBodyLine {
+    width: 1px;
+    min-height: 100%;
+    background: var(--modern-trace-divider-color);
+}
+
+.traceBodyContent {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 2px;
+}
+
+.traceBodyTitle {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--modern-trace-body-title-color);
+}
+
+.reasoningText,
+.toolText {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.72;
+    color: var(--modern-trace-body-color);
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.loadingText {
+    font-style: italic;
+    color: var(--modern-trace-muted-color);
+    font-size: 0.88rem;
+}
+
+.detailBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detailLabel {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--modern-trace-label-color);
+}
+
+.detailValue {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--modern-trace-body-color);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.9rem;
+    line-height: 1.72;
+    font-weight: 400;
+    font-family: inherit;
+    letter-spacing: -0.01em;
+    opacity: 1;
+}
+
+.detailValueLine {
+    display: block;
+}
+
+.detailValueKey {
+    color: color-mix(in srgb, var(--modern-trace-body-color) 74%, black 26%);
+}
+
+.detailValuePrefix {
+    opacity: 0.92;
+}
+
+.detailValueError {
+    color: var(--modern-trace-error-color);
+}
+
+@media (max-width: 768px) {
+    .traceStackHeader {
+        padding-left: 38px;
+    }
+
+    .traceToggle {
+        gap: 12px;
+    }
+
+    .traceBody {
+        margin-left: 13px;
+        gap: 0 16px;
+    }
+
+    .traceToggleTitle {
+        font-size: 0.86rem;
+    }
+
+    .reasoningText,
+    .toolText,
+    .detailValue {
+        font-size: 0.86rem;
+    }
+}

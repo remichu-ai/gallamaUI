@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Import the cors module
 const conversationRoutes = require('./routes/conversations'); // Ensure this path is correct
+const mcpRoutes = require('./routes/mcp');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors()); // Use the CORS middleware
 app.use('/api/conversations', conversationRoutes);
+app.use('/api/mcp', mcpRoutes);
 
 // Root route for testing
 app.get('/', (req, res) => {

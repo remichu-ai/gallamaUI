@@ -1,11 +1,16 @@
 .topBar {
     display: flex;
-    padding: 5px 45px;
+    padding: 10px clamp(4px, 1.2vw, 12px) 0;
     justify-content: space-between;
     align-items: center;
     background-color: var(--top-bar-bg-color);
     color: var(--top-bar-text-color);
     height: var(--top-bar-height);
+    transition: padding-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebarOpen {
+    padding-left: clamp(10px, 2vw, 18px);
 }
 
 .topBarText {

@@ -1,42 +1,39 @@
 .container {
-    /*max-width: 1024px; !* Increase max-width for the new 2-column layout *!*/
-    margin: 0 auto;
-    padding-left: 40px;
-    padding-right: 40px;
+    margin: 0;
+    padding: 24px 32px 32px;
     width: 100%;
-    height: 100vh;
-    /* Enable scrolling */
-    overflow-x: auto;
+    max-width: 1680px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    color: var(--text-color);
     /* Slim scrollbar */
     scrollbar-width: thin;
     scrollbar-color: #888 #f1f1f1;
 }
 
 .settingContainer {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+    gap: 24px;
     width: 100%;
-    justify-content: space-between;
+    align-items: flex-start;
 }
 
 .settingColumn1 {
-    padding: 10px;
-    flex: 1;
-    flex-direction: column;
-    margin-right: 40px;
-    width: 100%;
     display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 
 .settingColumn2 {
-    flex: 2;
-    width: 100%;
-    flex-direction: column;
     display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 
@@ -74,12 +71,15 @@
 
 .settingGroup {
     margin-bottom: 16px;
+    width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 .checkboxLabel {
     display: flex;
     align-items: center;
+    color: inherit;
 }
 
 .checkbox {
@@ -91,6 +91,8 @@
     display: flex;
     flex-direction: column;
     font-weight: 600;
+    width: 100%;
+    color: inherit;
 }
 
 .rangeInput {
@@ -127,25 +129,43 @@
 }
 
 .textInput {
-    min-width: 30px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 8px;
     margin-top: 8px;
     font-size: 1rem;
+    color: var(--form-control-text);
+    background-color: var(--form-control-bg);
+    border: 1px solid var(--form-control-border);
+    border-radius: 8px;
 }
 
 .textArea,
 .selectInput {
     width: 100%;
-    min-width: 450px;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 8px;
     margin-top: 8px;
     font-size: 1rem;
-    border: 1px solid var(--r-font-color);
-    border-radius: 4px;
+    color: var(--form-control-text);
+    background-color: var(--form-control-bg);
+    border: 1px solid var(--form-control-border);
+    border-radius: 8px;
 }
 
 .textArea {
     resize: both;
+}
+
+.textInput:focus,
+.textArea:focus,
+.selectInput:focus {
+    outline: 2px solid var(--form-control-focus);
+    outline-offset: 1px;
 }
 
 .saveButton {
@@ -159,6 +179,8 @@
     cursor: pointer;
     transition: 0.3s;
     margin-bottom: 20px;
+    margin-top: 8px;
+    width: 100%;
 }
 
 .saveButton:hover {
@@ -189,4 +211,372 @@
     background-color: var(--r-accent2);
     border: 1px solid var(--r-border-color);
 
+}
+
+.inlineInputRow {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.inlineInputRow > * {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.sectionHint {
+    margin-top: 6px;
+    font-size: 0.875rem;
+    opacity: 0.84;
+    color: inherit;
+}
+
+.displayModeCard {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, transparent);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent) 14%, transparent) 0, transparent 38%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--form-control-bg) 96%, var(--input-box-background-color) 4%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 90%, black 10%) 100%
+        );
+}
+
+.displayModeHeader {
+    margin-bottom: 14px;
+}
+
+.displayModeTitle {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.segmentedControl {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--input-box-background-color) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 72%, transparent);
+}
+
+.segmentedButton {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.segmentedButton:hover {
+    background: color-mix(in srgb, var(--r-accent2) 14%, transparent);
+}
+
+.segmentedButtonActive {
+    background: linear-gradient(90deg, var(--r-accent), var(--r-accent2));
+    color: white;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--r-accent2) 28%, transparent);
+}
+
+.mcpOverviewCard {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 82%, transparent);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 18%, transparent) 0, transparent 38%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--input-box-background-color) 88%, var(--form-control-bg) 12%) 0%,
+            color-mix(in srgb, var(--form-control-bg) 92%, black 8%) 100%
+        );
+    color: var(--text-color);
+}
+
+.mcpOverviewHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mcpOverviewTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.mcpOverviewCard .sectionHint,
+.mcpOverviewCard .toggleHint,
+.mcpOverviewCard .toggleCopy strong {
+    color: var(--text-color);
+}
+
+.mcpOverviewCard .sectionHint,
+.mcpOverviewCard .toggleHint {
+    opacity: 0.68;
+}
+
+.mcpCard {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, transparent);
+    border-radius: 18px;
+    padding: 18px;
+    margin-top: 12px;
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 12%, transparent) 0, transparent 34%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--form-control-bg) 94%, var(--input-box-background-color) 6%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 90%, black 10%) 100%
+        );
+    color: var(--text-color);
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.mcpHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mcpTitle {
+    font-weight: bold;
+    color: inherit;
+}
+
+.mcpHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.toggleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.toggleCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggleHint {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    opacity: 0.76;
+    font-weight: 400;
+}
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.switchTrack {
+    position: relative;
+    width: 56px;
+    height: 32px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--r-border-color) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 42%, transparent);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.switchTrack::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: color-mix(in srgb, white 82%, var(--modal-surface) 18%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+}
+
+.switch input:checked + .switchTrack {
+    background: linear-gradient(90deg, var(--r-accent), var(--r-accent2));
+    border-color: color-mix(in srgb, var(--r-accent2) 72%, transparent);
+}
+
+.switch input:checked + .switchTrack::after {
+    transform: translateX(24px);
+}
+
+.secondaryButton {
+    background-color: transparent;
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid currentColor;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.secondaryButton:hover {
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.dangerButton {
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color, #fff) 82%, white 18%) 0%,
+            color-mix(in srgb, var(--form-control-border) 42%, var(--r-background-color, #fff) 58%) 100%
+        );
+    color: color-mix(in srgb, #8b332b 72%, var(--r-font-color) 28%);
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, #a14d43 22%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.dangerButton:hover {
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color, #fff) 88%, white 12%) 0%,
+            color-mix(in srgb, var(--form-control-border) 34%, var(--r-background-color, #fff) 66%) 100%
+        );
+    border-color: color-mix(in srgb, var(--form-control-border) 62%, #c06a5d 38%);
+}
+
+.dangerButton:disabled,
+.secondaryButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.dangerCard {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(167, 40, 40, 0.4);
+    background:
+        radial-gradient(circle at top right, rgba(167, 40, 40, 0.16) 0, transparent 38%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--form-control-bg) 93%, #6d1f1f 7%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 90%, #4c1414 10%) 100%
+        );
+    color: var(--text-color);
+}
+
+.dangerCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dangerTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: inherit;
+}
+
+.successText {
+    margin-top: 12px;
+    color: color-mix(in srgb, #6fd08d 84%, white 16%);
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(10, 13, 18, 0.58);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+}
+
+.modalCard {
+    width: min(100%, 520px);
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, transparent);
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--modal-surface) 92%, var(--input-box-background-color) 8%) 0%,
+            color-mix(in srgb, var(--form-control-bg) 94%, black 6%) 100%
+        );
+    color: var(--text-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+.modalTitle {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+}
+
+.modalText {
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+
+.modalActions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1200px) {
+    .settingContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .dangerCardHeader,
+    .modalActions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
     Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box,
-    Button, FormControl, FormLabel, Input, Checkbox, Select
+    FormControl, FormLabel, Input, Select
 } from '@chakra-ui/react';
-import { Divider } from '@chakra-ui/react'
 import LoadedModels from '../components/ModelManagement/LoadedModels.jsx'
 import useModelManagementStore from '../store/modelManagementStore.js';
-import useUIStore from "../store/uiStore.js";
 import styles from './ModelManagement.module.css';
+
+const getModelSelectionId = (modelData) => modelData.model_id || modelData.model;
+
+const formatFieldLabel = (value) => value.replace(/_/g, ' ');
 
 const ModelManagement = () => {
     const { availableModels, fetchAvailableModels, loadModel } = useModelManagementStore();
     const [selectedModel, setSelectedModel] = useState(null);
-    const [selectedModelData, setSelectedModelData] = useState(null); // Add a state to store model data
+    const [selectedModelData, setSelectedModelData] = useState(null);
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
@@ -20,12 +22,13 @@ const ModelManagement = () => {
     }, [fetchAvailableModels]);
 
     const openFormForModel = (modelData) => {
-        setSelectedModel(modelData.model_id); // Keep selected model_id
-        setSelectedModelData(modelData); // Store model data separately
+        const selectionId = getModelSelectionId(modelData);
+        setSelectedModel(selectionId);
+        setSelectedModelData(modelData);
         setFormData(prev => ({
             ...prev,
-            [modelData.model_id]: {
-                ...prev[modelData.model_id],
+            [selectionId]: {
+                ...prev[selectionId],
                 gpus: modelData.gpus || [],
                 cache_size: modelData.cache_size || '',
                 cache_quant: modelData.cache_quant || 'Q4',
@@ -64,16 +67,25 @@ const ModelManagement = () => {
     };
 
     const handleSubmit = async (modelId) => {
-        const modelData = availableModels.find(m => m.model_id === modelId);
+        const modelData = availableModels.find((model) => getModelSelectionId(model) === modelId);
+        if (!modelData) {
+            return;
+        }
 
-        let gpus = formData[modelId]?.gpus;
+        let gpus = formData[modelId]?.gpus ?? [];
         if (typeof gpus === 'string') {
             gpus = gpus.split(',').map(gpu => parseFloat(gpu.trim())).filter(gpu => !isNaN(gpu));
         }
+        if (!Array.isArray(gpus)) {
+            gpus = [];
+        }
 
-        let draft_gpus = formData[modelId]?.draft_gpus;
+        let draft_gpus = formData[modelId]?.draft_gpus ?? [];
         if (typeof draft_gpus === 'string') {
             draft_gpus = draft_gpus.split(',').map(gpu => parseFloat(gpu.trim())).filter(gpu => !isNaN(gpu));
+        }
+        if (!Array.isArray(draft_gpus)) {
+            draft_gpus = [];
         }
 
         const payload = {
@@ -96,183 +108,247 @@ const ModelManagement = () => {
     };
 
     const renderValue = (value) => {
-        // Check for undefined or null values
         if (value === null || value === undefined) {
-            return 'N/A';  // Or return any placeholder you prefer
+            return 'N/A';
         }
 
         if (typeof value === 'object' && !Array.isArray(value)) {
-            // If value is an object, we render its key-value pairs
+            const entries = Object.entries(value);
+            if (entries.length === 0) {
+                return 'N/A';
+            }
+
             return (
-                <div>
-                    {Object.entries(value).map(([subKey, subValue]) => (
-                        <div key={subKey}>
-                            <strong>{subKey}:</strong> {String(subValue)}
+                <div className={styles.objectValue}>
+                    {entries.map(([subKey, subValue]) => (
+                        <div key={subKey} className={styles.objectValueRow}>
+                            <strong>{formatFieldLabel(subKey)}:</strong> {String(subValue)}
                         </div>
                     ))}
                 </div>
             );
         }
 
-        return Array.isArray(value) ? value.join(', ') : String(value);
-    };
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value.join(', ') : 'N/A';
+        }
 
+        return String(value);
+    };
 
     return (
         <div className={styles.container}>
             <div className={styles.settingContainer}>
-                <div className={styles.settingColumn1}>
-                    <h2 className={styles.header}>Available Models</h2>
-                    <Accordion allowToggle>
-                        {availableModels.map((modelData) => {
-                            console.log('modelData:', modelData); // Check the structure of modelData
+                <section className={styles.settingColumn1}>
+                    <div className={styles.panelHeader}>
+                        <div>
+                            <p className={styles.eyebrow}>Model catalog</p>
+                            <h2 className={styles.header}>Available Models</h2>
+                            <p className={styles.panelHint}>
+                                Browse the installed catalog, inspect model metadata, then open a compact load form on the right.
+                            </p>
+                        </div>
+                        <span className={styles.countPill}>{availableModels.length} models</span>
+                    </div>
 
-                            const { model, backend } = modelData;
+                    <div className={styles.accordionScroller}>
+                        {availableModels.length > 0 ? (
+                            <Accordion allowToggle className={styles.modelAccordion}>
+                                {availableModels.map((modelData) => {
+                                    const { model, backend } = modelData;
+                                    const selectionId = getModelSelectionId(modelData);
+                                    const isSelected = selectedModel === selectionId;
 
-                            return (
-                                <AccordionItem key={`${model}-${backend}`}>
-                                    <h2>
-                                        <AccordionButton onClick={() => openFormForModel(modelData)}>
-                                            <Box flex="1" textAlign="left">
-                                                {model} (Backend: {backend})
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        {Object.entries(modelData).map(([key, value]) => {
-                                            if (key !== 'model' && key !== 'backend') {
-                                                return (
-                                                    <div key={key}>
-                                                        <strong>{key}:</strong> {renderValue(value)}
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </AccordionPanel>
-                                </AccordionItem>
-                            );
-                        })}
-                    </Accordion>
-                </div>
-                <div className={styles.settingColumn2}>
+                                    return (
+                                        <AccordionItem key={`${selectionId}-${backend}`} className={styles.modelItem}>
+                                            <h3>
+                                                <AccordionButton
+                                                    onClick={() => openFormForModel(modelData)}
+                                                    className={styles.modelTrigger}
+                                                >
+                                                    <Box className={styles.modelButtonContent}>
+                                                        <div className={styles.modelTopLine}>
+                                                            <span className={styles.modelName}>{model}</span>
+                                                            <span className={styles.backendPill}>{backend || 'Unknown backend'}</span>
+                                                            {isSelected && <span className={styles.selectedPill}>Selected</span>}
+                                                        </div>
+                                                        <span className={styles.modelPath}>{selectionId}</span>
+                                                    </Box>
+                                                    <AccordionIcon className={styles.accordionIcon} />
+                                                </AccordionButton>
+                                            </h3>
+                                            <AccordionPanel className={styles.modelPanel}>
+                                                <div className={styles.modelFieldGrid}>
+                                                    {Object.entries(modelData).map(([key, value]) => {
+                                                        if (key === 'model' || key === 'backend') {
+                                                            return null;
+                                                        }
+
+                                                        return (
+                                                            <div key={key} className={styles.modelField}>
+                                                                <span className={styles.fieldLabel}>{formatFieldLabel(key)}</span>
+                                                                <div className={styles.fieldValue}>{renderValue(value)}</div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </AccordionPanel>
+                                        </AccordionItem>
+                                    );
+                                })}
+                            </Accordion>
+                        ) : (
+                            <div className={styles.emptyState}>
+                                No models were returned by the backend yet. Refresh the backend connection and this catalog will populate here.
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                <section className={styles.settingColumn2}>
                     <div className={styles.loadedModelContainer}>
                         <LoadedModels />
                     </div>
+
                     {selectedModel && selectedModelData && (
                         <div className={styles.loadModelFormContainer}>
-                            <h2 className={styles.header}>
-                                Load Model: {selectedModelData.model}
-                            </h2>
-                            <h4 className={styles.subHeader}>
-                                Path: {selectedModel}
-                            </h4>
-                            {/* Max Sequence Length */}
-                            <FormControl mb={4}>
-                                <FormLabel>Max Sequence Length</FormLabel>
-                                <Input
-                                    name="max_seq_len"
-                                    value={formData[selectedModel]?.max_seq_len || ''}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    placeholder="Enter max sequence length"
-                                    className={styles.textInput}
-                                />
-                            </FormControl>
+                            <div className={styles.loadModelHeader}>
+                                <div>
+                                    <p className={styles.eyebrow}>Launch configuration</p>
+                                    <h2 className={styles.header}>Load {selectedModelData.model}</h2>
+                                    <p className={styles.subHeader}>{selectedModel}</p>
+                                </div>
+                                <span className={styles.backendPill}>{selectedModelData.backend || 'Unknown backend'}</span>
+                            </div>
 
-                            {/* Cache Size */}
-                            <FormControl mb={4}>
-                                <FormLabel>Cache Size (must be &gt;= max_seq_len). Leave blank to default to
-                                    max_seq_len</FormLabel>
-                                <Input
-                                    name="cache_size"
-                                    value={formData[selectedModel]?.cache_size || ''}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    placeholder="Enter cache size"
-                                    className={styles.textInput}
-                                />
-                            </FormControl>
+                            <p className={styles.formIntro}>
+                                Tune only the fields you care about. Blank values fall back to the server defaults.
+                            </p>
 
-                            {/* Cache Quant */}
-                            <FormControl mb={4}>
-                                <FormLabel>Cache Quantization. Default is Q4</FormLabel>
-                                <Select
-                                    name="cache_quant"
-                                    value={formData[selectedModel]?.cache_quant || 'Q4'}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    className={styles.selectInput}
-                                >
-                                    <option value="Q4">Q4</option>
-                                    <option value="Q6">Q6</option>
-                                    <option value="Q8">Q8</option>
-                                    <option value="FP16">FP16</option>
-                                </Select>
-                            </FormControl>
-                            <FormControl mb={4}>
-                                <FormLabel>GPUs. Default to auto. Else specify the GB to stay within by GPU. e.g.
-                                    20,20,15 mean: 20GB max for each of 2 first GPUs and 15GB limit for the 3rd
-                                    GPU</FormLabel>
-                                <Input
-                                    name="gpus"
-                                    value={formData[selectedModel]?.gpus || ''}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    placeholder="Enter GPU values"
-                                    className={styles.textInput}
-                                />
-                            </FormControl>
-                            <FormControl mb={4} display="flex" alignItems="center">
-                                <FormLabel ml={2}>Tensor Parallel (Only for Qwen2/2.5-72B, Llama 3.1-70B and Mistral
-                                    Large)</FormLabel>
-                                <Checkbox
-                                    name="tensor_parallel"
-                                    isChecked={formData[selectedModel]?.tensor_parallel || false}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    className={styles.checkbox}
-                                />
-                            </FormControl>
+                            <div className={styles.formGrid}>
+                                <FormControl mb={0} className={styles.formControl}>
+                                    <FormLabel className={styles.formLabel}>Max Sequence Length</FormLabel>
+                                    <Input
+                                        size="sm"
+                                        name="max_seq_len"
+                                        value={formData[selectedModel]?.max_seq_len || ''}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        placeholder="Enter max sequence length"
+                                        className={styles.textInput}
+                                    />
+                                </FormControl>
 
-                            {/* Draft Model */}
-                            <FormControl mb={4}>
-                                <FormLabel>Select Draft Model (Optional)</FormLabel>
-                                <Select
-                                    name="draft_model_id"
-                                    value={formData[selectedModel]?.draft_model_id || ''}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    className={styles.selectInput}
-                                >
-                                    <option value="">None</option>
-                                    {/* Default option for no draft model */}
-                                    {availableModels.map((model) => (
-                                        <option key={model.model} value={model.model}>
-                                            {model.model}
-                                        </option>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                                <FormControl mb={0} className={styles.formControl}>
+                                    <FormLabel className={styles.formLabel}>Cache Size</FormLabel>
+                                    <Input
+                                        size="sm"
+                                        name="cache_size"
+                                        value={formData[selectedModel]?.cache_size || ''}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        placeholder="Leave blank to match max sequence"
+                                        className={styles.textInput}
+                                    />
+                                </FormControl>
 
-                            {/* Draft Cache Quant */}
-                            <FormControl mb={4}>
-                                <FormLabel>Draft Cache Quantization. Default is Q4</FormLabel>
-                                <Select
-                                    name="draft_cache_quant"
-                                    value={formData[selectedModel]?.draft_cache_quant || 'Q4'}
-                                    onChange={(e) => handleChange(e, selectedModel)}
-                                    className={styles.selectInput}
-                                >
-                                    <option value="Q4">Q4</option>
-                                    <option value="Q6">Q6</option>
-                                    <option value="Q8">Q8</option>
-                                    <option value="FP16">FP16</option>
-                                </Select>
-                            </FormControl>
+                                <FormControl mb={0} className={styles.formControl}>
+                                    <FormLabel className={styles.formLabel}>Cache Quantization</FormLabel>
+                                    <Select
+                                        size="sm"
+                                        name="cache_quant"
+                                        value={formData[selectedModel]?.cache_quant || 'Q4'}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="Q4">Q4</option>
+                                        <option value="Q6">Q6</option>
+                                        <option value="Q8">Q8</option>
+                                        <option value="FP16">FP16</option>
+                                    </Select>
+                                </FormControl>
 
-                            <Button colorScheme="blue" mt={4} onClick={() => handleSubmit(selectedModel)}
-                                className={styles.saveButton}>
+                                <FormControl mb={0} className={`${styles.formControl} ${styles.formControlWide}`}>
+                                    <FormLabel className={styles.formLabel}>GPU Limits</FormLabel>
+                                    <Input
+                                        size="sm"
+                                        name="gpus"
+                                        value={formData[selectedModel]?.gpus || ''}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        placeholder="Example: 20,20,15"
+                                        className={styles.textInput}
+                                    />
+                                </FormControl>
+
+                                <div className={`${styles.formControl} ${styles.formControlWide}`}>
+                                    <label className={styles.checkboxRow}>
+                                        <input
+                                            type="checkbox"
+                                            name="tensor_parallel"
+                                            checked={formData[selectedModel]?.tensor_parallel || false}
+                                            onChange={(e) => handleChange(e, selectedModel)}
+                                            className={styles.checkboxInput}
+                                        />
+                                        <span className={styles.checkboxCopy}>
+                                            <strong>Tensor Parallel</strong>
+                                            <span>Recommended only for Qwen2/2.5-72B, Llama 3.1-70B, and Mistral Large.</span>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <FormControl mb={0} className={`${styles.formControl} ${styles.formControlWide}`}>
+                                    <FormLabel className={styles.formLabel}>Draft Model</FormLabel>
+                                    <Select
+                                        size="sm"
+                                        name="draft_model_id"
+                                        value={formData[selectedModel]?.draft_model_id || ''}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="">None</option>
+                                        {availableModels.map((modelOption) => (
+                                            <option key={modelOption.model} value={modelOption.model}>
+                                                {modelOption.model}
+                                            </option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl mb={0} className={styles.formControl}>
+                                    <FormLabel className={styles.formLabel}>Draft Cache Quantization</FormLabel>
+                                    <Select
+                                        size="sm"
+                                        name="draft_cache_quant"
+                                        value={formData[selectedModel]?.draft_cache_quant || 'Q4'}
+                                        onChange={(e) => handleChange(e, selectedModel)}
+                                        className={styles.selectInput}
+                                    >
+                                        <option value="Q4">Q4</option>
+                                        <option value="Q6">Q6</option>
+                                        <option value="Q8">Q8</option>
+                                        <option value="FP16">FP16</option>
+                                    </Select>
+                                </FormControl>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => handleSubmit(selectedModel)}
+                                className={styles.saveButton}
+                            >
                                 Load Model
-                            </Button>
+                            </button>
                         </div>
                     )}
-                </div>
+
+                    {!selectedModel && (
+                        <div className={styles.emptySelectionCard}>
+                            <p className={styles.eyebrow}>No model selected</p>
+                            <h2 className={styles.header}>Pick a model to configure it</h2>
+                            <p className={styles.panelHint}>
+                                Selecting a model from the left opens a trimmed-down launch form here with cache, GPU, and draft settings.
+                            </p>
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

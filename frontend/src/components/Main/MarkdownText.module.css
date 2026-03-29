@@ -9,6 +9,26 @@
     /*white-space: pre-wrap; !* Preserves whitespace and line breaks *!*/
 }
 
+.markdownContainer > :first-child {
+    margin-top: 0;
+}
+
+.markdownContainer > :last-child {
+    margin-bottom: 0;
+}
+
+.markdownContainer p {
+    margin: 0 0 0.65em;
+}
+
+.markdownContainer ul,
+.markdownContainer ol,
+.markdownContainer pre,
+.markdownContainer blockquote,
+.markdownContainer table {
+    margin: 0 0 0.8em;
+}
+
 .markdownContent {
     overflow: auto;
 }
@@ -37,19 +57,25 @@
     border-collapse: collapse;
 }
 
+.markdownContainer tr {
+    background-color: var(--markdown-table-row-odd-bg);
+}
+
 .markdownContainer th,
 .markdownContainer td {
-    border: 2px solid black;
+    border: 2px solid var(--markdown-table-border-color);
     padding: 6px;
+    color: var(--markdown-table-cell-text);
 }
 
 .markdownContainer th {
-    background-color: hsl(75, 20.1%, 56.1%);
+    background-color: var(--markdown-table-header-bg);
+    color: var(--markdown-table-header-text);
     text-align: left;
 }
 
 .markdownContainer tr:nth-child(even) {
-    background-color: #fef3e0;
+    background-color: var(--markdown-table-row-even-bg);
 }
 
 .codeBlockWrapper {
