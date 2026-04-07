@@ -13,12 +13,52 @@
     padding-left: clamp(10px, 2vw, 18px);
 }
 
+.mobileLayout,
+.mobileLayout.sidebarOpen {
+    gap: 12px;
+    padding: calc(env(safe-area-inset-top) + 10px) 10px 8px;
+    min-height: 48px;
+    height: auto;
+}
+
 .topBarText {
     margin: 2px;
     font-size: var(--top-bar-font-size);
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mobileMenuButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--top-bar-text-color) 20%, transparent);
+    background: color-mix(in srgb, var(--top-bar-bg-color) 70%, transparent);
+    color: var(--top-bar-text-color);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.mobileMenuButton:hover {
+    background: color-mix(in srgb, var(--top-bar-text-color) 10%, transparent);
 }
 
 .spacer {
     flex-grow: 1;
+}
+
+@media (max-width: 720px) {
+    .topBar {
+        gap: 10px;
+    }
+
+    .topBarText {
+        font-size: clamp(1rem, 4vw, 1.15rem);
+    }
 }

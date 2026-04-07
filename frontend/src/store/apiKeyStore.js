@@ -4,6 +4,11 @@ import {
     API_ENDPOINT_OPTIONS,
     DEFAULT_API_ENDPOINT_TYPE
 } from '../services/api/endpointTypes.js';
+import {
+    DEFAULT_BACKEND_API_BASE_URL,
+    DEFAULT_GALLAMA_API_BASE_URL,
+    normalizeConfiguredUrl,
+} from '../services/urlConfig.js';
 
 const useApiKeyStore = create(
     persist(
@@ -15,7 +20,7 @@ const useApiKeyStore = create(
                 // },
                 gallama: {
                     name: 'Gallama',
-                    endpoint: 'http://127.0.0.1:8000/v1',
+                    endpoint: DEFAULT_GALLAMA_API_BASE_URL,
                 },
                 // claude: {
                 //     name: 'Claude',
@@ -32,6 +37,7 @@ const useApiKeyStore = create(
             return {
                 apiKeys: initialApiKeys,
                 selectedService: "gallama", // default service
+                backendApiUrl: DEFAULT_BACKEND_API_BASE_URL,
                 apiEndpointOptions: API_ENDPOINT_OPTIONS,
                 selectedApiEndpointType: DEFAULT_API_ENDPOINT_TYPE,
                 services,
@@ -43,6 +49,10 @@ const useApiKeyStore = create(
                 })),
                 clearApiKey: (service) => set(state => ({
                     apiKeys: {...state.apiKeys, [service]: 'NA'}
+                })),
+
+                setBackendApiUrl: (url) => set(() => ({
+                    backendApiUrl: url,
                 })),
 
                 selectApiEndpointType: (apiEndpointType) => set((state) => {
@@ -69,8 +79,34 @@ const useApiKeyStore = create(
 
                 getSelectedServiceEndpoint: () => {
                     const state = get()
-                    return state.services[state.selectedService]?.endpoint
+                    return normalizeConfiguredUrl(
+                        state.services[state.selectedService]?.endpoint,
+                        services[state.selectedService]?.endpoint
+                    )
                 },
+
+                setServiceEndpoint: (serviceName, endpoint) =>
+                    set((state) => {
+                        if (!state.services[serviceName]) {
+                            console.warn(`Service ${serviceName} not found. Keeping current endpoint.`)
+                            return {}
+                        }
+
+                        return {
+                            services: {
+                                ...state.services,
+                                [serviceName]: {
+                                    ...state.services[serviceName],
+                                    endpoint,
+                                }
+                            }
+                        }
+                    }),
+
+                getBackendApiBaseUrl: () => normalizeConfiguredUrl(
+                    get().backendApiUrl,
+                    DEFAULT_BACKEND_API_BASE_URL
+                ),
 
                 getSelectedApiEndpointType: () => {
                     const state = get();

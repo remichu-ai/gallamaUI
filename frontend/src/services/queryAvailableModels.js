@@ -1,4 +1,5 @@
 import useApiKeyStore from '../store/apiKeyStore'
+import { joinUrlPath } from './urlConfig.js';
 
 const queryAvailableModels = async () => {
     const store = useApiKeyStore.getState()
@@ -10,13 +11,17 @@ const queryAvailableModels = async () => {
         return []
     }
 
-    const endpoint = services[selectedService]?.endpoint
+    const endpoint = store.getSelectedServiceEndpoint?.() || services[selectedService]?.endpoint
+    if (!endpoint) {
+        console.warn(`No API endpoint configured for ${selectedService}`)
+        return []
+    }
 
     try {
         let response
         switch (selectedService) {
             case 'openai':
-                response = await fetch(`${endpoint}/models`, {
+                response = await fetch(joinUrlPath(endpoint, '/models'), {
                     headers: {
                         'Authorization': `Bearer ${apiKey}`
                     }
@@ -28,7 +33,7 @@ const queryAvailableModels = async () => {
                 break
             case 'gallama':
                 // Assuming Gallama has a similar endpoint structure
-                response = await fetch(`${endpoint}/models`, {
+                response = await fetch(joinUrlPath(endpoint, '/models'), {
                     headers: {
                         'Authorization': `Bearer ${apiKey}`
                     }

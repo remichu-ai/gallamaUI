@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import styles from './SettingPage.module.css';
 import useChatSettingStore from '../store/chatSettingStore';
 import useApiKeyStore from '../store/apiKeyStore';
@@ -6,6 +7,8 @@ import { queryAvailableModels } from '../services/queryAvailableModels';
 import useUIStore from '../store/uiStore';
 import McpServerToolPanel from '../components/Mcp/McpServerToolPanel.jsx';
 import useChatStore from '../store/chatStore';
+import { buildBackendApiUrl } from '../services/backendApi.js';
+import useMcpServerDiscoverability from '../components/Mcp/useMcpServerDiscoverability.js';
 import axios from 'axios';
 import {
     TOOL_PAYLOAD_FORMAT_JSON,
@@ -18,12 +21,42 @@ const formatThemeLabel = (theme) =>
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ');
 
+const getEnabledToolNamesForServer = (server) => {
+    const discoveredToolNames = (server?.discoveredTools ?? [])
+        .map((tool) => tool?.name?.trim())
+        .filter(Boolean);
+
+    if (server?.toolMode === 'all') {
+        return discoveredToolNames;
+    }
+
+    const selectedToolNames = (server?.selectedToolNames ?? [])
+        .map((toolName) => String(toolName).trim())
+        .filter(Boolean);
+
+    if (discoveredToolNames.length === 0) {
+        return selectedToolNames;
+    }
+
+    const discoveredToolNameSet = new Set(discoveredToolNames);
+    return selectedToolNames.filter((toolName) => discoveredToolNameSet.has(toolName));
+};
+
+const getDiscoveredToolNamesForServer = (server) => (
+    (server?.discoveredTools ?? [])
+        .map((tool) => tool?.name?.trim())
+        .filter(Boolean)
+);
+
+const isMcpServerOffline = (server) => server?.discoveryStatus === 'error';
+
 const SettingsPage = () => {
     const [isDeleteHistoryModalOpen, setIsDeleteHistoryModalOpen] = useState(false);
     const [deleteConfirmationText, setDeleteConfirmationText] = useState('');
     const [deleteHistoryStatus, setDeleteHistoryStatus] = useState('');
     const [deleteHistoryError, setDeleteHistoryError] = useState('');
     const [isDeletingHistory, setIsDeletingHistory] = useState(false);
+    const [collapsedMcpServerIds, setCollapsedMcpServerIds] = useState(() => new Set());
 
     const {
         temperature,
@@ -33,12 +66,16 @@ const SettingsPage = () => {
         systemPrompt,
         setSystemPrompt,
         saveSettings,
+        useThinking,
+        toggleUseThinking,
         useMcp,
         setUseMcp,
         mcpServers,
         addMcpServer,
         removeMcpServer,
         updateMcpServer,
+        setMcpServerDiscoveryState,
+        setMcpServerDiscoveredTools,
         maxImageWidth,
         setMaxImageWidth,
         maxImageHeight,
@@ -50,12 +87,15 @@ const SettingsPage = () => {
         selectedService,
         apiEndpointOptions,
         selectedApiEndpointType,
+        backendApiUrl,
         services,
         updateApiKey,
         selectService,
         selectApiEndpointType,
+        setBackendApiUrl,
         setAvailableModels,
         getAvailableModels,
+        setServiceEndpoint,
         setSelectedModel,
         getSelectedModel
     } = useApiKeyStore();
@@ -102,14 +142,14 @@ const SettingsPage = () => {
 
         try {
             try {
-                await axios.delete('http://localhost:3000/api/conversations/all');
+                await axios.delete(buildBackendApiUrl('/api/conversations/all'));
             } catch (bulkDeleteError) {
                 console.warn('Bulk delete endpoint unavailable, falling back to deleting conversations one by one.', bulkDeleteError);
 
-                const { data: conversations } = await axios.get('http://localhost:3000/api/conversations');
+                const { data: conversations } = await axios.get(buildBackendApiUrl('/api/conversations'));
                 await Promise.all(
                     conversations.map((conversation) =>
-                        axios.delete(`http://localhost:3000/api/conversations/${conversation._id}`)
+                        axios.delete(buildBackendApiUrl(`/api/conversations/${conversation._id}`))
                     )
                 );
             }
@@ -131,16 +171,46 @@ const SettingsPage = () => {
 
 
 
+    const selectedServiceConfig = services[selectedService];
+    const selectedServiceEndpoint = selectedServiceConfig?.endpoint || '';
+
     useEffect(() => {
+        let isCancelled = false;
         const fetchModels = async () => {
             const models = await queryAvailableModels();
-            setAvailableModels(selectedService, models);
+            if (!isCancelled) {
+                setAvailableModels(selectedService, models);
+            }
         };
-        fetchModels();
-    }, [selectedService, setAvailableModels]);
+
+        const timeoutId = window.setTimeout(fetchModels, 300);
+
+        return () => {
+            isCancelled = true;
+            window.clearTimeout(timeoutId);
+        };
+    }, [selectedService, selectedServiceEndpoint, setAvailableModels]);
 
     const availableModels = getAvailableModels();
     const selectedModel = getSelectedModel();
+    const { handleMcpServerEnabledChange } = useMcpServerDiscoverability({
+        mcpServers,
+        setMcpServerDiscoveryState,
+        setMcpServerDiscoveredTools,
+        updateMcpServer,
+    });
+
+    const toggleMcpServerCollapse = useCallback((serverId) => {
+        setCollapsedMcpServerIds((previous) => {
+            const next = new Set(previous);
+            if (next.has(serverId)) {
+                next.delete(serverId);
+            } else {
+                next.add(serverId);
+            }
+            return next;
+        });
+    }, []);
 
 
 
@@ -174,6 +244,22 @@ const SettingsPage = () => {
 
                         <h3 className={styles.subHeader}>API Settings</h3>
 
+                        <div className={styles.settingGroup}>
+                            <label className={styles.blockLabel}>
+                                Gallama UI Backend URL:
+                                <input
+                                    type="text"
+                                    value={backendApiUrl}
+                                    onChange={(e) => setBackendApiUrl(e.target.value)}
+                                    className={styles.textInput}
+                                    placeholder="http://localhost:3000"
+                                />
+                            </label>
+                            <div className={styles.sectionHint}>
+                                Used for saved conversations and MCP discovery. Set this to your Tailscale URL when opening the UI from mobile.
+                            </div>
+                        </div>
+
                         {/* Service Provider Selector */}
                         <div className={styles.settingGroup}>
                             <label className={styles.blockLabel}>
@@ -190,6 +276,22 @@ const SettingsPage = () => {
                                     ))}
                                 </select>
                             </label>
+                        </div>
+
+                        <div className={styles.settingGroup}>
+                            <label className={styles.blockLabel}>
+                                {selectedServiceConfig?.name || 'Service'} API URL:
+                                <input
+                                    type="text"
+                                    value={selectedServiceConfig?.endpoint || ''}
+                                    onChange={(e) => setServiceEndpoint(selectedService, e.target.value)}
+                                    className={styles.textInput}
+                                    placeholder="http://127.0.0.1:8000/v1"
+                                />
+                            </label>
+                            <div className={styles.sectionHint}>
+                                Used for model listing and chat requests. Point this to localhost on desktop or your exposed Tailscale URL on mobile.
+                            </div>
                         </div>
 
                         {/* API Key Input */}
@@ -347,6 +449,21 @@ const SettingsPage = () => {
                             <label className={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
+                                    checked={useThinking}
+                                    onChange={toggleUseThinking}
+                                    className={styles.checkbox}
+                                />
+                                Use Thinking
+                            </label>
+                            <div className={styles.sectionHint}>
+                                Requests reasoning/thinking output from providers that support it.
+                            </div>
+                        </div>
+
+                        <div className={styles.settingGroup}>
+                            <label className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
                                     checked={showReasoning}
                                     onChange={toggleShowReasoning}
                                     className={styles.checkbox}
@@ -458,96 +575,175 @@ const SettingsPage = () => {
                                 </div>
                             )}
 
-                            {mcpServers.map((server, index) => (
-                                <div key={server.id} className={styles.mcpCard}>
-                                    <div className={styles.mcpHeaderRow}>
-                                        <div>
-                                            <div className={styles.mcpTitle}>MCP Server {index + 1}</div>
-                                            <div className={styles.sectionHint}>
-                                                Discovery works best with Streamable HTTP MCP endpoints.
+                            {mcpServers.map((server, index) => {
+                                const isCollapsed = collapsedMcpServerIds.has(server.id);
+                                const isOffline = isMcpServerOffline(server);
+                                const enabledToolNames = getEnabledToolNamesForServer(server);
+                                const discoveredToolNames = getDiscoveredToolNamesForServer(server);
+                                const conciseToolNames = isOffline ? discoveredToolNames : enabledToolNames;
+                                const panelId = `mcp-server-panel-${server.id}`;
+                                const serverTitle = server.name.trim() || `MCP Server ${index + 1}`;
+                                const serverStateLabel = server.discoveryStatus === 'loading'
+                                    ? 'Checking'
+                                    : isOffline
+                                        ? 'Offline'
+                                        : server.enabled
+                                            ? 'Online'
+                                            : 'Disabled';
+                                const serverStateClassName = server.discoveryStatus === 'loading'
+                                    ? styles.serverStateLoading
+                                    : isOffline
+                                        ? styles.serverStateOffline
+                                        : server.enabled
+                                            ? styles.serverStateOnline
+                                            : styles.serverStateDisabled;
+
+                                return (
+                                    <div
+                                        key={server.id}
+                                        className={`${styles.mcpCard} ${isCollapsed ? styles.mcpCardCollapsed : ''}`}
+                                    >
+                                        <div className={styles.mcpHeaderRow}>
+                                            <div className={styles.mcpHeaderMain}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleMcpServerCollapse(server.id)}
+                                                    className={styles.collapseButton}
+                                                    aria-expanded={!isCollapsed}
+                                                    aria-controls={panelId}
+                                                    aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} MCP Server ${index + 1}`}
+                                                >
+                                                    <ChevronDown
+                                                        size={16}
+                                                        className={`${styles.collapseChevron} ${isCollapsed ? styles.collapseChevronCollapsed : ''}`}
+                                                    />
+                                                </button>
+                                                <div className={styles.mcpTitleGroup}>
+                                                    <div className={styles.mcpTitleLine}>
+                                                        <div className={styles.mcpTitle}>{serverTitle}</div>
+                                                        <span className={`${styles.serverState} ${serverStateClassName}`}>
+                                                            <span className={styles.serverStateDot} />
+                                                            {serverStateLabel}
+                                                        </span>
+                                                    </div>
+                                                    {!isCollapsed && (
+                                                        <div className={styles.serverHint}>
+                                                            Discovery works best with Streamable HTTP MCP endpoints.
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className={styles.mcpHeaderActions}>
+                                                <button
+                                                    type="button"
+                                                    role="switch"
+                                                    aria-checked={server.enabled}
+                                                    aria-label={`${server.enabled ? 'Disable' : 'Enable'} MCP Server ${index + 1}`}
+                                                    onClick={() => handleMcpServerEnabledChange(server, !server.enabled)}
+                                                    disabled={server.discoveryStatus === 'loading'}
+                                                    className={`${styles.statusToggleButton} ${server.enabled ? styles.statusToggleButtonEnabled : styles.statusToggleButtonDisabled}`}
+                                                >
+                                                    <span className={styles.statusToggleVisual} aria-hidden="true">
+                                                        <span className={styles.statusToggleThumb} />
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeMcpServer(server.id)}
+                                                    className={`${styles.dangerButton} ${styles.mcpRemoveButton}`}
+                                                >
+                                                    Remove
+                                                </button>
                                             </div>
                                         </div>
-                                        <div className={styles.mcpHeaderActions}>
-                                            <label className={styles.toggleRow}>
-                                                <span className={styles.toggleCopy}>
-                                                    <strong>{server.enabled ? 'Enabled' : 'Disabled'}</strong>
-                                                    <span className={styles.toggleHint}>Turn the whole server on or off without deleting it.</span>
-                                                </span>
-                                                <span className={styles.switch}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={server.enabled}
-                                                        onChange={(e) => updateMcpServer(server.id, 'enabled', e.target.checked)}
-                                                    />
-                                                    <span className={styles.switchTrack} />
-                                                </span>
-                                            </label>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeMcpServer(server.id)}
-                                                className={styles.dangerButton}
-                                            >
-                                                Remove
-                                            </button>
-                                        </div>
+
+                                        {isCollapsed ? (
+                                            <div id={panelId} className={styles.conciseMcpSummary}>
+                                                <div className={styles.conciseSummaryHeader}>Tools</div>
+                                                <div className={styles.conciseSummaryContent}>
+                                                    {conciseToolNames.length > 0 ? (
+                                                        <div className={styles.enabledToolList}>
+                                                            {conciseToolNames.map((toolName) => (
+                                                                <span
+                                                                    key={toolName}
+                                                                    className={`${styles.enabledToolChip} ${isOffline ? styles.enabledToolChipDisabled : ''}`}
+                                                                >
+                                                                    {toolName}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <span className={styles.conciseSummaryEmpty}>
+                                                            {isOffline
+                                                                ? 'Server offline'
+                                                                : server.discoveryStatus === 'loading'
+                                                                ? 'Checking tools...'
+                                                                : 'No tools enabled'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div id={panelId} className={styles.mcpPanelBody}>
+                                                <div className={styles.inlineInputRow}>
+                                                    <label className={styles.blockLabel}>
+                                                        Server Name:
+                                                        <input
+                                                            type="text"
+                                                            value={server.name}
+                                                            onChange={(e) => updateMcpServer(server.id, 'name', e.target.value)}
+                                                            className={styles.textInput}
+                                                            placeholder="dummy_mcp"
+                                                        />
+                                                    </label>
+
+                                                    <label className={styles.blockLabel}>
+                                                        Server URL:
+                                                        <input
+                                                            type="text"
+                                                            value={server.url}
+                                                            onChange={(e) => updateMcpServer(server.id, 'url', e.target.value)}
+                                                            className={styles.textInput}
+                                                            placeholder="http://127.0.0.1:18001/mcp"
+                                                        />
+                                                    </label>
+                                                </div>
+
+                                                <div className={styles.inlineInputRow}>
+                                                    <label className={styles.blockLabel}>
+                                                        Authorization Token:
+                                                        <input
+                                                            type="password"
+                                                            value={server.authorizationToken}
+                                                            onChange={(e) => updateMcpServer(server.id, 'authorizationToken', e.target.value)}
+                                                            className={styles.textInput}
+                                                            placeholder="Optional bearer token"
+                                                        />
+                                                    </label>
+                                                </div>
+
+                                                <div className={styles.settingGroup}>
+                                                    <label className={styles.blockLabel}>
+                                                        Headers JSON:
+                                                        <textarea
+                                                            value={server.headersText}
+                                                            onChange={(e) => updateMcpServer(server.id, 'headersText', e.target.value)}
+                                                            rows={4}
+                                                            placeholder='{"x-custom-header":"value"}'
+                                                            className={styles.textArea}
+                                                        />
+                                                    </label>
+                                                    <div className={styles.sectionHint}>
+                                                        Use a JSON object. Invalid JSON will be ignored.
+                                                    </div>
+                                                </div>
+
+                                                <McpServerToolPanel server={server} />
+                                            </div>
+                                        )}
                                     </div>
-
-                                    <div className={styles.inlineInputRow}>
-                                        <label className={styles.blockLabel}>
-                                            Server Name:
-                                            <input
-                                                type="text"
-                                                value={server.name}
-                                                onChange={(e) => updateMcpServer(server.id, 'name', e.target.value)}
-                                                className={styles.textInput}
-                                                placeholder="dummy_mcp"
-                                            />
-                                        </label>
-
-                                        <label className={styles.blockLabel}>
-                                            Server URL:
-                                            <input
-                                                type="text"
-                                                value={server.url}
-                                                onChange={(e) => updateMcpServer(server.id, 'url', e.target.value)}
-                                                className={styles.textInput}
-                                                placeholder="http://127.0.0.1:18001/mcp"
-                                            />
-                                        </label>
-                                    </div>
-
-                                    <div className={styles.inlineInputRow}>
-                                        <label className={styles.blockLabel}>
-                                            Authorization Token:
-                                            <input
-                                                type="password"
-                                                value={server.authorizationToken}
-                                                onChange={(e) => updateMcpServer(server.id, 'authorizationToken', e.target.value)}
-                                                className={styles.textInput}
-                                                placeholder="Optional bearer token"
-                                            />
-                                        </label>
-                                    </div>
-
-                                    <div className={styles.settingGroup}>
-                                        <label className={styles.blockLabel}>
-                                            Headers JSON:
-                                            <textarea
-                                                value={server.headersText}
-                                                onChange={(e) => updateMcpServer(server.id, 'headersText', e.target.value)}
-                                                rows={4}
-                                                placeholder='{"x-custom-header":"value"}'
-                                                className={styles.textArea}
-                                            />
-                                        </label>
-                                        <div className={styles.sectionHint}>
-                                            Use a JSON object. Invalid JSON will be ignored.
-                                        </div>
-                                    </div>
-
-                                    <McpServerToolPanel server={server} />
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                     </div>

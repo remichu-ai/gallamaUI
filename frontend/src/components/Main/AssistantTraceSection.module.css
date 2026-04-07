@@ -149,7 +149,7 @@
     white-space: pre-wrap;
     word-break: break-word;
     line-height: 1.72;
-    color: var(--modern-trace-body-color);
+    color: color-mix(in srgb, var(--modern-trace-body-color) 82%, var(--bg-color) 18%);
     font-size: 0.9rem;
     font-weight: 400;
     letter-spacing: -0.01em;
@@ -180,7 +180,7 @@
     padding: 0;
     border: none;
     background: transparent;
-    color: var(--modern-trace-body-color);
+    color: color-mix(in srgb, var(--modern-trace-body-color) 82%, var(--bg-color) 18%);
     white-space: pre-wrap;
     word-break: break-word;
     font-size: 0.9rem;
@@ -209,16 +209,16 @@
 
 @media (max-width: 768px) {
     .traceStackHeader {
-        padding-left: 38px;
+        padding-left: 30px;
     }
 
     .traceToggle {
-        gap: 12px;
+        gap: 10px;
     }
 
     .traceBody {
-        margin-left: 13px;
-        gap: 0 16px;
+        margin-left: 10px;
+        gap: 0 12px;
     }
 
     .traceToggleTitle {

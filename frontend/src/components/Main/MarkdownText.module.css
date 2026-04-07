@@ -21,6 +21,22 @@
     margin: 0 0 0.65em;
 }
 
+.markdownContainer a,
+.markdownContainer a:visited {
+    color: var(--markdown-link-color, color-mix(in srgb, var(--top-bar-text-color, currentColor) 82%, white 18%));
+    -webkit-text-fill-color: var(--markdown-link-color, color-mix(in srgb, var(--top-bar-text-color, currentColor) 82%, white 18%));
+    text-decoration-color: color-mix(in srgb, var(--markdown-link-color, currentColor) 68%, transparent);
+    text-underline-offset: 0.16em;
+    transition: color 0.18s ease, text-decoration-color 0.18s ease;
+    word-break: break-word;
+}
+
+.markdownContainer a:hover {
+    color: var(--markdown-link-hover-color, color-mix(in srgb, var(--markdown-link-color, currentColor) 82%, white 18%));
+    -webkit-text-fill-color: var(--markdown-link-hover-color, color-mix(in srgb, var(--markdown-link-color, currentColor) 82%, white 18%));
+    text-decoration-color: currentColor;
+}
+
 .markdownContainer ul,
 .markdownContainer ol,
 .markdownContainer pre,

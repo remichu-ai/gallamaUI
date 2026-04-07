@@ -86,7 +86,7 @@
 .traceName {
     font-size: 0.98rem;
     font-weight: 600;
-    color: var(--text-color);
+    color: color-mix(in srgb, var(--text-color) 84%, var(--bg-color) 16%);
 }
 
 .traceServer {
@@ -97,7 +97,7 @@
 .traceText {
     white-space: pre-wrap;
     word-break: break-word;
-    color: var(--text-color);
+    color: color-mix(in srgb, var(--text-color) 80%, var(--bg-color) 20%);
     margin-bottom: 10px;
 }
 
@@ -122,7 +122,7 @@
     border-radius: 12px;
     background: color-mix(in srgb, var(--chat-message-thinking-background) 68%, black 8%);
     border: 1px solid color-mix(in srgb, var(--chat-message-border-color) 52%, transparent 48%);
-    color: var(--text-color);
+    color: color-mix(in srgb, var(--text-color) 80%, var(--bg-color) 20%);
     white-space: pre-wrap;
     word-break: break-word;
     font-size: 0.84rem;

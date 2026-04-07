@@ -1,7 +1,16 @@
 .panel {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
+    color: var(--text-color);
+}
+
+.drawerVariant {
+    padding-top: 12px;
+    border-top: 1px solid color-mix(in srgb, var(--form-control-border) 28%, transparent);
+}
+
+.sidebarVariant {
     margin-top: 12px;
     padding: 14px;
     border-radius: 14px;
@@ -10,53 +19,64 @@
     box-shadow:
         0 14px 28px -26px color-mix(in srgb, var(--r-border-color) 48%, transparent),
         inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    color: var(--text-color);
 }
 
 .compact {
-    margin-top: 10px;
-    padding: 12px;
+    gap: 10px;
 }
 
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 14px;
 }
 
 .headerText {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     min-width: 0;
 }
 
 .headerLabel {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
 .headerMeta {
-    font-size: 0.84rem;
-    color: color-mix(in srgb, var(--text-color) 80%, transparent);
+    font-size: 0.86rem;
+    color: color-mix(in srgb, var(--text-color) 78%, transparent);
 }
 
 .refreshButton {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 12px;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0 18px;
     border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--form-control-border) 24%, var(--form-control-bg) 76%);
-    background: color-mix(in srgb, var(--form-control-bg) 84%, var(--input-box-background-color) 16%);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 46%, transparent);
+    background: color-mix(in srgb, var(--input-box-background-color) 84%, transparent);
     color: inherit;
-    font-weight: 600;
+    font: inherit;
+    font-weight: 700;
     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--form-control-border) 64%, transparent);
+}
+
+.drawerVariant .refreshButton {
+    min-height: 38px;
+    padding: 0 15px;
 }
 
 .refreshButton:disabled {
-    opacity: 0.7;
+    opacity: 0.72;
     cursor: wait;
 }
 
@@ -68,89 +88,123 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
+}
+
+.drawerVariant .statusRow {
+    gap: 10px;
 }
 
 .statusPill {
     display: inline-flex;
     align-items: center;
-    min-height: 30px;
-    padding: 0 12px;
+    min-height: 34px;
+    padding: 0 14px;
     border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 700;
+    border: 1px solid transparent;
+    font-size: 0.8rem;
+    font-weight: 800;
     letter-spacing: 0.01em;
+    color: color-mix(in srgb, var(--text-color) 92%, transparent);
     background: rgba(120, 120, 120, 0.12);
 }
 
 .status_ready {
-    background: rgba(66, 148, 106, 0.18);
+    color: color-mix(in srgb, #dffbe7 88%, white 12%);
+    background: color-mix(in srgb, #3a7652 56%, transparent);
+    border-color: color-mix(in srgb, #69d592 38%, transparent);
 }
 
 .status_loading {
-    background: rgba(89, 128, 178, 0.18);
+    color: color-mix(in srgb, #ebf4ff 88%, white 12%);
+    background: color-mix(in srgb, #4f6e96 58%, transparent);
+    border-color: color-mix(in srgb, #8ebcf8 38%, transparent);
 }
 
 .status_error {
-    background: rgba(185, 83, 83, 0.18);
+    color: color-mix(in srgb, #fff0eb 90%, white 10%);
+    background: color-mix(in srgb, #8e4334 60%, transparent);
+    border-color: color-mix(in srgb, #ff9b86 38%, transparent);
 }
 
 .status_stale {
-    background: rgba(177, 133, 77, 0.2);
+    color: color-mix(in srgb, #fff4df 90%, white 10%);
+    background: color-mix(in srgb, #7d6536 58%, transparent);
+    border-color: color-mix(in srgb, #e2b96b 38%, transparent);
 }
 
 .statusMeta {
-    font-size: 0.8rem;
-    color: color-mix(in srgb, var(--text-color) 76%, transparent);
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--text-color) 72%, transparent);
 }
 
 .errorText {
-    color: #b04141;
-    font-size: 0.84rem;
+    color: #ee675c;
+    font-size: 0.92rem;
+    line-height: 1.4;
+}
+
+.infoText {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--text-color) 78%, transparent);
 }
 
 .allowAllRow,
 .toolRow {
     display: flex;
     justify-content: space-between;
-    gap: 14px;
+    gap: 16px;
 }
 
 .allowAllRow {
     align-items: center;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background:
-        linear-gradient(90deg, color-mix(in srgb, var(--r-accent2) 18%, transparent), transparent 48%),
-        color-mix(in srgb, var(--form-control-bg) 90%, transparent);
-    border: 1px dashed color-mix(in srgb, var(--r-accent2) 34%, transparent);
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px dashed color-mix(in srgb, var(--r-accent2) 30%, transparent);
+    background: color-mix(in srgb, var(--input-box-background-color) 48%, transparent);
 }
 
 .allowAllLabel {
     display: inline-flex;
     align-items: center;
     min-height: 30px;
-    font-size: 0.94rem;
+    font-size: 0.98rem;
     color: var(--text-color);
 }
 
 .toolList {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .toolRow {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--form-control-bg) 66%, transparent);
-    border: 1px solid color-mix(in srgb, var(--r-border-color) 20%, transparent);
-    column-gap: 14px;
-    row-gap: 6px;
+    padding: 16px 16px 14px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--input-box-background-color) 44%, transparent);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 28%, transparent);
+    column-gap: 16px;
+    row-gap: 8px;
+}
+
+.drawerVariant .allowAllRow,
+.drawerVariant .toolRow,
+.drawerVariant .emptyState {
+    background: color-mix(in srgb, var(--input-box-background-color) 32%, transparent);
+}
+
+.drawerVariant .allowAllRow {
+    border-radius: 14px;
+}
+
+.drawerVariant .toolRow,
+.drawerVariant .emptyState {
+    border-radius: 14px;
 }
 
 .toolHeader {
@@ -163,33 +217,35 @@
 .toolNameLine {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
+    font-size: 1rem;
 }
 
 .toolIcon {
     flex: 0 0 14px;
     width: 14px;
     height: 14px;
+    opacity: 0.88;
 }
 
 .toolDescription {
-    font-size: 0.82rem;
-    line-height: 1.45;
+    font-size: 0.85rem;
+    line-height: 1.55;
     color: color-mix(in srgb, var(--text-color) 84%, transparent);
     min-width: 0;
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 .toolDescriptionRow {
     grid-column: 1 / -1;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
 }
 
@@ -199,13 +255,13 @@
     justify-content: center;
     width: 18px;
     height: 18px;
-    margin-top: 1px;
+    margin-top: 2px;
     padding: 0;
     border: 0;
     background: transparent;
-    color: color-mix(in srgb, var(--text-color) 76%, transparent);
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
     cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .descriptionToggle:hover {
@@ -229,26 +285,25 @@
     line-clamp: unset;
 }
 
+.controlRowDisabled {
+    opacity: 0.62;
+}
+
 .compact .toolRow {
-    padding: 10px 12px;
-    row-gap: 4px;
+    padding: 15px 16px 13px;
 }
 
 .emptyState {
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: color-mix(in srgb, var(--form-control-bg) 70%, transparent);
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 28%, transparent);
+    background: color-mix(in srgb, var(--input-box-background-color) 44%, transparent);
     font-size: 0.88rem;
-    line-height: 1.5;
+    line-height: 1.55;
     color: color-mix(in srgb, var(--text-color) 88%, transparent);
 }
 
-.switch {
-    position: relative;
-    display: inline-flex;
-    flex-shrink: 0;
-}
-
+.switch,
 .allowAllSwitch {
     position: relative;
     display: inline-flex;
@@ -263,74 +318,68 @@
     cursor: pointer;
 }
 
-.switchTrack {
-    position: relative;
-    width: 52px;
-    height: 30px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--r-border-color) 20%, transparent);
-    border: 1px solid color-mix(in srgb, var(--r-border-color) 42%, transparent);
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+.switch input:disabled,
+.allowAllSwitch input:disabled {
+    cursor: not-allowed;
 }
 
-.switchTrack::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: color-mix(in srgb, white 78%, var(--modal-surface) 22%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-    transition: transform 0.2s ease;
-}
-
-.switch input:checked + .switchTrack {
-    background: color-mix(in srgb, var(--r-accent2) 62%, var(--r-accent) 38%);
-    border-color: color-mix(in srgb, var(--r-accent2) 74%, transparent);
-}
-
-.switch input:checked + .switchTrack::after {
-    transform: translateX(22px);
-}
-
+.switchTrack,
 .allowAllSwitchTrack {
     position: relative;
     width: 58px;
-    height: 30px;
+    height: 32px;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--r-accent2) 18%, transparent);
-    border: 1px solid color-mix(in srgb, var(--r-accent2) 32%, transparent);
+    border: 1px solid color-mix(in srgb, black 14%, transparent);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, #4f5d6e 88%, white 12%) 0%,
+        color-mix(in srgb, #424e5d 92%, black 8%) 100%
+    );
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+.switchTrack::after,
 .allowAllSwitchTrack::after {
     content: '';
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: color-mix(in srgb, white 82%, var(--modal-surface) 18%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(236, 239, 243, 0.96) 100%);
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
     transition: transform 0.22s ease;
 }
 
+.switch input:checked + .switchTrack,
 .allowAllSwitch input:checked + .allowAllSwitchTrack {
-    background: color-mix(in srgb, var(--r-accent2) 54%, var(--form-control-bg) 46%);
-    border-color: color-mix(in srgb, var(--r-accent2) 58%, transparent);
+    border-color: color-mix(in srgb, #45c16c 42%, transparent);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, #46ca6f 82%, #5d8a70 18%) 0%,
+        color-mix(in srgb, #2fa45d 88%, #2b7252 12%) 100%
+    );
 }
 
+.switch input:checked + .switchTrack::after,
 .allowAllSwitch input:checked + .allowAllSwitchTrack::after {
-    transform: translateX(28px);
+    transform: translateX(26px);
+}
+
+.switch input:disabled + .switchTrack,
+.allowAllSwitch input:disabled + .allowAllSwitchTrack {
+    opacity: 0.7;
 }
 
 @keyframes spin {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }

@@ -19,7 +19,23 @@ const useUIStore = create(persist((set) => ({
     }),
     // side bar element
     sidebarExtended: false,
-    setSidebarExtended: () => set((state) => ({ sidebarExtended: !state.sidebarExtended })),
+    setSidebarExtended: (value) => set((state) => ({
+        sidebarExtended: typeof value === 'boolean' ? value : !state.sidebarExtended
+    })),
+    isMobileViewport: false,
+    setIsMobileViewport: (value) => set((state) => {
+        const isMobileViewport = Boolean(value);
+
+        if (state.isMobileViewport === isMobileViewport) {
+            return state;
+        }
+
+        return {
+            isMobileViewport,
+            sidebarExtended: isMobileViewport ? false : state.sidebarExtended,
+            showMcpToolDrawer: isMobileViewport ? false : state.showMcpToolDrawer,
+        };
+    }),
 
     // side bar element - Settings
     showSettingPage: false,

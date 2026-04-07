@@ -5,6 +5,7 @@ import {
     normalizeResponsesOutputItems,
     normalizeToolCallsToTraceItems,
 } from '../../services/api/requestTransforms.js';
+import { buildOrderedTraceEntries } from '../../services/assistantTraceOrdering.js';
 import { formatToolPayloadValue } from '../../services/toolTraceFormatting.js';
 import ToolPayloadText from './ToolPayloadText.jsx';
 import { AnimatedReasoning, ReasoningSection } from './ReasoningSection.jsx';
@@ -29,6 +30,19 @@ const formatReasoningMeta = (reasoning, isContentLoading) => {
     }
 
     return `${wordCount} word${wordCount === 1 ? '' : 's'}`;
+};
+
+const getPendingMcpServerLabel = (responseItems = []) => {
+    const pendingMcpToolCall = responseItems.find(
+        (item) => item?.type === 'mcp_call' && item?.status === 'in_progress',
+    );
+
+    if (pendingMcpToolCall?.server_label) {
+        return pendingMcpToolCall.server_label;
+    }
+
+    const discoveredMcpServer = responseItems.find((item) => item?.type === 'mcp_list_tools');
+    return discoveredMcpServer?.server_label ?? '';
 };
 
 const hasExplicitOpenState = (openTraceItems, entryId) => (
@@ -92,75 +106,40 @@ const mergeToolTraceItems = (traceItems = []) => {
     }));
 };
 
-const mergeOrderedTraceItems = (traceItems = []) => {
-    const orderedEntries = [];
-    const entryIndexByCallId = new Map();
+const mergeDisplayTraceSources = (primaryTraceItems = [], secondaryTraceItems = []) => {
+    const mergedItems = [];
+    const seenIds = new Set();
+    const seenReasoningTexts = new Set();
+    const primaryTraceCount = primaryTraceItems.length;
 
-    traceItems.forEach((item, index) => {
-        if (item?.type === 'reasoning') {
-            const reasoningText = item.text ?? '';
-            if (!toSingleLine(reasoningText)) {
+    [...primaryTraceItems, ...secondaryTraceItems].forEach((item, index) => {
+        if (!item || !DISPLAY_TRACE_TYPES.has(item?.type)) {
+            return;
+        }
+
+        const normalizedReasoningText = item?.type === 'reasoning'
+            ? toSingleLine(item.text ?? '')
+            : '';
+
+        // Prefer response-derived reasoning items over synthetic trace entries from the store.
+        if (normalizedReasoningText) {
+            const isSecondaryTraceItem = index >= primaryTraceCount;
+            if (isSecondaryTraceItem && seenReasoningTexts.has(normalizedReasoningText)) {
                 return;
             }
+            seenReasoningTexts.add(normalizedReasoningText);
+        }
 
-            orderedEntries.push({
-                id: item.id ?? `reasoning-${index}`,
-                kind: 'reasoning',
-                text: reasoningText,
-                meta: formatReasoningMeta(reasoningText, false),
-            });
+        const itemId = item.id ?? `${item.type}-${index}`;
+        if (seenIds.has(itemId)) {
             return;
         }
 
-        if (!ACTUAL_TOOL_TRACE_TYPES.has(item?.type)) {
-            return;
-        }
-
-        const baseEntry = {
-            id: item.id ?? `${item.type}-${index}`,
-            kind: 'tool',
-            label: item.label ?? 'Tool activity',
-            name: item.name ?? item.server_label ?? 'Tool',
-            serverLabel: item.server_label ?? '',
-            status: item.status ?? '',
-            text: item.text ?? '',
-            argumentsValue: item.argumentsValue ?? '',
-            outputValue: item.outputValue ?? '',
-            error: item.error ?? '',
-            callId: item.call_id ?? null,
-        };
-
-        if (item.type === 'tool_call' && item.call_id) {
-            entryIndexByCallId.set(item.call_id, orderedEntries.length);
-            orderedEntries.push(baseEntry);
-            return;
-        }
-
-        if (item.type === 'tool_result' && item.call_id && entryIndexByCallId.has(item.call_id)) {
-            const existingIndex = entryIndexByCallId.get(item.call_id);
-            const existingEntry = orderedEntries[existingIndex];
-
-            orderedEntries[existingIndex] = {
-                ...existingEntry,
-                status: item.status ?? existingEntry.status,
-                outputValue: item.outputValue ?? existingEntry.outputValue,
-                error: item.error ?? existingEntry.error,
-                text: item.text ?? existingEntry.text,
-            };
-            return;
-        }
-
-        orderedEntries.push(baseEntry);
+        seenIds.add(itemId);
+        mergedItems.push(item);
     });
 
-    return orderedEntries.map((entry) => (
-        entry.kind === 'tool'
-            ? {
-                ...entry,
-                meta: formatMeta(entry.label, entry.serverLabel, entry.status),
-            }
-            : entry
-    ));
+    return mergedItems;
 };
 
 const DetailBlock = ({ label, rawValue, value, tone = 'default', format }) => {
@@ -246,7 +225,7 @@ const AssistantTraceSection = ({
     toolCalls,
     isContentLoading,
 }) => {
-    const { showReasoning, traceDisplayMode, toolPayloadFormat } = useUIStore();
+    const { showReasoning, traceDisplayMode, toolPayloadFormat, isMobileViewport } = useUIStore();
 
     const normalizedResponseItems = useMemo(
         () => normalizeResponsesOutputItems(responseItems ?? []),
@@ -260,18 +239,26 @@ const AssistantTraceSection = ({
         () => (Array.isArray(traceItems) ? traceItems.filter((item) => DISPLAY_TRACE_TYPES.has(item?.type)) : []),
         [traceItems],
     );
+    const mergedTraceItems = useMemo(
+        () => mergeDisplayTraceSources(responseTraceItems, providedTraceItems),
+        [providedTraceItems, responseTraceItems],
+    );
     const fallbackToolTraceItems = useMemo(
         () => normalizeToolCallsToTraceItems(toolCalls ?? []),
         [toolCalls],
     );
     const orderedTraceEntries = useMemo(
-        () => mergeOrderedTraceItems(responseTraceItems.length > 0 ? responseTraceItems : providedTraceItems),
-        [providedTraceItems, responseTraceItems],
+        () => buildOrderedTraceEntries(mergedTraceItems),
+        [mergedTraceItems],
     );
-    const effectiveTraceItems = responseTraceItems.length > 0 ? responseTraceItems : fallbackToolTraceItems;
+    const effectiveTraceItems = mergedTraceItems.length > 0 ? mergedTraceItems : fallbackToolTraceItems;
     const toolEntries = useMemo(
         () => mergeToolTraceItems(effectiveTraceItems),
         [effectiveTraceItems],
+    );
+    const pendingMcpServerLabel = useMemo(
+        () => getPendingMcpServerLabel(responseItems ?? []),
+        [responseItems],
     );
     const effectiveReasoning = reasoning || normalizedResponseItems.reasoning || '';
     const hasReasoning = Boolean(toSingleLine(effectiveReasoning));
@@ -280,6 +267,8 @@ const AssistantTraceSection = ({
         () => orderedTraceEntries.filter((entry) => showReasoning || entry.kind !== 'reasoning'),
         [orderedTraceEntries, showReasoning],
     );
+    const hasVisibleToolEntry = visibleOrderedTraceEntries.some((entry) => entry.kind === 'tool');
+    const isPreparingMcpCall = Boolean(pendingMcpServerLabel) && !hasVisibleToolEntry;
     const modernTraceEntries = useMemo(() => {
         if (visibleOrderedTraceEntries.length > 0) {
             return visibleOrderedTraceEntries.map((entry) => (
@@ -290,19 +279,21 @@ const AssistantTraceSection = ({
                         summary: 'Thinking',
                         meta: entry.meta,
                         text: entry.text,
-                        defaultOpen: false,
+                        defaultOpen: isMobileViewport,
                     }
                     : {
                         id: entry.id,
                         kind: 'tool',
-                        summary: entry.name,
+                        summary: entry.traceType === 'tool_result'
+                            ? `${entry.name} result`
+                            : (entry.status === 'in_progress' ? `Running ${entry.name}` : entry.name),
                         meta: entry.meta,
                         text: entry.text,
                         argumentsValue: entry.argumentsValue,
                         outputValue: entry.outputValue,
                         error: entry.error,
                         bodyTitle: entry.text ? 'Activity' : '',
-                        defaultOpen: Boolean(entry.error),
+                        defaultOpen: Boolean(entry.error) || entry.status === 'in_progress',
                     }
             ));
         }
@@ -313,10 +304,14 @@ const AssistantTraceSection = ({
             fallbackEntries.push({
                 id: 'fallback-reasoning',
                 kind: 'reasoning',
-                summary: isContentLoading && !hasReasoning ? 'Thinking…' : 'Show thinking',
-                meta: formatReasoningMeta(effectiveReasoning, isContentLoading),
+                summary: isPreparingMcpCall
+                    ? 'Preparing MCP call…'
+                    : (isContentLoading && !hasReasoning ? 'Thinking…' : 'Show thinking'),
+                meta: isPreparingMcpCall
+                    ? formatMeta('MCP', pendingMcpServerLabel, 'Streaming')
+                    : formatReasoningMeta(effectiveReasoning, isContentLoading),
                 text: effectiveReasoning,
-                defaultOpen: isContentLoading && !effectiveReasoning,
+                defaultOpen: isMobileViewport || (isContentLoading && !effectiveReasoning),
                 isLoading: !hasReasoning,
             });
         }
@@ -341,6 +336,9 @@ const AssistantTraceSection = ({
         effectiveReasoning,
         hasReasoning,
         isContentLoading,
+        isMobileViewport,
+        isPreparingMcpCall,
+        pendingMcpServerLabel,
         showReasoning,
         toolEntries,
         visibleOrderedTraceEntries,

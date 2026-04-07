@@ -1,13 +1,27 @@
 .quickSettings {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 16px;
     margin-right: 20px;
+    min-width: 0;
 }
 
 @media (max-width: 720px) {
     .quickSettings {
+        gap: 8px 12px;
         margin-right: 0;
+    }
+
+    .quickSettingsLabel {
+        font-size: 0.82rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .quickSettings {
+        display: none;
     }
 }
 

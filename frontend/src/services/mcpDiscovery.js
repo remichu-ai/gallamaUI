@@ -1,10 +1,9 @@
 import { parseHeadersText } from './api/requestTransforms.js';
 import { normalizeDiscoveredTools } from './mcpUtils.js';
-
-const MCP_DISCOVERY_API = 'http://localhost:3000/api/mcp/discover';
+import { buildBackendApiUrl } from './backendApi.js';
 
 export const discoverMcpTools = async (server) => {
-    const response = await fetch(MCP_DISCOVERY_API, {
+    const response = await fetch(buildBackendApiUrl('/api/mcp/discover'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

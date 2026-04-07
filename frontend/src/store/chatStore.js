@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import axios from 'axios';
 import { compress, decompress } from 'lz-string';
 import { normalizeToolCallsToTraceItems } from '../services/api/requestTransforms.js';
+import { buildBackendApiUrl } from '../services/backendApi.js';
 
 const MAX_LOCAL_STORAGE_SIZE = 4.5 * 1024 * 1024; // 4.5MB safety limit for image
 const CHUNK_FLUSH_TIMEOUT_MS = 5000;
@@ -155,6 +156,22 @@ const getTraceToolMergeKey = (item, fallbackIndex) => {
     return `trace-tool:${fallbackIndex}`;
 };
 
+const getTraceItemMergeKey = (item, fallbackIndex) => {
+    if (item?.id) {
+        return item.id;
+    }
+
+    if (item?.type && item?.call_id) {
+        return `${item.type}:${item.call_id}`;
+    }
+
+    if (item?.type && item?.name) {
+        return `${item.type}:${item.name}:${fallbackIndex}`;
+    }
+
+    return `trace-item:${fallbackIndex}`;
+};
+
 const mergeToolTraceItems = (existingTraceItems = [], incomingToolCalls = []) => {
     const incomingTraceItems = incomingToolCalls
         .map((toolCall, index) => {
@@ -200,6 +217,35 @@ const mergeToolTraceItems = (existingTraceItems = [], incomingToolCalls = []) =>
             ...traceItems[existingIndex],
             ...item,
             argumentsValue: item.argumentsValue || traceItems[existingIndex].argumentsValue,
+        };
+    });
+
+    return traceItems;
+};
+
+const mergeTraceItems = (existingTraceItems = [], incomingTraceItems = []) => {
+    const traceItems = [...existingTraceItems];
+    const keyToIndex = new Map(
+        traceItems.map((item, index) => [getTraceItemMergeKey(item, index), index]),
+    );
+
+    incomingTraceItems.forEach((item, incomingIndex) => {
+        if (!item) {
+            return;
+        }
+
+        const key = getTraceItemMergeKey(item, `${traceItems.length + incomingIndex}`);
+        const existingIndex = keyToIndex.get(key);
+
+        if (existingIndex === undefined) {
+            keyToIndex.set(key, traceItems.length);
+            traceItems.push(item);
+            return;
+        }
+
+        traceItems[existingIndex] = {
+            ...traceItems[existingIndex],
+            ...item,
         };
     });
 
@@ -283,13 +329,13 @@ const useChatStore = create(persist(
             try {
                 let response;
                 if (conversation_id === "temp_id") {
-                    response = await axios.post('http://localhost:3000/api/conversations/save', {
+                    response = await axios.post(buildBackendApiUrl('/api/conversations/save'), {
                         messages,
                         title: conversation_title
                     });
                     set({ conversation_id: response.data.id });
                 } else {
-                    response = await axios.put(`http://localhost:3000/api/conversations/${conversation_id}`, {
+                    response = await axios.put(buildBackendApiUrl(`/api/conversations/${conversation_id}`), {
                         messages,
                         title: conversation_title
                     });
@@ -459,6 +505,7 @@ const useChatStore = create(persist(
 
             if (
                 update.tool_calls
+                || update.trace_items
                 || update.response_items
                 || update.replace_response_items
                 || update.response_id
@@ -474,6 +521,7 @@ const useChatStore = create(persist(
 
                     const lastMessage = { ...messages[lastIndex] };
                     const incomingToolCalls = Array.isArray(update.tool_calls) ? update.tool_calls : [];
+                    const incomingTraceItems = Array.isArray(update.trace_items) ? update.trace_items : [];
                     const incomingResponseItems = Array.isArray(update.response_items) ? update.response_items : [];
 
                     if (incomingToolCalls.length > 0) {
@@ -484,6 +532,13 @@ const useChatStore = create(persist(
                         lastMessage.trace_items = mergeToolTraceItems(
                             Array.isArray(lastMessage.trace_items) ? lastMessage.trace_items : [],
                             incomingToolCalls,
+                        );
+                    }
+
+                    if (incomingTraceItems.length > 0) {
+                        lastMessage.trace_items = mergeTraceItems(
+                            Array.isArray(lastMessage.trace_items) ? lastMessage.trace_items : [],
+                            incomingTraceItems,
                         );
                     }
 

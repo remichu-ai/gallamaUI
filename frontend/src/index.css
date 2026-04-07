@@ -150,12 +150,17 @@
 }
 
 /* Global CSS to apply JetBrains Mono */
+html {
+    --app-height: 100svh;
+}
+
 body {
     /*font-family: 'Poppins', monospace;*/
     font-family: var(--primary-font);
     background: var(--page-bg-color);
     color: var(--text-color);
     transition: background-color 0.25s ease, color 0.25s ease;
+    overscroll-behavior: none;
 }
 
 
@@ -163,6 +168,7 @@ html, body, #root {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -177,11 +183,12 @@ input, textarea, select, button {
 
 #root {
     /*min-height: 100vh;*/
-    height: 100vh;
-    width: 100vw;
+    min-height: var(--app-height, 100svh);
+    height: var(--app-height, 100svh);
+    width: 100%;
     display: flex;
     /*flex-direction: column;*/
-    overflow-y: auto;
+    overflow: hidden;
     animation: fadeIn 1.5s;
 }
 

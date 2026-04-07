@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-const useInputStore = create((set, get) => ({
+const useInputStore = create(persist((set, get) => ({
     inputText: '',
     backupInputText: '',
     setInputText: (text) => set({ inputText: text }),
@@ -14,6 +15,13 @@ const useInputStore = create((set, get) => ({
     clear: () => set({
         inputText: '',
         backupInputText: ''
+    }),
+}), {
+    name: 'input-store',
+    storage: createJSONStorage(() => localStorage),
+    partialize: (state) => ({
+        inputText: state.inputText,
+        backupInputText: state.backupInputText,
     }),
 }));
 

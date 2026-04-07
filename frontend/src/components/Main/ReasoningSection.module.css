@@ -79,11 +79,11 @@
 }
 
 .opening, .closing {
-    color: var(--chat-message-thinking-color);
+    color: color-mix(in srgb, var(--chat-message-thinking-color) 80%, var(--bg-color) 20%);
 }
 
 .content {
-    color: var(--chat-message-thinking-color);
+    color: color-mix(in srgb, var(--chat-message-thinking-color) 80%, var(--bg-color) 20%);
 }
 
 .tagLabel {

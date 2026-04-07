@@ -135,6 +135,72 @@ const createReasoningTraceItem = (id, text) => {
     };
 };
 
+const extractAnthropicToolArgumentsValue = (block) => {
+    return normalizeToolPayloadValue(JSON.stringify(block?.input ?? {}));
+};
+
+const extractAnthropicMcpResultValue = (block) => {
+    const blockContent = block?.content;
+
+    if (Array.isArray(blockContent) && blockContent.length === 1 && blockContent[0]?.type === 'text') {
+        return blockContent[0].text ?? '';
+    }
+
+    return blockContent ?? '';
+};
+
+const normalizeAnthropicTraceItem = (block, index) => {
+    if (block?.type === 'thinking') {
+        return createReasoningTraceItem(
+            block.id ?? `anthropic-thinking:${index}`,
+            block.thinking ?? '',
+        );
+    }
+
+    if (block?.type === 'tool_use') {
+        return {
+            id: block.id ?? `anthropic-tool:${index}`,
+            type: 'tool_call',
+            label: 'Function call',
+            name: block.name ?? 'Function',
+            argumentsValue: extractAnthropicToolArgumentsValue(block),
+            call_id: block.id ?? null,
+            status: null,
+        };
+    }
+
+    if (block?.type === 'mcp_tool_use') {
+        return {
+            id: block.id ?? `anthropic-mcp-tool:${index}`,
+            type: 'tool_call',
+            label: 'MCP call',
+            name: block.name ?? 'MCP tool',
+            server_label: block.server_name ?? block.server_label ?? '',
+            argumentsValue: extractAnthropicToolArgumentsValue(block),
+            call_id: block.id ?? null,
+            status: 'in_progress',
+        };
+    }
+
+    if (block?.type === 'mcp_tool_result') {
+        const rawOutputValue = extractAnthropicMcpResultValue(block);
+        const normalizedOutputValue = getPreferredMcpOutputValue(rawOutputValue);
+
+        return {
+            id: block.id ?? `anthropic-mcp-tool-result:${index}`,
+            type: 'tool_result',
+            label: 'MCP result',
+            name: block.name ?? 'MCP tool',
+            outputValue: block.is_error ? '' : normalizedOutputValue,
+            call_id: block.tool_use_id ?? null,
+            error: block.is_error ? normalizedOutputValue : '',
+            status: block.is_error ? 'failed' : 'completed',
+        };
+    }
+
+    return null;
+};
+
 const extractResponseToolOutputValue = (output) => {
     if (typeof output === 'string') {
         return normalizeToolPayloadValue(output);
@@ -782,7 +848,7 @@ export const normalizeAnthropicMessage = (response) => {
         .join('\n');
 
     const toolCalls = content
-        .filter((block) => block?.type === 'tool_use')
+        .filter((block) => block?.type === 'tool_use' || block?.type === 'mcp_tool_use')
         .map((block, index) => ({
             index,
             id: block.id,
@@ -794,28 +860,7 @@ export const normalizeAnthropicMessage = (response) => {
         }));
 
     const traceItems = content
-        .map((block, index) => {
-            if (block?.type === 'thinking') {
-                return createReasoningTraceItem(
-                    block.id ?? `anthropic-thinking:${index}`,
-                    block.thinking ?? '',
-                );
-            }
-
-            if (block?.type === 'tool_use') {
-                return {
-                    id: block.id ?? `anthropic-tool:${index}`,
-                    type: 'tool_call',
-                    label: 'Function call',
-                    name: block.name ?? 'Function',
-                    argumentsValue: normalizeToolPayloadValue(JSON.stringify(block.input ?? {})),
-                    call_id: block.id ?? null,
-                    status: null,
-                };
-            }
-
-            return null;
-        })
+        .map((block, index) => normalizeAnthropicTraceItem(block, index))
         .filter(Boolean);
 
     return {

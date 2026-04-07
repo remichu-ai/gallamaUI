@@ -1,0 +1,556 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+.drawerVariant {
+    width: 100%;
+    border-radius: 28px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 74%, transparent);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 12%, transparent) 0, transparent 34%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--input-box-background-color) 90%, var(--form-control-bg) 10%) 0%,
+            color-mix(in srgb, var(--form-control-bg) 92%, black 8%) 100%
+        );
+    box-shadow:
+        0 24px 48px -34px rgba(0, 0, 0, 0.52),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sidebarVariant {
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--r-border-color) 55%, transparent);
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--input-box-background-color) 92%, white 8%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 96%, var(--r-accent2) 4%) 100%
+        );
+    box-shadow:
+        0 14px 30px -28px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.header {
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid color-mix(in srgb, var(--form-control-border) 22%, transparent);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+}
+
+.headerTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.eyebrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    opacity: 0.64;
+}
+
+.title {
+    margin: 10px 0 0;
+    font-size: 1.15rem;
+    line-height: 1.1;
+}
+
+.body {
+    flex: 1;
+    min-height: 0;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.switchRow,
+.serverHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.switchRow {
+    margin-top: 18px;
+}
+
+.switchCopy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.switchCopy strong {
+    font-size: 1.05rem;
+}
+
+.globalNotice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, #d5a14b 36%, transparent);
+    background: color-mix(in srgb, #d5a14b 14%, transparent);
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, #ffd78e 78%, white 22%);
+}
+
+.switchHint,
+.serverMeta,
+.serverUrl,
+.emptyState p {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    opacity: 0.76;
+}
+
+.serverCard {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 18px 16px;
+    border-radius: 22px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 48%, transparent);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 8%, transparent) 0, transparent 30%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--form-control-bg) 94%, var(--input-box-background-color) 6%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 94%, black 6%) 100%
+        );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.serverCardCollapsed {
+    gap: 10px;
+}
+
+.drawerVariant .serverCard {
+    border-radius: 18px;
+    padding: 16px 16px 14px;
+}
+
+.drawerVariant .serverCardCollapsed {
+    padding-bottom: 15px;
+}
+
+.serverHeaderMain {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.serverIdentity {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.serverTitleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.serverTitleLine {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.serverTitle {
+    font-size: 1rem;
+    line-height: 1.15;
+}
+
+.serverState {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.serverStateDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.serverStateOnline {
+    color: color-mix(in srgb, #6cde90 86%, white 14%);
+}
+
+.serverStateOffline {
+    color: color-mix(in srgb, #ffb2a0 72%, #f06d4f 28%);
+}
+
+.serverStateDisabled {
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
+}
+
+.serverStateLoading {
+    color: color-mix(in srgb, #8ebcf8 82%, white 18%);
+}
+
+.collapseButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    margin-top: 1px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.collapseButton:hover {
+    color: var(--text-color);
+    background: color-mix(in srgb, var(--input-box-background-color) 36%, transparent);
+}
+
+.collapseChevron {
+    transition: transform 0.2s ease;
+}
+
+.collapseChevronCollapsed {
+    transform: rotate(-90deg);
+}
+
+.serverExpandedBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.serverEditorGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.fieldLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+.textInput,
+.textArea {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 9px 10px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, transparent);
+    background: var(--form-control-bg);
+    color: var(--form-control-text);
+    font: inherit;
+}
+
+.textArea {
+    resize: vertical;
+}
+
+.textInput:focus,
+.textArea:focus {
+    outline: 2px solid var(--form-control-focus);
+    outline-offset: 1px;
+}
+
+.serverActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sectionCopy {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    opacity: 0.72;
+}
+
+.secondaryButton,
+.removeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 66%, transparent);
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color, #fff) 82%, white 18%) 0%,
+            color-mix(in srgb, var(--form-control-border) 42%, var(--r-background-color, #fff) 58%) 100%
+        );
+    color: color-mix(in srgb, var(--text-color) 92%, transparent);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.secondaryButton:hover,
+.removeButton:hover {
+    transform: translateY(-1px);
+}
+
+.removeButton {
+    color: color-mix(in srgb, #8b332b 72%, var(--text-color) 28%);
+}
+
+.serverUrl {
+    padding-top: 12px;
+    border-top: 1px solid color-mix(in srgb, var(--form-control-border) 30%, transparent);
+    word-break: break-word;
+}
+
+.drawerVariant .serverUrl {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.conciseSummary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid color-mix(in srgb, var(--form-control-border) 28%, transparent);
+}
+
+.conciseSummaryTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.conciseSummaryLabel {
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.conciseSummaryMeta {
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--text-color) 72%, transparent);
+}
+
+.conciseSummaryContent {
+    min-height: 24px;
+}
+
+.conciseToolList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.conciseToolChip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 4px 10px;
+    margin: 0;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--r-accent2) 42%, var(--form-control-border) 58%);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--r-accent2) 24%, var(--form-control-bg) 76%) 0%,
+            color-mix(in srgb, var(--r-accent) 14%, var(--input-box-background-color) 86%) 100%
+        );
+    color: color-mix(in srgb, white 88%, var(--text-color) 12%);
+    font-size: 0.82rem;
+    line-height: 1.2;
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    box-shadow:
+        0 8px 18px -18px color-mix(in srgb, var(--r-accent2) 72%, transparent),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+
+.conciseToolChip:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.conciseToolChip:focus-visible {
+    outline: 2px solid var(--form-control-focus);
+    outline-offset: 2px;
+}
+
+.conciseToolChipMuted {
+    opacity: 0.72;
+    cursor: default;
+}
+
+.conciseToolChipEnabled {
+    border-color: color-mix(in srgb, var(--r-accent2) 42%, var(--form-control-border) 58%);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--r-accent2) 24%, var(--form-control-bg) 76%) 0%,
+            color-mix(in srgb, var(--r-accent) 14%, var(--input-box-background-color) 86%) 100%
+        );
+    color: color-mix(in srgb, white 88%, var(--text-color) 12%);
+}
+
+.conciseToolChipDisabled {
+    border-color: color-mix(in srgb, var(--form-control-border) 42%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 46%, transparent);
+    color: color-mix(in srgb, var(--text-color) 74%, transparent);
+    box-shadow: none;
+}
+
+.conciseToolChipReadOnly {
+    opacity: 0.58;
+}
+
+.conciseToolChipReadOnly:disabled {
+    cursor: not-allowed;
+}
+
+.conciseSummaryEmpty {
+    font-size: 0.86rem;
+    color: color-mix(in srgb, var(--text-color) 72%, transparent);
+}
+
+.emptyState {
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 32%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 66%, transparent);
+}
+
+.emptyState p {
+    margin: 4px 0 0;
+}
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.switchTrack {
+    position: relative;
+    width: 58px;
+    height: 32px;
+    border-radius: 999px;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, #4f5d6e 88%, white 12%) 0%,
+        color-mix(in srgb, #424e5d 92%, black 8%) 100%
+    );
+    border: 1px solid color-mix(in srgb, black 14%, transparent);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.switchTrack::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(236, 239, 243, 0.96) 100%);
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    transition: transform 0.2s ease;
+}
+
+.switch input:checked + .switchTrack {
+    border-color: color-mix(in srgb, #45c16c 42%, transparent);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, #46ca6f 82%, #5d8a70 18%) 0%,
+        color-mix(in srgb, #2fa45d 88%, #2b7252 12%) 100%
+    );
+}
+
+.switch input:checked + .switchTrack::after {
+    transform: translateX(26px);
+}
+
+.switch input:disabled + .switchTrack {
+    opacity: 0.72;
+}
+
+@media (max-width: 720px) {
+    .header {
+        padding: 16px 16px 14px;
+    }
+
+    .headerTop {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .body {
+        padding: 14px;
+    }
+
+    .switchRow,
+    .serverHeader {
+        align-items: flex-start;
+    }
+
+    .conciseSummaryTop,
+    .serverHeader {
+        align-items: flex-start;
+    }
+
+    .serverEditorGrid {
+        grid-template-columns: 1fr;
+    }
+}

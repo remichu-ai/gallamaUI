@@ -234,4 +234,66 @@ describe('toolTraceFormatting', () => {
         });
         expect(normalized.trace_items[2].text).toBe('Now summarize the result.');
     });
+
+    it('normalizes Anthropic MCP tool use and result blocks', () => {
+        const normalized = normalizeAnthropicMessage({
+            role: 'assistant',
+            content: [
+                {
+                    type: 'mcp_tool_use',
+                    id: 'mcp-tool-1',
+                    name: 'run_command',
+                    server_name: 'code_server',
+                    input: { command: 'sleep 4; echo done' },
+                },
+                {
+                    type: 'mcp_tool_result',
+                    tool_use_id: 'mcp-tool-1',
+                    is_error: false,
+                    content: [{
+                        type: 'text',
+                        text: '{\n  "exit_code": 0,\n  "stdout": "done\\n"\n}\n\n[{"structured_content":{"exit_code":0,"stdout":"done\\n"}}]',
+                    }],
+                },
+                { type: 'text', text: 'done' },
+            ],
+        });
+
+        expect(normalized.tool_calls).toEqual([
+            {
+                index: 0,
+                id: 'mcp-tool-1',
+                type: 'function',
+                function: {
+                    name: 'run_command',
+                    arguments: '{"command":"sleep 4; echo done"}',
+                },
+            },
+        ]);
+        expect(normalized.trace_items).toEqual([
+            expect.objectContaining({
+                id: 'mcp-tool-1',
+                type: 'tool_call',
+                label: 'MCP call',
+                name: 'run_command',
+                server_label: 'code_server',
+                argumentsValue: {
+                    command: 'sleep 4; echo done',
+                },
+                call_id: 'mcp-tool-1',
+                status: 'in_progress',
+            }),
+            expect.objectContaining({
+                type: 'tool_result',
+                label: 'MCP result',
+                call_id: 'mcp-tool-1',
+                outputValue: {
+                    exit_code: 0,
+                    stdout: 'done\n',
+                },
+                status: 'completed',
+            }),
+        ]);
+        expect(normalized.content).toBe('done');
+    });
 });

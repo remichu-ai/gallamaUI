@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Plus } from 'lucide-react';
 import useInputStore from '../../store/inputStore.js'
 import { sendMessageAndGetResponse, sendMessageAndReturnResponse } from "../../services/chat.mjs";
 import useChatStore from "../../store/chatStore.js";
@@ -7,6 +8,7 @@ import useModelManagementStore from "../../store/modelManagementStore.js";
 import styles from "./InputBox.module.css"
 import { assets } from "../../assets/assets.js";
 import useApiKeyStore from "../../store/apiKeyStore.js";
+import useUIStore from "../../store/uiStore.js";
 import ModelSelector from "./ModelSelector.jsx";
 
 const resizeImage = (file, maxWidth, maxHeight) => {
@@ -29,7 +31,14 @@ const resizeImage = (file, maxWidth, maxHeight) => {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL(file.type));
+                const outputType = (
+                    file.type === 'image/png'
+                    || file.type === 'image/webp'
+                    || file.type === 'image/jpeg'
+                )
+                    ? file.type
+                    : 'image/jpeg';
+                resolve(canvas.toDataURL(outputType, outputType === 'image/jpeg' ? 0.92 : undefined));
             };
             img.src = event.target.result;
         };
@@ -40,6 +49,7 @@ const resizeImage = (file, maxWidth, maxHeight) => {
 const InputBox = () => {
     const { inputText, setInputText, softClear, revertInput, clear } = useInputStore();
     const [content, setContent] = useState([{ type: 'text', content: '' }]);
+    const [isInputFocused, setIsInputFocused] = useState(false);
 
     const {
         messages,
@@ -56,13 +66,38 @@ const InputBox = () => {
     const {
         getSelectedModel
     } = useApiKeyStore();
+    const { isMobileViewport } = useUIStore();
 
     const chatSettings = useChatSettingStore.getState();
     const { maxImageWidth, maxImageHeight } = useChatSettingStore();
     const [selectedModel, setSelectedModel] = useState(getSelectedModel());
     const inputRef = useRef();
+    const fileInputRef = useRef();
+    const shouldIgnoreIconClickRef = useRef(false);
+    const hasHydratedPersistedDraftRef = useRef(false);
 
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const revealComposerOnMobile = () => {
+        if (!isMobileViewport) {
+            return;
+        }
+
+        const scrollInputIntoView = () => {
+            inputRef.current?.scrollIntoView({ block: 'end' });
+        };
+
+        window.requestAnimationFrame(scrollInputIntoView);
+        window.setTimeout(scrollInputIntoView, 250);
+    };
+
+    const collapseComposer = () => {
+        if (inputRef.current) {
+            inputRef.current.style.height = 'auto';
+            inputRef.current.blur();
+        }
+        setIsInputFocused(false);
+    };
 
     const onSent = async () => {
         // Filter out empty text content and create a cleaned content array
@@ -96,6 +131,12 @@ const InputBox = () => {
         // Reset input state immediately
         setContent([{ type: 'text', content: '' }]);
         setInputText("");
+        window.requestAnimationFrame(() => {
+            if (inputRef.current) {
+                inputRef.current.style.height = 'auto';
+            }
+        });
+        collapseComposer();
 
         try {
             await sendMessageAndGetResponse(
@@ -236,42 +277,139 @@ const InputBox = () => {
         adjustTextareaHeight();
     };
 
+    const handleTextareaFocus = () => {
+        setIsInputFocused(true);
+
+        if (isMobileViewport) {
+            revealComposerOnMobile();
+            return;
+        }
+
+        window.setTimeout(() => {
+            inputRef.current?.scrollIntoView({ block: 'nearest' });
+        }, 180);
+    };
+
+    const handleTextareaTouchStart = (e) => {
+        if (!isMobileViewport) {
+            return;
+        }
+
+        setIsInputFocused(true);
+        revealComposerOnMobile();
+    };
+
+    const handleTextareaBlur = () => {
+        window.setTimeout(() => {
+            const activeElement = document.activeElement;
+            if (activeElement !== inputRef.current) {
+                setIsInputFocused(false);
+            }
+        }, 0);
+    };
+
+    const appendImagesToComposer = (imageUrls) => {
+        if (imageUrls.length === 0) {
+            return;
+        }
+
+        setContent((prevContent) => {
+            const nextContent = [...prevContent];
+            const trailingItem = nextContent[nextContent.length - 1];
+            const trailingTextItem = trailingItem?.type === 'text' ? trailingItem : null;
+
+            if (trailingTextItem) {
+                nextContent.pop();
+                if (trailingTextItem.content.trim() !== '') {
+                    nextContent.push(trailingTextItem);
+                }
+            }
+
+            imageUrls.forEach((url) => {
+                nextContent.push({
+                    type: 'image_url',
+                    image_url: { url }
+                });
+            });
+
+            nextContent.push(
+                trailingTextItem?.content.trim() === ''
+                    ? trailingTextItem
+                    : { type: 'text', content: '' }
+            );
+
+            return nextContent;
+        });
+
+        setIsInputFocused(true);
+
+        window.requestAnimationFrame(() => {
+            inputRef.current?.focus();
+            revealComposerOnMobile();
+        });
+    };
+
+    const prepareAttachedImages = async (files) => {
+        const imageFiles = Array.from(files).filter((file) => file.type.startsWith('image/'));
+
+        if (imageFiles.length === 0) {
+            return;
+        }
+
+        try {
+            const resizedImageUrls = await Promise.all(
+                imageFiles.map((file) => resizeImage(file, maxImageWidth || 1024, maxImageHeight || 1024))
+            );
+
+            appendImagesToComposer(resizedImageUrls);
+        } catch (error) {
+            console.error('Error preparing attached images:', error);
+            alert('Unable to attach one or more images.');
+        }
+    };
+
     const handlePaste = async (e) => {
         const items = e.clipboardData.items;
-        let handled = false;
+        const imageFiles = [];
 
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image') !== -1) {
-                handled = true;
                 const blob = items[i].getAsFile();
-
-                // Resize the image
-                const resizedDataUrl = await resizeImage(blob, maxImageWidth || 1024, maxImageHeight || 1024);
-
-                setContent(prevContent => [
-                    ...prevContent,
-                    {
-                        type: 'image_url',
-                        image_url: { url: resizedDataUrl }
-                    },
-                    { type: 'text', content: '' } // Add new empty text input after image
-                ]);
+                if (blob) {
+                    imageFiles.push(blob);
+                }
             }
         }
 
         // If no images were pasted, let the default text paste behavior occur
-        if (!handled) {
+        if (imageFiles.length === 0) {
             return true;
         }
 
         e.preventDefault();
+        await prepareAttachedImages(imageFiles);
     };
 
     const removeContent = (index) => {
         setContent(prevContent => prevContent.filter((_, i) => i !== index));
     };
 
-    const handleIconClick = () => {
+    const handleAttachButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileInputChange = async (e) => {
+        const files = e.target.files;
+
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        await prepareAttachedImages(files);
+        e.target.value = '';
+    };
+
+    const triggerIconAction = () => {
         const loadedModels = useModelManagementStore.getState().loadedModels;
         if (Object.keys(loadedModels).length === 0) {
             alert("No model has been loaded\nCheck Model Management in Sidebar");
@@ -291,8 +429,41 @@ const InputBox = () => {
         }
     };
 
+    const handleIconClick = () => {
+        if (shouldIgnoreIconClickRef.current) {
+            shouldIgnoreIconClickRef.current = false;
+            return;
+        }
+
+        triggerIconAction();
+    };
+
+    const handleIconMouseDown = (e) => {
+        e.preventDefault();
+    };
+
+    const handleIconTouchStart = (e) => {
+        e.preventDefault();
+        shouldIgnoreIconClickRef.current = true;
+        triggerIconAction();
+    };
+
     useEffect(() => {
         adjustTextareaHeight();
+    }, [inputText]);
+
+    useEffect(() => {
+        if (hasHydratedPersistedDraftRef.current) {
+            return;
+        }
+
+        hasHydratedPersistedDraftRef.current = true;
+
+        if (!inputText) {
+            return;
+        }
+
+        setContent([{ type: 'text', content: inputText }]);
     }, [inputText]);
 
     useEffect(() => {
@@ -306,8 +477,26 @@ const InputBox = () => {
     }, []);
 
     return (
-        <div className={styles.inputBoxContainer}>
+        <div className={`${styles.inputBoxContainer} ${isInputFocused ? styles.inputBoxContainerFocused : ''}`}>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className={styles.hiddenFileInput}
+                onChange={handleFileInputChange}
+                aria-hidden="true"
+                tabIndex={-1}
+            />
             <div className={styles.inputBoxAndSendIcon}>
+                <button
+                    type="button"
+                    className={styles.attachButton}
+                    onClick={handleAttachButtonClick}
+                    aria-label="Attach photos"
+                >
+                    <Plus className={styles.attachIcon} size={20} />
+                </button>
                 <div className={styles.contentSequenceContainer}>
                     {content.map((item, index) => (
                         <div key={index} className={styles.contentItem}>
@@ -319,6 +508,9 @@ const InputBox = () => {
                                         onChange={handleInputChange}
                                         onKeyPress={handleKeyPress}
                                         onPaste={handlePaste}
+                                        onTouchStart={handleTextareaTouchStart}
+                                        onFocus={handleTextareaFocus}
+                                        onBlur={handleTextareaBlur}
                                         placeholder='Enter a prompt here or paste images'
                                         rows={1}
                                     />
@@ -332,12 +524,18 @@ const InputBox = () => {
                         </div>
                     ))}
                 </div>
-                <div className={styles.imgContainer}>
+                <button
+                    type="button"
+                    className={styles.imgContainer}
+                    onMouseDown={handleIconMouseDown}
+                    onTouchStart={handleIconTouchStart}
+                    onClick={handleIconClick}
+                    aria-label={isStreaming ? 'Stop generating' : 'Send message'}
+                >
                     {isStreaming ? (
                         <img
                             src={assets.stop_icon}
                             className={styles.img}
-                            onClick={handleIconClick}
                             width={23}
                             height={23}
                             alt="Stop"
@@ -345,14 +543,13 @@ const InputBox = () => {
                     ) : (
                         <assets.SendIcon
                             className={styles.img}
-                            onClick={handleIconClick}
                             width={23}
                             height={23}
                         />
                     )}
-                </div>
+                </button>
             </div>
-            <div className={styles.footer}>
+            <div className={`${styles.footer} ${isInputFocused ? styles.footerFocused : ''}`}>
                 <ModelSelector />
             </div>
         </div>

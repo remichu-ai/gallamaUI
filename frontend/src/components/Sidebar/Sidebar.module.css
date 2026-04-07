@@ -21,6 +21,47 @@
     overflow: hidden;
 }
 
+.mobileSidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: min(var(--sidebar-expanded-width), calc(100vw - 28px));
+    max-width: calc(100vw - 28px);
+    padding-top: calc(env(safe-area-inset-top) + 12px);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+    border-right: 1px solid color-mix(in srgb, var(--ui-icon-color) 12%, transparent);
+    transform: translateX(calc(-100% - 18px));
+    transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.mobileSidebar.collapsed,
+.mobileSidebar.expanded {
+    width: min(var(--sidebar-expanded-width), calc(100vw - 28px));
+}
+
+.mobileSidebar.collapsed {
+    pointer-events: none;
+}
+
+.mobileSidebar.expanded {
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.mobileBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    border: 0;
+    padding: 0;
+    background: rgba(10, 13, 18, 0.46);
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+}
+
 .expanded {
     width: var(--sidebar-expanded-width);
     background-color: var(--side-bar-hover-color);
@@ -66,6 +107,22 @@
     padding-top: 4px;
 }
 
+.sidebarStatus {
+    width: 100%;
+    padding: 10px 12px 0;
+    box-sizing: border-box;
+    font-size: 13px;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--ui-icon-color) 78%, transparent);
+    overflow-wrap: anywhere;
+}
+
+.mobileMcpSection {
+    width: 100%;
+    padding: 4px 0 12px;
+    box-sizing: border-box;
+}
+
 .sectionLabel {
     opacity: 0;
     visibility: hidden;
@@ -86,7 +143,8 @@
 .sidebarToggle,
 .clearMessages,
 .settings,
-.modelManagement {
+.modelManagement,
+.mcpControls {
     display: flex;
     align-items: center;
     white-space: nowrap;
@@ -120,24 +178,55 @@
 
 .clearMessages,
 .settings,
-.modelManagement {
+.modelManagement,
+.mcpControls {
     cursor: pointer;
     padding: 0 var(--sidebar-item-horizontal-padding);
 }
 
 .clearMessages:hover,
 .settings:hover,
-.modelManagement:hover {
+.modelManagement:hover,
+.mcpControls:hover {
     background: color-mix(in srgb, var(--ui-icon-color) 10%, transparent);
 }
 
 .collapsed .clearMessages,
 .collapsed .settings,
-.collapsed .modelManagement {
+.collapsed .modelManagement,
+.collapsed .mcpControls {
     align-self: flex-start;
     width: 42px;
     justify-content: center;
     padding: 0;
+}
+
+.mcpControls {
+    background: transparent;
+    border: 0;
+    color: inherit;
+    text-align: left;
+}
+
+.mcpControls .menuText {
+    flex: 1;
+    min-width: 0;
+}
+
+.mcpChevron {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--ui-icon-color) 82%, transparent);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.expanded .mcpChevron {
+    opacity: 1;
+    visibility: visible;
 }
 
 .iconSlot {
@@ -352,4 +441,18 @@
 /* Show the mini box on clicking the delete button */
 .conversationItemActive .deleteBox {
     display: block;
+}
+
+@media (max-width: 820px) {
+    .sidebarContainer {
+        z-index: 12;
+    }
+
+    .sidebarTop {
+        gap: 8px;
+    }
+
+    .mobileMcpSection {
+        padding-bottom: 14px;
+    }
 }

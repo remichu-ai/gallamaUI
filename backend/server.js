@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const cors = require('cors'); // Import the cors module
 const conversationRoutes = require('./routes/conversations'); // Ensure this path is correct
 const mcpRoutes = require('./routes/mcp');
@@ -23,8 +22,8 @@ const connectWithRetry = () => {
 connectWithRetry();
 
 // Middleware
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors()); // Use the CORS middleware
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/mcp', mcpRoutes);

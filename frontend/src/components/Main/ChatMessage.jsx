@@ -3,6 +3,7 @@ import { assets } from "../../assets/assets.js";
 import MarkdownText from './MarkdownText.jsx';
 import AssistantTraceSection from './AssistantTraceSection.jsx';
 import { CopyButtonChat } from './CopyButtonChat';
+import useUIStore from '../../store/uiStore.js';
 import styles from './ChatMessage.module.css';
 
 const ImageModal = ({ src, alt, isOpen, onClose, clickPosition }) => {
@@ -123,11 +124,14 @@ const getRoleWrapperCSS = (role) => {
 };
 
 const ChatMessage = ({ message }) => {
+    const { isMobileViewport } = useUIStore();
     const [modalImage, setModalImage] = useState({
         src: '',
         isOpen: false,
         clickPosition: null
     });
+
+    const shouldInlineAssistantIcon = isMobileViewport && message.role === 'assistant';
 
     const handleImageClick = (url, e) => {
         setModalImage({
@@ -186,11 +190,18 @@ const ChatMessage = ({ message }) => {
     return (
         <>
             <div className={`${styles.chatMessageContainer} ${getRoleContainerCSS(message.role)}`}>
-                <div className={`${styles.roleIcon} ${getRoleIconCSS(message.role)}`}>
-                    <img src={getIcon(message.role)} alt="" />
-                </div>
+                {!shouldInlineAssistantIcon && (
+                    <div className={`${styles.roleIcon} ${getRoleIconCSS(message.role)}`}>
+                        <img src={getIcon(message.role)} alt="" />
+                    </div>
+                )}
                 <div className={`${styles.chatMessageWrapper} ${getRoleWrapperCSS(message.role)}`}>
                     <div className={`${styles.chatMessageContent} ${getRoleCSS(message.role)}`}>
+                        {shouldInlineAssistantIcon && (
+                            <div className={`${styles.roleIcon} ${styles.roleIconAssistant} ${styles.inlineAssistantIcon}`}>
+                                <img src={getIcon(message.role)} alt="" />
+                            </div>
+                        )}
                         {message.role === 'assistant' && (
                             <AssistantTraceSection
                                 reasoning={message.reasoning}

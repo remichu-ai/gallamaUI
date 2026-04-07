@@ -160,6 +160,14 @@
     width: 100%;
 }
 
+.chatMessageContent a[x-apple-data-detectors],
+.chatMessageContent [x-apple-data-detectors-type],
+.chatMessageContent [x-apple-data-detectors] {
+    color: var(--markdown-link-color, color-mix(in srgb, var(--top-bar-text-color, currentColor) 82%, white 18%)) !important;
+    -webkit-text-fill-color: var(--markdown-link-color, color-mix(in srgb, var(--top-bar-text-color, currentColor) 82%, white 18%)) !important;
+    text-decoration-color: color-mix(in srgb, var(--markdown-link-color, currentColor) 68%, transparent) !important;
+}
+
 
 
 p code {
@@ -278,4 +286,62 @@ li code {
 .modalOverlay.active {
     opacity: 1;
     visibility: visible;
+}
+
+@media (max-width: 720px) {
+    .chatMessageContainer {
+        margin-bottom: 10px;
+    }
+
+    .chatMessageWrapperAssistant {
+        display: block;
+        flex: 1 1 auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .chatMessageContentAssistant {
+        display: block;
+        width: 100%;
+        max-width: none;
+        padding: 0 2px 0 0;
+    }
+
+    .chatMessageContentAssistant::after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .roleIcon {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        margin-left: 8px;
+    }
+
+    .roleIconUser,
+    .roleIconAssistant {
+        width: 40px;
+        height: 40px;
+    }
+
+    .chatMessageContainerUser .roleIcon {
+        margin-left: 8px;
+    }
+
+    .chatMessageContainerAssistant .roleIcon {
+        margin-right: 10px;
+    }
+
+    .chatMessageContentMarkdownText {
+        margin-left: 0;
+        margin-right: 0;
+        width: auto;
+    }
+
+    .inlineAssistantIcon {
+        float: left;
+        margin: 0 10px 6px 0 !important;
+    }
 }

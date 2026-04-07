@@ -1,11 +1,15 @@
 // ChatComponent.jsx
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ChatMessagesList from './ChatMessageList.jsx';
 import InputBox from "./InputBox.jsx";
-import McpToolDrawer from './McpToolDrawer.jsx';
+import useUIStore from '../../store/uiStore.js';
 import styles from './ChatComponent.module.css';
 
+const McpToolDrawer = lazy(() => import('./McpToolDrawer.jsx'));
+
 const ChatComponent = () => {
+    const { isMobileViewport } = useUIStore();
+
     return (
         <div className={styles.chatComponentContainer}>
             <div className={styles.chatRail}>
@@ -16,7 +20,11 @@ const ChatComponent = () => {
                     <InputBox />
                 </div>
             </div>
-            <McpToolDrawer />
+            {!isMobileViewport && (
+                <Suspense fallback={<div className={styles.chatDrawerPlaceholder} aria-hidden="true" />}>
+                    <McpToolDrawer />
+                </Suspense>
+            )}
             {/* Optionally include LoadingComponent if needed */}
             {/*{loading && <LoadingComponent />}*/}
         </div>

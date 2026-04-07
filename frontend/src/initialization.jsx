@@ -5,6 +5,54 @@ import useModelManagementStore from './store/modelManagementStore';
 import useApiKeyStore from './store/apiKeyStore';
 import {mockMessages, mockMessagesBasic} from './mock/mockChatStore';
 
+const scheduleBackgroundTask = (task) => {
+    if (typeof window === 'undefined') {
+        return task();
+    }
+
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => {
+            void task();
+        }, { timeout: 1200 });
+        return undefined;
+    }
+
+    window.setTimeout(() => {
+        void task();
+    }, 0);
+    return undefined;
+};
+
+const syncModelSelection = (apiKeyStore, { allowAvailableFallback }) => {
+    const {
+        availableModels,
+        loadedModels,
+    } = useModelManagementStore.getState();
+
+    const previousSelectedModel = apiKeyStore.selectedModels['gallama'];
+    const loadedModelNames = Object.values(loadedModels).map((model) => model.name);
+    const availableModelNames = availableModels.map((model) => model.name);
+
+    let modelToSelect = '';
+
+    if (loadedModelNames.length > 0) {
+        if (previousSelectedModel && loadedModelNames.includes(previousSelectedModel)) {
+            modelToSelect = previousSelectedModel;
+        } else {
+            modelToSelect = loadedModelNames[0];
+        }
+    } else if (allowAvailableFallback && availableModelNames.length > 0) {
+        if (previousSelectedModel && availableModelNames.includes(previousSelectedModel)) {
+            modelToSelect = previousSelectedModel;
+        } else {
+            modelToSelect = availableModelNames[0];
+        }
+    }
+
+    apiKeyStore.setSelectedModel('gallama', modelToSelect);
+    apiKeyStore.setAvailableModels('gallama', availableModelNames);
+};
+
 export const initializeWithMockData = (mockType = 'advanced') => {
     const chatStore = useChatStore.getState();
     const uiStore = useUIStore.getState();
@@ -37,76 +85,42 @@ export const initializeWithMockData = (mockType = 'advanced') => {
 };
 
 export const initializeWithRealData = async () => {
-    // Get all store states
     const modelManagementStore = useModelManagementStore.getState();
     const apiKeyStore = useApiKeyStore.getState();
-    const chatStore = useChatStore.getState();
-    const uiStore = useUIStore.getState();
 
-    // Clear existing messages and set initial UI state
-    chatStore.clearMessages();
-    uiStore.showChatComponent = true;
+    // Preserve persisted chat state when the app is recreated on mobile.
+    useUIStore.setState({ showChatComponent: true });
 
     try {
-        // Fetch both available and loaded models
-        await Promise.all([
-            modelManagementStore.fetchAvailableModels(),
-            modelManagementStore.fetchLoadedModels()
-        ]);
+        // Load only what the chat shell needs immediately.
+        await modelManagementStore.fetchLoadedModels();
+        syncModelSelection(apiKeyStore, { allowAvailableFallback: false });
 
-        // Get the current state after fetches
-        const availableModels = modelManagementStore.availableModels;
-        const loadedModels = modelManagementStore.loadedModels;
-
-        // Get the previously selected model for the gallama service
-        const previousSelectedModel = apiKeyStore.selectedModels['gallama'];
-
-        // Initialize model selection based on loaded models
-        let modelToSelect = '';
-
-        // First, check if we have any loaded models
-        if (Object.keys(loadedModels).length > 0) {
-            // If we have loaded models, prefer the previously selected model if it's still loaded
-            const loadedModelNames = Object.values(loadedModels).map(model => model.name);
-
-            if (previousSelectedModel && loadedModelNames.includes(previousSelectedModel)) {
-                modelToSelect = previousSelectedModel;
-            } else {
-                // If previous model isn't loaded, use the first loaded model
-                modelToSelect = loadedModelNames[0];
+        // The broader model catalog is only needed for secondary surfaces.
+        scheduleBackgroundTask(async () => {
+            try {
+                await modelManagementStore.fetchAvailableModels();
+                syncModelSelection(apiKeyStore, { allowAvailableFallback: true });
+            } catch (error) {
+                console.error('Error fetching available models in the background:', error);
             }
-        } else if (availableModels.length > 0) {
-            // If no loaded models but we have available models, check if previous model is in available list
-            const availableModelNames = availableModels.map(model => model.name);
+        });
 
-            if (previousSelectedModel && availableModelNames.includes(previousSelectedModel)) {
-                modelToSelect = previousSelectedModel;
-            } else {
-                // If previous model isn't available, use the first available model
-                modelToSelect = availableModelNames[0];
-            }
-        }
-
-        // Update the selected model in the API key store
-        apiKeyStore.setSelectedModel('gallama', modelToSelect);
-
-        // Initialize available models in the API key store
-        const modelNames = availableModels.map(model => model.name);
-        apiKeyStore.setAvailableModels('gallama', modelNames);
+        const {
+            availableModels,
+            loadedModels,
+        } = useModelManagementStore.getState();
 
         console.log('Initialization complete:', {
-            selectedModel: modelToSelect,
-            availableModels: modelNames,
+            selectedModel: apiKeyStore.selectedModels['gallama'],
+            availableModels: availableModels.map((model) => model.name),
             loadedModels: Object.keys(loadedModels),
             uiState: {
-                showChatComponent: uiStore.showChatComponent,
+                showChatComponent: useUIStore.getState().showChatComponent,
             }
         });
 
     } catch (error) {
         console.error('Error during initialization:', error);
-        // Reset to empty state in case of error
-        apiKeyStore.setSelectedModel('gallama', '');
-        apiKeyStore.setAvailableModels('gallama', []);
     }
 };

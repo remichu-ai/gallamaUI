@@ -9,10 +9,5 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
-  },
-  "dependencies": {
-    "lz-string": "^1.5.0",
-    "multer": "^2.1.1",
-    "sass": "^1.97.3"
   }
 }

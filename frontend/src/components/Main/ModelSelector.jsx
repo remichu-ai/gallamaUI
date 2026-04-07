@@ -24,8 +24,10 @@ const ModelSelector = () => {
   }, []);
 
   useEffect(() => {
-    fetchLoadedModels();
-  }, []);
+    if (Object.keys(loadedModels).length === 0) {
+      fetchLoadedModels();
+    }
+  }, [fetchLoadedModels, loadedModels]);
 
   useEffect(() => {
     const modelKeys = Object.keys(loadedModels);

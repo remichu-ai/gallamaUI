@@ -7,7 +7,8 @@
     isolation: isolate;
     width: 100%;
     flex-direction: row;
-    height: 100vh;
+    min-height: var(--app-height, 100svh);
+    height: var(--app-height, 100svh);
     background: var(--page-bg-color);
     overflow: hidden;
     flex: 1;
@@ -15,6 +16,16 @@
 
 .sidebarExpanded {
     --sidebar-rail-offset: var(--sidebar-expanded-width);
+}
+
+.sidebarPlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-collapsed-width);
+    background-color: var(--side-bar-bg-color);
+    z-index: 0;
 }
 
 .mainContainer::before {
@@ -44,6 +55,8 @@
     overflow: hidden;
     flex-direction: column;
     margin-left: var(--sidebar-rail-offset);
+    min-width: 0;
+    min-height: 0;
     transition: margin-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -53,20 +66,24 @@
     z-index: 1;
     width: 100%;
     min-width: 0;
-    height: 100%;
+    min-height: 0;
     overflow: hidden;
     box-sizing: border-box;
-    padding-left: var(--sidebar-rail-offset);
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    transition: padding-left 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .chatComContainer {
     display: flex;
     width: 100%;
     flex: 1;
+    min-height: 0;
     flex-direction: row;
     justify-content: center;
+}
+
+.mobileLayout {
+    --sidebar-rail-offset: 0px;
+}
+
+.mobileLayout .sidebarPlaceholder {
+    display: none;
 }

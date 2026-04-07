@@ -3,6 +3,31 @@ export const MCP_TOOL_MODE_CUSTOM = 'custom';
 
 const VALID_DISCOVERY_STATES = new Set(['idle', 'loading', 'ready', 'error', 'stale']);
 
+const createFallbackUuid = () => {
+    const cryptoApi = globalThis.crypto;
+
+    if (typeof cryptoApi?.randomUUID === 'function') {
+        return cryptoApi.randomUUID();
+    }
+
+    if (typeof cryptoApi?.getRandomValues === 'function') {
+        const bytes = cryptoApi.getRandomValues(new Uint8Array(16));
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+        const hex = [...bytes].map((value) => value.toString(16).padStart(2, '0')).join('');
+        return [
+            hex.slice(0, 8),
+            hex.slice(8, 12),
+            hex.slice(12, 16),
+            hex.slice(16, 20),
+            hex.slice(20),
+        ].join('-');
+    }
+
+    return `mcp-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+};
+
 export const parseDelimitedToolNames = (value) => {
     if (Array.isArray(value)) {
         return [...new Set(value.map((item) => String(item).trim()).filter(Boolean))];
@@ -51,7 +76,7 @@ export const normalizeMcpServerShape = (server = {}) => {
     }
 
     return {
-        id: server.id ?? crypto.randomUUID(),
+        id: server.id ?? createFallbackUuid(),
         enabled: server.enabled !== false,
         name: typeof server.name === 'string' ? server.name : '',
         url: typeof server.url === 'string' ? server.url : '',

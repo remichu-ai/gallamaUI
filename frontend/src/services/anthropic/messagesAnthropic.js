@@ -6,12 +6,24 @@ import {
     getAnthropicMaxTokens,
     normalizeAnthropicMessage,
 } from '../api/requestTransforms.js';
+import {
+    getPreferredMcpOutputValue,
+    normalizeToolPayloadValue,
+} from '../toolTraceFormatting.js';
 
 const buildHeaders = (apiKey) => ({
     'Content-Type': 'application/json',
     'anthropic-version': '2023-06-01',
     ...(apiKey && apiKey !== 'NA' ? { 'x-api-key': apiKey } : {}),
 });
+
+const extractMcpResultValue = (content) => {
+    if (Array.isArray(content) && content.length === 1 && content[0]?.type === 'text') {
+        return content[0].text ?? '';
+    }
+
+    return content ?? '';
+};
 
 const messagesAnthropic = async ({
     apiKey,
@@ -62,6 +74,7 @@ const messagesAnthropic = async ({
 
     const processStream = async function* () {
         const toolBlocks = new Map();
+        const toolBlocksById = new Map();
 
         for await (const event of streamSSE(response)) {
             const payload = parseEventData(event);
@@ -69,13 +82,41 @@ const messagesAnthropic = async ({
                 continue;
             }
 
-            if (payload.type === 'content_block_start' && payload.content_block?.type === 'tool_use') {
-                toolBlocks.set(payload.index, {
-                    id: payload.content_block.id,
-                    name: payload.content_block.name,
-                    partialJson: '',
-                });
-                continue;
+            if (payload.type === 'content_block_start') {
+                if (payload.content_block?.type === 'tool_use' || payload.content_block?.type === 'mcp_tool_use') {
+                    const toolBlock = {
+                        id: payload.content_block.id,
+                        name: payload.content_block.name,
+                        serverName: payload.content_block.server_name ?? payload.content_block.server_label ?? '',
+                        type: payload.content_block.type,
+                        partialJson: '',
+                    };
+
+                    toolBlocks.set(payload.index, toolBlock);
+                    toolBlocksById.set(toolBlock.id, toolBlock);
+                    continue;
+                }
+
+                if (payload.content_block?.type === 'mcp_tool_result') {
+                    const rawOutputValue = extractMcpResultValue(payload.content_block.content);
+                    const normalizedOutputValue = getPreferredMcpOutputValue(rawOutputValue);
+                    const linkedToolBlock = toolBlocksById.get(payload.content_block.tool_use_id);
+
+                    yield {
+                        trace_items: [{
+                            id: payload.content_block.id ?? `${payload.content_block.tool_use_id}:result`,
+                            type: 'tool_result',
+                            label: 'MCP result',
+                            name: linkedToolBlock?.name ?? payload.content_block.name ?? 'MCP tool',
+                            server_label: linkedToolBlock?.serverName ?? '',
+                            call_id: payload.content_block.tool_use_id ?? null,
+                            outputValue: payload.content_block.is_error ? '' : normalizedOutputValue,
+                            error: payload.content_block.is_error ? normalizedOutputValue : '',
+                            status: payload.content_block.is_error ? 'failed' : 'completed',
+                        }],
+                    };
+                    continue;
+                }
             }
 
             if (payload.type === 'content_block_delta') {
@@ -101,14 +142,18 @@ const messagesAnthropic = async ({
             if (payload.type === 'content_block_stop') {
                 const toolBlock = toolBlocks.get(payload.index);
                 if (toolBlock) {
+                    const argumentsValue = normalizeToolPayloadValue(toolBlock.partialJson || '{}');
+
                     yield {
-                        tool_calls: [{
+                        trace_items: [{
                             id: toolBlock.id,
-                            type: 'function',
-                            function: {
-                                name: toolBlock.name,
-                                arguments: toolBlock.partialJson || '{}',
-                            },
+                            type: 'tool_call',
+                            label: toolBlock.type === 'mcp_tool_use' ? 'MCP call' : 'Function call',
+                            name: toolBlock.name,
+                            server_label: toolBlock.type === 'mcp_tool_use' ? toolBlock.serverName : '',
+                            argumentsValue,
+                            call_id: toolBlock.id,
+                            status: toolBlock.type === 'mcp_tool_use' ? 'in_progress' : null,
                         }],
                     };
                     toolBlocks.delete(payload.index);

@@ -45,3 +45,10 @@
 .chatMessageList:hover::-webkit-scrollbar-thumb {
     background-color: var(--scroll-bar-color);
 }
+
+@media (max-width: 720px) {
+    .chatMessageList {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}

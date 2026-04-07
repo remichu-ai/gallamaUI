@@ -172,6 +172,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
 
             if (
                 chunk.tool_calls
+                || chunk.trace_items
                 || chunk.response_items
                 || chunk.replace_response_items
                 || chunk.response_id
@@ -180,6 +181,7 @@ async function sendMessageAndGetResponse(msgs, addMessage, updateLastMessage, st
             ) {
                 updateLastMessage({
                     tool_calls: chunk.tool_calls,
+                    trace_items: chunk.trace_items,
                     response_items: chunk.response_items,
                     replace_response_items: chunk.replace_response_items,
                     response_id: chunk.response_id,

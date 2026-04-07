@@ -129,6 +129,8 @@
 }
 
 .textInput {
+    appearance: none;
+    -webkit-appearance: none;
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -137,9 +139,16 @@
     margin-top: 8px;
     font-size: 1rem;
     color: var(--form-control-text);
+    -webkit-text-fill-color: var(--form-control-text);
+    caret-color: var(--form-control-text);
     background-color: var(--form-control-bg);
     border: 1px solid var(--form-control-border);
     border-radius: 8px;
+}
+
+.textInput::placeholder {
+    color: color-mix(in srgb, var(--form-control-text) 55%, transparent);
+    -webkit-text-fill-color: color-mix(in srgb, var(--form-control-text) 55%, transparent);
 }
 
 .textArea,
@@ -158,7 +167,7 @@
 }
 
 .textArea {
-    resize: both;
+    resize: vertical;
 }
 
 .textInput:focus,
@@ -259,10 +268,13 @@
 }
 
 .segmentedControl {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
     padding: 6px;
+    width: fit-content;
+    max-width: 100%;
     border-radius: 999px;
     background: color-mix(in srgb, var(--input-box-background-color) 72%, transparent);
     border: 1px solid color-mix(in srgb, var(--form-control-border) 72%, transparent);
@@ -335,42 +347,284 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    border: 1px solid color-mix(in srgb, var(--form-control-border) 78%, transparent);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 52%, transparent);
     border-radius: 18px;
-    padding: 18px;
+    padding: 20px 22px 18px;
     margin-top: 12px;
     background:
-        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 12%, transparent) 0, transparent 34%),
+        radial-gradient(circle at top right, color-mix(in srgb, var(--r-accent2) 8%, transparent) 0, transparent 32%),
         linear-gradient(
             180deg,
-            color-mix(in srgb, var(--form-control-bg) 94%, var(--input-box-background-color) 6%) 0%,
-            color-mix(in srgb, var(--input-box-background-color) 90%, black 10%) 100%
+            color-mix(in srgb, var(--form-control-bg) 96%, var(--input-box-background-color) 4%) 0%,
+            color-mix(in srgb, var(--input-box-background-color) 94%, black 6%) 100%
         );
     color: var(--text-color);
     max-width: 100%;
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .mcpHeaderRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+.mcpHeaderMain {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.mcpTitleGroup {
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: min(720px, 100%);
+}
+
+.mcpTitleLine {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .mcpTitle {
+    font-size: 1.05rem;
     font-weight: bold;
     color: inherit;
+}
+
+.serverState {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.serverStateDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.serverStateOnline {
+    color: color-mix(in srgb, #6cde90 86%, white 14%);
+}
+
+.serverStateOffline {
+    color: color-mix(in srgb, #ffb2a0 72%, #f06d4f 28%);
+}
+
+.serverStateDisabled {
+    color: color-mix(in srgb, var(--text-color) 62%, transparent);
+}
+
+.serverStateLoading {
+    color: color-mix(in srgb, #8ebcf8 82%, white 18%);
+}
+
+.serverHint {
+    margin: 8px 0 0;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    opacity: 0.66;
 }
 
 .mcpHeaderActions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     flex-wrap: wrap;
     justify-content: flex-end;
+    flex: 0 0 auto;
+    justify-self: end;
+}
+
+.mcpControlCluster {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.collapseButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--text-color) 58%, transparent);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.collapseButton:hover {
+    color: var(--text-color);
+}
+
+.collapseButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.collapseChevron {
+    transition: transform 0.2s ease;
+}
+
+.collapseChevronCollapsed {
+    transform: rotate(-90deg);
+}
+
+.statusToggleButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--text-color);
+    background: transparent;
+    cursor: pointer;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.statusToggleButton:hover {
+    opacity: 0.92;
+}
+
+.statusToggleButton:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.statusToggleVisual {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 50px;
+    height: 28px;
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, black 14%, transparent);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, #4f5d6e 88%, white 12%) 0%,
+        color-mix(in srgb, #424e5d 92%, black 8%) 100%
+    );
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.statusToggleThumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(236, 239, 243, 0.96) 100%);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    transition: transform 0.2s ease;
+}
+
+.statusToggleButtonEnabled .statusToggleVisual {
+    border-color: color-mix(in srgb, #45c16c 42%, transparent);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, #46ca6f 82%, #5d8a70 18%) 0%,
+        color-mix(in srgb, #2fa45d 88%, #2b7252 12%) 100%
+    );
+}
+
+.statusToggleButtonEnabled .statusToggleThumb {
+    transform: translateX(22px);
+}
+
+.mcpPanelBody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mcpCardCollapsed {
+    gap: 0;
+}
+
+.conciseMcpSummary {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid color-mix(in srgb, var(--form-control-border) 34%, transparent);
+}
+
+.conciseSummaryHeader {
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    opacity: 0.88;
+}
+
+.conciseSummaryContent {
+    min-height: 24px;
+}
+
+.enabledToolList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.enabledToolChip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 12px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--r-accent2) 42%, var(--form-control-border) 58%);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--r-accent2) 28%, var(--form-control-bg) 72%) 0%,
+            color-mix(in srgb, var(--r-accent) 18%, var(--input-box-background-color) 82%) 100%
+        );
+    color: color-mix(in srgb, white 90%, var(--text-color) 10%);
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.2;
+    box-shadow:
+        0 8px 18px -18px color-mix(in srgb, var(--r-accent2) 72%, transparent),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.enabledToolChipDisabled {
+    opacity: 0.58;
+    border-color: color-mix(in srgb, var(--form-control-border) 32%, transparent);
+    background: color-mix(in srgb, var(--form-control-bg) 46%, transparent);
+    color: color-mix(in srgb, var(--text-color) 74%, transparent);
+    box-shadow: none;
+}
+
+.conciseSummaryEmpty {
+    font-size: 0.9rem;
+    opacity: 0.72;
 }
 
 .toggleRow {
@@ -384,6 +638,44 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.offlineBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, #ffede4 90%, white 10%);
+    background: color-mix(in srgb, #cb5a3c 72%, transparent);
+    border: 1px solid color-mix(in srgb, #cb5a3c 55%, transparent);
+}
+
+.mcpRemoveButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 108px;
+    min-height: 32px;
+    padding: 5px 12px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--form-control-bg) 82%, transparent);
+    border: 1px solid color-mix(in srgb, var(--form-control-border) 36%, transparent);
+    color: color-mix(in srgb, var(--text-color) 84%, transparent);
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+.mcpRemoveButton:hover {
+    background: color-mix(in srgb, var(--form-control-bg) 92%, transparent);
+    border-color: color-mix(in srgb, var(--form-control-border) 50%, transparent);
+    color: var(--text-color);
 }
 
 .toggleHint {
@@ -404,6 +696,10 @@
     inset: 0;
     opacity: 0;
     cursor: pointer;
+}
+
+.switch input:disabled {
+    cursor: wait;
 }
 
 .switchTrack {
@@ -436,6 +732,10 @@
 
 .switch input:checked + .switchTrack::after {
     transform: translateX(24px);
+}
+
+.switch input:disabled + .switchTrack {
+    opacity: 0.72;
 }
 
 .secondaryButton {
@@ -578,5 +878,84 @@
     .modalActions {
         flex-direction: column;
         align-items: stretch;
+    }
+}
+
+@media (max-width: 820px) {
+    .container {
+        padding: 18px 18px 24px;
+    }
+
+    .settingContainer {
+        gap: 18px;
+    }
+
+    .header {
+        margin-bottom: 10px;
+        font-size: 1.35rem;
+    }
+
+    .subHeader {
+        font-size: 1.1rem;
+    }
+
+    .displayModeCard,
+    .mcpOverviewCard,
+    .mcpCard,
+    .dangerCard,
+    .modalCard {
+        padding: 16px;
+    }
+
+    .segmentedControl {
+        width: 100%;
+    }
+
+    .segmentedButton {
+        flex: 1 1 132px;
+        text-align: center;
+    }
+
+    .toggleRow,
+    .mcpHeaderActions,
+    .mcpHeaderRow,
+    .dangerCardHeader {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 16px 14px 20px;
+    }
+
+    .inlineInputRow,
+    .toggleRow,
+    .mcpHeaderActions,
+    .mcpHeaderRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mcpControlCluster {
+        width: 100%;
+    }
+
+    .statusToggleButton {
+        flex: 1 1 auto;
+    }
+
+    .secondaryButton,
+    .dangerButton,
+    .loadButton {
+        width: 100%;
+    }
+
+    .modalOverlay {
+        padding: 14px;
+    }
+
+    .modalCard {
+        padding: 18px;
     }
 }

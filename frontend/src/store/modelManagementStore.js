@@ -9,33 +9,65 @@ const useModelManagementStore = create(
             taskStatus: {},
             loadedModels: {},  // New state to store loaded models
             isLoading: false,
+            availableModelsRequest: null,
+            loadedModelsRequest: null,
 
             fetchAvailableModels: async () => {
+                const existingRequest = get().availableModelsRequest;
+                if (existingRequest) {
+                    return existingRequest;
+                }
+
                 const endpoint = get().getServiceEndpoint()
-                const response = await fetch(`${endpoint}/list_available_models`)
-                const data = await response.json()
-                set({availableModels: data})
-                console.log("Available models: ", data)
+                const request = fetch(`${endpoint}/list_available_models`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        set({availableModels: data})
+                        console.log("Available models: ", data)
+                        return data;
+                    })
+                    .finally(() => {
+                        set({availableModelsRequest: null})
+                    });
+
+                set({ availableModelsRequest: request });
+                return request;
             },
 
             fetchLoadedModels: async () => {  // Updated function to fetch loaded models
+                const existingRequest = get().loadedModelsRequest;
+                if (existingRequest) {
+                    return existingRequest;
+                }
+
                 set({isLoading: true})
                 const endpoint = get().getServiceEndpoint()
-                try {
-                    const response = await fetch(`${endpoint}/list_loaded_models`)
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch loaded models')
-                    }
-                    const data = await response.json()
-                    set({loadedModels: data})
-                    console.log("Loaded models: ", data)
-                } catch (error) {
-                    console.error("Error fetching loaded models: ", error)
-                    set({loadedModels: {}})  // Clear the store if there's an error
-                }
-                setTimeout(() => {
-                    set({isLoading: false})
-                }, 500);
+                const request = fetch(`${endpoint}/list_loaded_models`)
+                    .then(async (response) => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch loaded models')
+                        }
+                        return response.json()
+                    })
+                    .then((data) => {
+                        set({loadedModels: data})
+                        console.log("Loaded models: ", data)
+                        return data;
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching loaded models: ", error)
+                        set({loadedModels: {}})  // Clear the store if there's an error
+                        return {};
+                    })
+                    .finally(() => {
+                        set({
+                            isLoading: false,
+                            loadedModelsRequest: null,
+                        })
+                    });
+
+                set({ loadedModelsRequest: request });
+                return request;
             },
 
             loadModel: async (model) => {

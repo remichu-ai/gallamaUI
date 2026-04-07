@@ -22,7 +22,7 @@ const formatLastSynced = (value) => {
     return `Synced ${date.toLocaleString()}`;
 };
 
-const McpServerToolPanel = ({ server, compact = false }) => {
+const McpServerToolPanel = ({ server, compact = false, variant = 'drawer' }) => {
     const [expandedDescriptions, setExpandedDescriptions] = useState(() => new Set());
     const {
         setMcpServerDiscoveryState,
@@ -33,8 +33,11 @@ const McpServerToolPanel = ({ server, compact = false }) => {
 
     const tools = server.discoveredTools ?? [];
     const isLoading = server.discoveryStatus === 'loading';
+    const isOffline = server.discoveryStatus === 'error';
+    const areToolControlsDisabled = isLoading || isOffline || server.enabled === false;
     const allowAll = server.toolMode !== 'custom';
     const allowedCount = getAllowedToolCount(server);
+    const visibleAllowedCount = areToolControlsDisabled ? 0 : allowedCount;
 
     const toggleDescription = (toolName) => {
         setExpandedDescriptions((previous) => {
@@ -65,12 +68,14 @@ const McpServerToolPanel = ({ server, compact = false }) => {
     };
 
     return (
-        <div className={`${styles.panel} ${compact ? styles.compact : ''}`}>
+        <div
+            className={`${styles.panel} ${compact ? styles.compact : ''} ${variant === 'drawer' ? styles.drawerVariant : styles.sidebarVariant}`}
+        >
             <div className={styles.header}>
                 <div className={styles.headerText}>
                     <span className={styles.headerLabel}>Discovered tools</span>
                     <span className={styles.headerMeta}>
-                        {tools.length > 0 ? `${allowedCount}/${tools.length} allowed` : 'No tools synced'}
+                        {tools.length > 0 ? `${visibleAllowedCount}/${tools.length} allowed` : 'No tools synced'}
                     </span>
                 </div>
                 <button
@@ -88,7 +93,7 @@ const McpServerToolPanel = ({ server, compact = false }) => {
                 <span className={`${styles.statusPill} ${styles[`status_${server.discoveryStatus}`] || ''}`}>
                     {server.discoveryStatus === 'loading' && 'Syncing tool list'}
                     {server.discoveryStatus === 'ready' && 'Tool list ready'}
-                    {server.discoveryStatus === 'error' && 'Sync failed'}
+                    {server.discoveryStatus === 'error' && 'Offline'}
                     {server.discoveryStatus === 'stale' && 'Tool list may be outdated'}
                     {server.discoveryStatus === 'idle' && 'Ready to discover'}
                 </span>
@@ -99,20 +104,27 @@ const McpServerToolPanel = ({ server, compact = false }) => {
                 <div className={styles.errorText}>{server.discoveryError}</div>
             )}
 
+            {isOffline && tools.length > 0 && (
+                <div className={styles.infoText}>
+                    Tool selections are saved and will come back when this server is reachable again.
+                </div>
+            )}
+
             {tools.length > 0 ? (
                 <>
-                    <label className={styles.allowAllRow}>
+                    <label className={`${styles.allowAllRow} ${areToolControlsDisabled ? styles.controlRowDisabled : ''}`}>
                         <span className={styles.allowAllLabel}>
                             <strong>Allow all tools</strong>
                         </span>
                         <span className={styles.allowAllSwitch}>
                             <input
                                 type="checkbox"
-                                checked={allowAll}
+                                checked={!areToolControlsDisabled && allowAll}
                                 onChange={(event) => setMcpServerToolMode(
                                     server.id,
                                     event.target.checked ? MCP_TOOL_MODE_ALL : 'custom'
                                 )}
+                                disabled={areToolControlsDisabled}
                             />
                             <span className={styles.allowAllSwitchTrack} />
                         </span>
@@ -122,9 +134,13 @@ const McpServerToolPanel = ({ server, compact = false }) => {
                         {tools.map((tool) => {
                             const isExpanded = expandedDescriptions.has(tool.name);
                             const description = tool.description || 'No description provided by the server.';
+                            const isChecked = !areToolControlsDisabled && isToolAllowedForServer(server, tool.name);
 
                             return (
-                                <div key={tool.name} className={styles.toolRow}>
+                                <div
+                                    key={tool.name}
+                                    className={`${styles.toolRow} ${areToolControlsDisabled ? styles.controlRowDisabled : ''}`}
+                                >
                                     <span className={styles.toolHeader}>
                                         <span className={styles.toolNameLine}>
                                             <Wrench size={14} className={styles.toolIcon} />
@@ -134,9 +150,10 @@ const McpServerToolPanel = ({ server, compact = false }) => {
                                     <label className={styles.switch}>
                                         <input
                                             type="checkbox"
-                                            checked={isToolAllowedForServer(server, tool.name)}
+                                            checked={isChecked}
                                             onChange={() => toggleMcpServerTool(server.id, tool.name)}
                                             aria-label={`Toggle ${tool.name}`}
+                                            disabled={areToolControlsDisabled}
                                         />
                                         <span className={styles.switchTrack} />
                                     </label>
