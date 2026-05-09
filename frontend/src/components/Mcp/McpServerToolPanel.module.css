@@ -375,6 +375,80 @@
     opacity: 0.7;
 }
 
+:global([data-theme='retro']) .sidebarVariant {
+    border-color: color-mix(in srgb, var(--r-border-color) 32%, transparent);
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, #f8efd9 74%, var(--r-background-color) 26%) 0%,
+            color-mix(in srgb, #e5d6b5 58%, var(--r-background-color) 42%) 100%
+        );
+    box-shadow:
+        0 14px 28px -26px rgba(93, 71, 51, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+:global([data-theme='retro']) .drawerVariant {
+    border-top-color: color-mix(in srgb, var(--r-border-color) 18%, transparent);
+}
+
+:global([data-theme='retro']) .headerMeta,
+:global([data-theme='retro']) .statusMeta,
+:global([data-theme='retro']) .infoText,
+:global([data-theme='retro']) .toolDescription {
+    color: color-mix(in srgb, var(--text-color) 82%, transparent);
+}
+
+:global([data-theme='retro']) .refreshButton {
+    border-color: color-mix(in srgb, var(--r-border-color) 34%, transparent);
+    background: color-mix(in srgb, rgba(255, 248, 232, 0.84) 82%, #ddcfad 18%);
+}
+
+:global([data-theme='retro']) .refreshButton:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--r-border-color) 52%, transparent);
+    background: color-mix(in srgb, rgba(255, 248, 232, 0.74) 76%, #d4c095 24%);
+}
+
+:global([data-theme='retro']) .allowAllRow,
+:global([data-theme='retro']) .toolRow,
+:global([data-theme='retro']) .emptyState {
+    border-color: color-mix(in srgb, var(--r-border-color) 22%, transparent);
+    background: color-mix(in srgb, rgba(248, 240, 220, 0.82) 78%, #dfcfaa 22%);
+}
+
+:global([data-theme='retro']) .allowAllRow {
+    border-style: solid;
+}
+
+:global([data-theme='retro']) .statusPill {
+    color: color-mix(in srgb, var(--text-color) 88%, transparent);
+    background: rgba(108, 88, 62, 0.08);
+}
+
+:global([data-theme='retro']) .status_ready {
+    color: #25523b;
+    background: rgba(104, 173, 120, 0.18);
+    border-color: rgba(67, 143, 94, 0.26);
+}
+
+:global([data-theme='retro']) .status_loading {
+    color: #2c4b60;
+    background: rgba(106, 141, 176, 0.18);
+    border-color: rgba(78, 116, 151, 0.24);
+}
+
+:global([data-theme='retro']) .status_error {
+    color: #914f3e;
+    background: rgba(221, 135, 108, 0.18);
+    border-color: rgba(182, 100, 76, 0.24);
+}
+
+:global([data-theme='retro']) .status_stale {
+    color: #7a5d28;
+    background: rgba(211, 178, 100, 0.18);
+    border-color: rgba(170, 132, 54, 0.24);
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);

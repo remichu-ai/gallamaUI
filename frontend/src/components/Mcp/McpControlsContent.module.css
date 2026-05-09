@@ -518,6 +518,95 @@
     );
 }
 
+:global([data-theme='retro']) .drawerVariant {
+    border-color: color-mix(in srgb, var(--r-border-color) 58%, transparent);
+    background:
+        radial-gradient(circle at top right, rgba(105, 155, 171, 0.12) 0, transparent 30%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color) 80%, #eadfc2 20%) 0%,
+            color-mix(in srgb, var(--r-background-color) 70%, #d6c7a5 30%) 100%
+        );
+    box-shadow:
+        0 24px 48px -34px rgba(93, 71, 51, 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+:global([data-theme='retro']) .header {
+    border-bottom-color: color-mix(in srgb, var(--r-border-color) 20%, transparent);
+    background: linear-gradient(180deg, rgba(255, 250, 236, 0.32), transparent);
+}
+
+:global([data-theme='retro']) .globalNotice {
+    border-color: color-mix(in srgb, #b78239 44%, transparent);
+    background: color-mix(in srgb, #d9b36a 18%, rgba(255, 247, 225, 0.62));
+    color: color-mix(in srgb, var(--r-font-color) 74%, #8a5a18 26%);
+}
+
+:global([data-theme='retro']) .serverCard {
+    border-color: color-mix(in srgb, var(--r-border-color) 42%, transparent);
+    background:
+        radial-gradient(circle at top right, rgba(105, 155, 171, 0.08) 0, transparent 28%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, #f7efd8 72%, var(--r-background-color) 28%) 0%,
+            color-mix(in srgb, #e3d5b4 62%, var(--r-background-color) 38%) 100%
+        );
+    box-shadow:
+        0 14px 28px -26px rgba(93, 71, 51, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+:global([data-theme='retro']) .collapseButton {
+    color: color-mix(in srgb, var(--text-color) 72%, transparent);
+}
+
+:global([data-theme='retro']) .collapseButton:hover {
+    background: rgba(255, 248, 231, 0.52);
+}
+
+:global([data-theme='retro']) .serverMeta,
+:global([data-theme='retro']) .conciseSummaryMeta,
+:global([data-theme='retro']) .conciseSummaryEmpty {
+    color: color-mix(in srgb, var(--text-color) 82%, transparent);
+}
+
+:global([data-theme='retro']) .serverStateOffline {
+    color: #b96a55;
+}
+
+:global([data-theme='retro']) .conciseToolChip {
+    border-color: color-mix(in srgb, var(--r-border-color) 28%, #8fa8b1 72%);
+    color: color-mix(in srgb, var(--text-color) 72%, #6d6459 28%);
+    font-weight: 600;
+}
+
+:global([data-theme='retro']) .conciseToolChipEnabled {
+    border-color: color-mix(in srgb, var(--r-border-color) 24%, #8ba6af 76%);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, #d8e3e7 34%, #f8eed7 66%) 0%,
+            color-mix(in srgb, #d5c29c 30%, #efe1bd 70%) 100%
+        );
+    color: color-mix(in srgb, var(--text-color) 76%, #675b4d 24%);
+}
+
+:global([data-theme='retro']) .conciseToolChipDisabled {
+    border-color: color-mix(in srgb, var(--r-border-color) 24%, transparent);
+    background: color-mix(in srgb, #f4ead0 78%, rgba(255, 255, 255, 0.36) 22%);
+    color: color-mix(in srgb, var(--text-color) 60%, #8a7e70 40%);
+}
+
+:global([data-theme='retro']) .conciseToolChipMuted {
+    color: color-mix(in srgb, var(--text-color) 62%, #8c8173 38%);
+    opacity: 0.88;
+}
+
+:global([data-theme='retro']) .conciseToolChipReadOnly {
+    opacity: 0.88;
+}
+
 .switch input:checked + .switchTrack::after {
     transform: translateX(26px);
 }

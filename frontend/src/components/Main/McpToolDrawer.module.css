@@ -89,6 +89,32 @@
     border-color: color-mix(in srgb, var(--form-control-border) 92%, transparent);
 }
 
+:global([data-theme='retro']) .drawerPanelFallback {
+    border-color: color-mix(in srgb, var(--r-border-color) 58%, transparent);
+    background:
+        radial-gradient(circle at top right, rgba(105, 155, 171, 0.12) 0, transparent 30%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color) 80%, #eadfc2 20%) 0%,
+            color-mix(in srgb, var(--r-background-color) 70%, #d5c7a2 30%) 100%
+        );
+}
+
+:global([data-theme='retro']) .drawerTab {
+    border-color: color-mix(in srgb, var(--r-border-color) 58%, transparent);
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--r-background-color) 78%, #efe4c6 22%) 0%,
+            color-mix(in srgb, var(--r-background-color) 64%, #d8c7a1 36%) 100%
+        );
+    box-shadow: 0 16px 28px -24px rgba(93, 71, 51, 0.28);
+}
+
+:global([data-theme='retro']) .drawerTab:hover {
+    border-color: color-mix(in srgb, var(--r-border-color) 76%, transparent);
+}
+
 .open .drawerTab {
     transform: translateY(0);
     border-bottom-color: color-mix(in srgb, var(--form-control-bg) 96%, transparent);
